@@ -1,0 +1,101 @@
+agro-product/
+├── public/
+│   └── images/                # Static assets (e.g. logo, bg, banners)
+│       └── logo.png
+│       └── hero-bg.jpg
+│
+├── src/
+│   ├── assets/                # Imported assets (non-static, like imported images)
+│   │   └── icons/
+│   │   └── illustrations/
+│   │   └── videos/
+│   │
+│   ├── components/            # Reusable components
+│   │   ├── Header.jsx
+│   │   ├── 
+.jsx
+│   │   ├── ProductCard.jsx
+│   │   └── ui/                # Reusable UI atoms (e.g., buttons, modals)
+│   │
+│   ├── pages/                 # Route-based components (pages)
+│   │   ├── Home.jsx
+│   │   ├── Products.jsx
+│   │   ├── About.jsx
+│   │   └── Contact.jsx
+│   │
+│   ├── routes/                # React Router config (if using)
+│   │   └── Router.jsx
+│   │
+│   ├── context/               # React context for global state
+│   │   └── CartContext.jsx
+│   │
+│   ├── hooks/                 # Custom React hooks
+│   │   └── useCart.js
+│   │   └── useWindowSize.js
+│   │
+│   ├── data/                  # Static data (e.g. product JSON)
+│   │   └── products.js
+│   │
+│   ├── utils/                 # Utility functions (e.g. formatCurrency)
+│   │   └── helpers.js
+│   │   └── constants.js
+│   │
+│   ├── styles/                # Global styles or Tailwind config overrides
+│   │   └── index.css
+│   │   └── tailwind.css
+│   │
+│   ├── App.jsx                # Main app component
+│   ├── main.jsx               # Entry point
+│   └── index.html             # Only used if modified directly
+│
+├── .gitignore
+├── tailwind.config.js
+├── postcss.config.js
+├── vite.config.js
+├── package.json
+└── README.md
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React from 'react'
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
+import { BackgroundBeamsWithCollision } from '../components/ui/background-beams-with-collision'
+import Header from '../components/Header'
+import Home from '../components/pages/Home'
+import Footer from '../components/Footer'
+
+function AppRouter() {
+    const { pathname } = useLocation()
+    return (
+        <Router>
+            <Header />
+            <BackgroundBeamsWithCollision />
+            <Switch>
+                <Route path='/home' element={<Home />} />
+            </Switch>
+            <Route render={({ location }) => {
+                if (location.pathname === "/") {
+                    return (
+                        <>
+                            Hello World
+                        </>
+                    )
+                }
+            }} />
+            <Footer />
+        </Router>
+    )
+}
+
+export default AppRouter

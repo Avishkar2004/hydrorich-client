@@ -1,10 +1,46 @@
-import React from 'react'
-import { BackgroundBeamsWithCollision } from '../components/ui/background-beams-with-collision'
+import React, { useEffect } from "react";
+import {
+    BrowserRouter as Router,
+    Routes,
+    Route,
+    useLocation,
+} from "react-router-dom";
 
-function AppRouter() {
-    return (
+import Home from "../components/pages/Home";
+import Header from "../components/Header";
+import Footer from "../components/Footer"; // Make sure this exists
+import { BackgroundBeamsWithCollision } from "../components/ui/background-beams-with-collision";
+
+// Scroll to top on route change
+const ScrollToTop = () => {
+    const { pathname } = useLocation();
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
+    return null;
+};
+
+// Common background beam only on home route
+const HomeWithExtras = () => (
+    <>
         <BackgroundBeamsWithCollision />
-    )
-}
+        {/* <Home /> */}
+    </>
+);
 
-export default AppRouter
+const AppRoutes = () => {
+    return (
+        <Router>
+            <Header />
+            <ScrollToTop />
+            <Routes>
+                <Route path="/" element={<HomeWithExtras />} />
+                {/* Add more routes below */}
+                <Route path="/home" element={<Home />} />
+            </Routes>
+            <Footer />
+        </Router>
+    );
+};
+
+export default AppRoutes;
