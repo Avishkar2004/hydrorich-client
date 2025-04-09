@@ -10,6 +10,8 @@ import Home from "../components/pages/Home";
 import Header from "../components/Header";
 import Footer from "../components/Footer"; // Make sure this exists
 import { BackgroundBeamsWithCollision } from "../components/ui/background-beams-with-collision";
+import AboutUs from "../components/pages/AboutUs";
+import Contact from "../components/pages/Contact";
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -37,6 +39,8 @@ const AppRoutes = () => {
                 <Route path="/" element={<HomeWithExtras />} />
                 {/* Add more routes below */}
                 <Route path="/home" element={<Home />} />
+                <Route path="/aboutus" element={<AboutUs />} />
+                <Route path="/contact" element={<Contact />} />
             </Routes>
             <Footer />
         </Router>

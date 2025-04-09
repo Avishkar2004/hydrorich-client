@@ -1,128 +1,55 @@
-import React from "react";
+import { Mail, Phone, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const Footer = () => {
+export default function Footer() {
     return (
-        <footer className="bg-gray-800 text-white py-6 font-secondary">
-            <div className="container mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    {/* Column 1 */}
-                    <div className="md:col-span-1">
-                        <h2 className="text-xl font-semibold">Newsletter</h2>
-                        <p>
-                            Subscribe to get seasonal offers, farming tips, articles, news,
-                            and blogs regularly.
-                        </p>
-                        <div className="mt-4">
-                            <input
-                                type="email"
-                                placeholder="Your email"
-                                className="w-full py-2 px-4 rounded-full bg-gray-700 text-white"
-                            />
-                            <button className="mt-2 bg-green-500 text-white py-2 px-4 rounded-full hover:bg-green-600">
-                                Subscribe
-                            </button>
-                        </div>
-                    </div>
+        <footer className="bg-green-100 text-gray-800 pt-10 pb-6 mt-12 border-t border-green-200">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-10">
 
-                    {/* Column 2 */}
-                    <div className="md:col-span-1">
-                        <h2 className="text-xl font-semibold">Information</h2>
-                        <ul className="mt-4 space-y-4 ">
-                            <li>
-                                <Link to="#" className="hover:text-blue-600">
-                                    About Hydrorich
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="#" className="hover:text-blue-600">
-                                    Contact Us
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="#" className="hover:text-blue-600">
-                                    FAQs
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="#" className="hover:text-blue-600">
-                                    Products Ideas, Roadmap, anad Announcements
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="#" className="hover:text-blue-600">
-                                    Track Order
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-                    {/* Column 3 */}
-                    <div className="md:col-span-1">
-                        <h2 className="text-xl font-semibold">Categories</h2>
-                        <ul className="mt-4 space-y-4 ">
-                            <li>
-                                <Link to="#" className="hover:text-blue-600">
-                                    Brands
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="#" className="hover:text-blue-600">
-                                    Insecticides
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="#" className="hover:text-blue-600">
-                                    Fungicides
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="#" className="hover:text-blue-600">
-                                    Micro-nutrients
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="#" className="hover:text-blue-600">
-                                    Organic Products
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-
-                    {/* Column 4 */}
-                    <div className="md:col-span-1">
-                        <h2 className="text-xl font-semibold">Policies</h2>
-                        <ul className="mt-4 space-y-4 ">
-                            <li>
-                                <Link to="#" className="hover:text-blue-600">
-                                    Privacy Policy
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="#" className="hover:text-blue-600">
-                                    Terms and Conditions
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="#" className="hover:text-blue-600">
-                                    Shipping Policy
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="#" className="hover:text-blue-600">
-                                    Cancellation and Refund
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="#" className="hover:text-blue-600">
-                                    Preventive Policy for COVID-19
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
+                {/* Logo & Tagline */}
+                <div>
+                    <h2 className="text-2xl font-bold text-green-700">Hydrorich 🌱</h2>
+                    <p className="mt-2 text-sm text-gray-600">
+                        Empowering agriculture through innovation.
+                        Organic, sustainable, and effective farming products for a greener tomorrow.
+                    </p>
                 </div>
+
+                {/* Quick Links */}
+                <div>
+                    <h3 className="text-lg font-semibold text-green-600 mb-3">Quick Links</h3>
+                    <ul className="space-y-2">
+                        <li><Link to="/home" className="hover:text-green-800 transition">Home</Link></li>
+                        <li><Link to="/products" className="hover:text-green-800 transition">Products</Link></li>
+                        <li><Link to="/aboutus" className="hover:text-green-800 transition">About Us</Link></li>
+                        <li><Link to="/contact" className="hover:text-green-800 transition">Contact</Link></li>
+                    </ul>
+                </div>
+
+                {/* Contact Info */}
+                <div>
+                    <h3 className="text-lg font-semibold text-green-600 mb-3">Contact Us</h3>
+                    <ul className="space-y-3 text-sm">
+                        <li className="flex items-center gap-2">
+                            <Phone className="w-4 h-4 text-green-700" />
+                            +91 9322810348
+                        </li>
+                        <li className="flex items-center gap-2">
+                            <Mail className="w-4 h-4 text-green-700" />
+                            support@hydrorich.in
+                        </li>
+                        <li className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4 text-green-700" />
+                            Pune, Maharashtra, India
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            {/* Footer Bottom */}
+            <div className="mt-8 border-t border-green-300 pt-4 text-center text-sm text-gray-600">
+                © {new Date().getFullYear()} Hydrorich. All rights reserved.
             </div>
         </footer>
     );
-};
-
-export default Footer;
+}

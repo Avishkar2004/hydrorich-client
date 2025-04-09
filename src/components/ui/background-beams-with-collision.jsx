@@ -30,27 +30,50 @@ export const BackgroundBeamsWithCollision = ({
     <div
       ref={parentRef}
       className={cn(
-        "h-96 md:h-[40rem] bg-gradient-to-b from-white to-neutral-100 dark:from-neutral-950 dark:to-neutral-800 relative flex items-center w-full justify-center overflow-hidden",
-        // h-screen if you want bigger
+        "h-96 md:h-[40.5rem] bg-gradient-to-b from-white to-neutral-100 dark:from-neutral-950 dark:to-neutral-800 relative flex items-center w-full justify-center overflow-hidden",
         className
       )}>
+
+      {/* Beams */}
       {beams.map((beam) => (
         <CollisionMechanism
           key={beam.initialX + "beam-idx"}
           beamOptions={beam}
           containerRef={containerRef}
-          parentRef={parentRef} />
+          parentRef={parentRef}
+        />
       ))}
-      {children}
+
+      {/* 💧 Text Overlay - Hydrorich */}
+      {/* 💧 Text Overlay - Hydrorich */}
+      <div className="absolute z-10 text-center px-4">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-green-700 dark:text-white drop-shadow-lg">
+          Welcome to Hydrorich 🌿
+        </h1>
+        <p className="mt-4 text-sm sm:text-lg md:text-xl text-neutral-700 dark:text-neutral-300 max-w-3xl mx-auto">
+          Revolutionizing agriculture through nature-powered innovation. We empower farmers with sustainable products, organic growth boosters, and smart irrigation tools — for a greener India, one crop at a time.
+        </p>
+        <p className="mt-6 text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto italic">
+          “From soil to soul — Hydrorich is rooted in purpose, powered by science, and committed to the future of farming.”
+        </p>
+      </div>
+
+
+      {/* Container Floor Layer */}
       <div
         ref={containerRef}
         className="absolute bottom-0 bg-neutral-100 w-full inset-x-0 pointer-events-none"
         style={{
           boxShadow:
             "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(34, 42, 53, 0.04), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset",
-        }}></div>
+        }}
+      ></div>
+
+      {/* Children if needed */}
+      {children}
     </div>
   );
+
 };
 
 const CollisionMechanism = React.forwardRef(({ parentRef, containerRef, beamOptions = {} }, ref) => {
@@ -186,7 +209,7 @@ const Explosion = ({
             opacity: 0,
           }}
           transition={{ duration: Math.random() * 1.5 + 0.5, ease: "easeOut" }}
-          className="absolute h-1 w-1 rounded-full bg-gradient-to-b from-indigo-500 to-purple-500" />
+          className="absolute h-1 w-1 rounded-full bg-gradient-to-b from-indigo-600 to-pink-700" />
       ))}
     </div>
   );
