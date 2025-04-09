@@ -45,7 +45,6 @@ export const BackgroundBeamsWithCollision = ({
       ))}
 
       {/* 💧 Text Overlay - Hydrorich */}
-      {/* 💧 Text Overlay - Hydrorich */}
       <div className="absolute z-10 text-center px-4">
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-green-700 dark:text-white drop-shadow-lg">
           Welcome to Hydrorich 🌿
