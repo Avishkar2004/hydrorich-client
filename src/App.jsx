@@ -1,9 +1,11 @@
 import AppRouter from "./Router/Router.jsx";
+import { Analytics } from "@vercel/analytics/react"
 
 function App() {
   return (
-    <div>
+    <div className="overflow-hidden">
       <AppRouter />
+      <Analytics />
     </div>
   );
 }
