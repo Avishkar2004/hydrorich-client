@@ -16,6 +16,7 @@ import AboutUs from "../components/pages/AboutUs";
 import Contact from "../components/pages/Contact";
 import ProductDetails from "../components/pages/ProductsDetails.jsx";
 import Products from "../components/pages/Products.jsx";
+import Collection from "../components/ui/Collection.jsx";
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -30,6 +31,7 @@ const ScrollToTop = () => {
 
 const HomeWithExtras = () => (
     <>
+    <Collection />
         <BackgroundBeamsWithCollision />
     </>
 );
