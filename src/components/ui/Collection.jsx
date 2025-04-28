@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import Offer from "../../assets/Collections/Offer.webp";
 import Funcgicide from "../../assets/Collections/fungicide1.avif";
 import insectiicide1 from "../../assets/Collections/insectiicide1.avif";
 import micronutrients1 from "../../assets/Collections/micronutrients1.avif";
@@ -20,12 +19,7 @@ const Collection = () => {
   };
 
   return (
-    <section className="flex flex-col items-center mb-9">
-      <div className="mb-5 w-full max-w-[1436px] px-4">
-        {/* <Link to="#">
-          <img src={Offer} alt="Offer" className="w-full" />
-        </Link> */}
-      </div>
+    <section className="flex flex-col items-center mb-5 mt-5">
       <div className="flex flex-col sm:flex-row justify-between items-center w-full max-w-[1436px] px-4 mb-5 font-bold">
         <h1 className="text-[#1e2d7d] text-lg sm:text-xl font-primary cursor-pointer">
           Our Collection's
