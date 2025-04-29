@@ -11,7 +11,7 @@ export default function Home() {
           Discover the power of organic agriculture with Hydrorich — boosting growth, sustainability, and freshness for every crop and everywhere.
         </p>
         <button className="px-6 py-3 bg-green-600 text-white font-semibold rounded-full hover:bg-green-700 transition duration-300">
-          <Link to="/">Explore Products</Link>
+          <Link to="/products">Explore Products</Link>
         </button>
       </div>
     </section>

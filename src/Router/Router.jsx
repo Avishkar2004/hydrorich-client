@@ -31,6 +31,7 @@ const ScrollToTop = () => {
 
 const HomeWithExtras = () => (
     <>
+    <Home />
     <Collection />
         <BackgroundBeamsWithCollision />
     </>
@@ -44,7 +45,6 @@ const AppRoutes = () => {
             <Routes>
                 <Route element={<ScrollToTop />} />
                 <Route path="/" element={<HomeWithExtras />} />
-                <Route path="/home" element={<Home />} />
                 <Route path="/products" element={<Products />} />
                 <Route path="/products/:id" element={<ProductDetails />} />
                 <Route path="/aboutus" element={<AboutUs />} />
