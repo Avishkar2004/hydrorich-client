@@ -24,9 +24,9 @@ export default function Header() {
             <input
               type="text"
               placeholder="Search for products..."
-              className="w-full border border-gray-300 rounded-full py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-green-600"
+              className="w-full border border-gray-400 rounded-full py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-green-600"
             />
-            <Search className="absolute top-2.5 left-3 text-gray-400" size={20} />
+            <Search className="absolute top-2.5 left-3 text-gray-500" size={20} />
           </div>
         </div>
 
