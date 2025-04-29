@@ -31,8 +31,8 @@ const ScrollToTop = () => {
 
 const HomeWithExtras = () => (
     <>
-    <Home />
-    <Collection />
+        <Home />
+        <Collection />
         <BackgroundBeamsWithCollision />
     </>
 );
