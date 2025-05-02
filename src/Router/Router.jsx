@@ -19,6 +19,8 @@ import Products from "../components/pages/Products.jsx";
 import Collection from "../components/ui/Collection.jsx";
 import { Rotate3D } from "lucide-react";
 import PgrList from "../components/pages/pgr/PgrList.jsx";
+import CropList from "../components/pages/crop/CropList.jsx";
+import CropOptions from "../components/pages/crop/CropOptions.jsx";
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -51,6 +53,10 @@ const AppRoutes = () => {
                 <Route path="/products/:id" element={<ProductDetails />} />
                 <Route path="/aboutus" element={<AboutUs />} />
                 <Route path="/contact" element={<Contact />} />
+
+                {/* Crops */}
+                <Route path="/crops" element={<CropList />} />
+                <Route path="/crops/:name" element={<CropOptions />} />
 
                 {/* For PGR */}
                 <Route path="/pgr" element={<PgrList />} />
