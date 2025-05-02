@@ -8,7 +8,7 @@ import {
 import { useLayoutEffect } from "react";
 
 
-import Home from "../components/pages/Home";
+import HomePage from "../components/pages/HomePage.jsx";
 import Header from "../components/Header";
 import Footer from "../components/Footer"; // Make sure this exists
 import { BackgroundBeamsWithCollision } from "../components/ui/background-beams-with-collision";
@@ -17,6 +17,8 @@ import Contact from "../components/pages/Contact";
 import ProductDetails from "../components/pages/ProductsDetails.jsx";
 import Products from "../components/pages/Products.jsx";
 import Collection from "../components/ui/Collection.jsx";
+import { Rotate3D } from "lucide-react";
+import PgrList from "../components/pages/pgr/PgrList.jsx";
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -31,7 +33,7 @@ const ScrollToTop = () => {
 
 const HomeWithExtras = () => (
     <>
-        <Home />
+        <HomePage />
         <Collection />
         <BackgroundBeamsWithCollision />
     </>
@@ -49,6 +51,10 @@ const AppRoutes = () => {
                 <Route path="/products/:id" element={<ProductDetails />} />
                 <Route path="/aboutus" element={<AboutUs />} />
                 <Route path="/contact" element={<Contact />} />
+
+                {/* For PGR */}
+                <Route path="/pgr" element={<PgrList />} />
+                <Route path="/pgr/:id" element={<ProductDetails />} />
             </Routes>
 
             <Footer />
