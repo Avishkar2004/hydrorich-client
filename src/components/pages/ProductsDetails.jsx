@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircle, Star } from "lucide-react";
 import ReactImageMagnify from "react-image-magnify";
+import { div } from "framer-motion/client";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -121,7 +122,7 @@ const ProductDetails = () => {
                     <button
                       key={idx}
                       onClick={() => setSelectedVariant(v)}
-                      className={`px-8 py-3 rounded-lg border text-sm font-medium transition-all
+                      className={`px-14 py-5 rounded-lg border text-sm font-medium transition-all
             ${isSelected
                           ? "bg-green-50 text-green-700 border-green-500 shadow-sm"
                           : "bg-white text-gray-500 border-gray-300 hover:border-green-500 hover:text-green-700"}
@@ -133,6 +134,38 @@ const ProductDetails = () => {
                 })}
               </div>
             </div>
+
+            {selectedVariant?.dosage && (
+              <div className="mt-10">
+                <h2 className="text-xl font-bold text-green-800 mb-4 flex items-center gap-2">
+                  🌱 Dosage & Usage Instructions
+                </h2>
+
+                <div className="bg-green-50 border border-green-200 rounded-2xl p-6 shadow-md space-y-4">
+                  <div className="flex items-start gap-4">
+                    <div className="text-green-700 text-xl">💊</div>
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium">Dosage per unit</p>
+                      <p className="text-base font-semibold text-gray-800">{selectedVariant.dosage.dosage_per_unit}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="text-green-700 text-xl">📋</div>
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium">Usage Instructions</p>
+                      <p className="text-base font-semibold text-gray-800 whitespace-pre-line">
+                        {selectedVariant.dosage.usage_instructions}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+
+
+
             {/* Highlights */}
             <div className="mt-6">
               <h2 className="font-semibold text-lg text-green-900">Product Highlights</h2>
