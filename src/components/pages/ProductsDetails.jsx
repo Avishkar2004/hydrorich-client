@@ -35,7 +35,7 @@ const ProductDetails = () => {
     }
   }, [product]);
 
- 
+
 
   if (loading) return <div className="text-center py-20">Loading...</div>;
   if (!product) return <div className="text-center text-red-600 mt-10">Product not found.</div>;
@@ -113,20 +113,26 @@ const ProductDetails = () => {
 
             {/* Variant Selection */}
             <div className="mt-4">
-              <h2 className="font-medium text-gray-800 text-sm">Select Variant:</h2>
-              <div className="flex gap-3 mt-2 flex-wrap">
-                {product.variants.map((v, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setSelectedVariant(v)}
-                    className={`px-4 py-2 text-sm rounded-full border ${selectedVariant?.name === v.name ? "bg-green-600 text-white border-green-600" : "bg-white text-gray-700 border-gray-300 hover:border-green-500"}`}
-                  >
-                    {v.name} ({v.quantity} gm; {v.unit})
-                  </button>
-                ))}
+              <h2 className="font-semibold text-gray-900 text-base">Select Variant</h2>
+              <div className="flex flex-wrap gap-3 mt-3">
+                {product.variants.map((v, idx) => {
+                  const isSelected = selectedVariant?.name === v.name;
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedVariant(v)}
+                      className={`px-8 py-3 rounded-lg border text-sm font-medium transition-all
+            ${isSelected
+                          ? "bg-green-50 text-green-700 border-green-500 shadow-sm"
+                          : "bg-white text-gray-500 border-gray-300 hover:border-green-500 hover:text-green-700"}
+          `}
+                    >
+                      {v.name}
+                    </button>
+                  );
+                })}
               </div>
             </div>
-
             {/* Highlights */}
             <div className="mt-6">
               <h2 className="font-semibold text-lg text-green-900">Product Highlights</h2>
@@ -136,7 +142,6 @@ const ProductDetails = () => {
                 <li className="flex items-center gap-2"><CheckCircle className="text-green-500" size={16} /> Genuine product guarantee</li>
               </ul>
             </div>
-
             {/* Reviews */}
             <div className="mt-6">
               <h2 className="font-semibold text-lg text-green-900">Customer Reviews</h2>
