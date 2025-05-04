@@ -21,6 +21,8 @@ import { Rotate3D } from "lucide-react";
 import PgrList from "../components/pages/pgr/PgrList.jsx";
 import CropList from "../components/pages/crop/CropList.jsx";
 import CropOptions from "../components/pages/crop/CropOptions.jsx";
+import SignUp from "../components/pages/SignUp.jsx";
+import Login from "../components/pages/LogIn.jsx";
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -49,6 +51,8 @@ const AppRoutes = () => {
             <Routes>
                 <Route element={<ScrollToTop />} />
                 <Route path="/" element={<HomeWithExtras />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/login" element={<Login />} />
                 <Route path="/products" element={<Products />} />
                 <Route path="/products/:id" element={<ProductDetails />} />
                 <Route path="/aboutus" element={<AboutUs />} />

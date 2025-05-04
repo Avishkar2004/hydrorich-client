@@ -50,7 +50,7 @@ export default function Header() {
             <a href="/cart" className="text-gray-600 hover:text-green-600 transition">
               <ShoppingCart size={22} />
             </a>
-            <a href="/account" className="text-gray-600 hover:text-green-600 transition">
+            <a href="/signup" className="text-gray-600 hover:text-green-600 transition">
               <User size={22} />
             </a>
             <button className="px-5 py-2 bg-green-600 text-white font-semibold rounded-full hover:bg-green-700 transition duration-200">

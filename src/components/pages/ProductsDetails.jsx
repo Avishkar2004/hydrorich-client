@@ -49,7 +49,6 @@ const ProductDetails = () => {
   return (
     <div className="bg-gray-50 min-h-screen px-4 sm:px-10 py-12">
       <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 bg-white rounded-3xl shadow-lg p-8">
-
         {/* LEFT: Images */}
         <div>
           <div className="w-full max-w-md mx-auto">
@@ -73,7 +72,6 @@ const ProductDetails = () => {
               }}
             />
           </div>
-
           {/* Thumbnails */}
           <div className="mt-6 grid grid-cols-4 gap-4">
             {product.images.map((img, idx) => (
@@ -87,7 +85,6 @@ const ProductDetails = () => {
             ))}
           </div>
         </div>
-
         {/* RIGHT: Info */}
         <div className="flex flex-col justify-between space-y-6">
           <div>
@@ -140,7 +137,6 @@ const ProductDetails = () => {
                 <h2 className="text-xl font-bold text-green-800 mb-4 flex items-center gap-2">
                   🌱 Dosage & Usage Instructions
                 </h2>
-
                 <div className="bg-green-50 border border-green-200 rounded-2xl p-6 shadow-md space-y-4">
                   <div className="flex items-start gap-4">
                     <div className="text-green-700 text-xl">💊</div>
@@ -149,7 +145,6 @@ const ProductDetails = () => {
                       <p className="text-base font-semibold text-gray-800">{selectedVariant.dosage.dosage_per_unit}</p>
                     </div>
                   </div>
-
                   <div className="flex items-start gap-4">
                     <div className="text-green-700 text-xl">📋</div>
                     <div>
@@ -162,10 +157,6 @@ const ProductDetails = () => {
                 </div>
               </div>
             )}
-
-
-
-
             {/* Highlights */}
             <div className="mt-6">
               <h2 className="font-semibold text-lg text-green-900">Product Highlights</h2>

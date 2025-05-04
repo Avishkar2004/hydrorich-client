@@ -5,8 +5,7 @@ export default function Home() {
   return (
     <section
       id="home"
-      className="bg-green-50 py-20 px-4 sm:px-8 md:px-16 lg:px-32 text-center"
-    >
+      className="bg-green-50 py-20 px-4 sm:px-8 md:px-16 lg:px-32 text-center">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl sm:text-5xl font-bold text-green-700 leading-tight mb-6">
           Welcome to Hydrorich 🌿
@@ -14,7 +13,6 @@ export default function Home() {
         <p className="text-gray-700 text-lg sm:text-xl mb-12">
           Discover the power of organic agriculture with Hydrorich — boosting growth, sustainability, and freshness for every crop and everywhere.
         </p>
-
         {/* Button Group */}
         <div className="flex justify-center gap-6 flex-wrap items-center">
           {/* Explore Products Button */}
@@ -23,14 +21,13 @@ export default function Home() {
               Explore Products
             </button>
           </Link>
-
           {/* Compact Crop Card */}
           <Link to="/crops">
             <div className="shadow-md rounded-xl p-2 w-28 hover:shadow-lg transition duration-300">
               <img
                 src={Crops}
                 alt="Crops"
-                className="w-full h-20 object-contain rounded-md mb-1 transition-transform duration-300 hover:scale-105"
+                className="w-full h-20 object-contain rounded-md mb-1"
               />
               <div className="text-green-700 font-semibold text-sm mt-1">Crop's</div>
             </div>
