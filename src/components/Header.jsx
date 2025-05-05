@@ -4,6 +4,16 @@ import Logo from "../assets/Logo.jpg";
 import { useAuth } from "../hooks/useAuth.js";
 import { Link } from "react-router-dom";
 
+import {
+  LogOut,
+  Settings,
+  MessageSquare,
+  FileText,
+  ChevronDown
+
+} from "lucide-react";
+
+
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const user = useAuth()
@@ -55,28 +65,34 @@ export default function Header() {
             </Link>
             {user ? (
               <div className="relative group">
-                <button className="flex items-center gap-2 text-gray-700 hover:text-green-600">
+                {/* Trigger */}
+                <div className="flex items-center gap-2 text-gray-800 hover:text-green-600 transition cursor-pointer">
                   <User size={22} />
-                  <span className="text-sm font-semibold">
-                    {user.displayName?.split(" ")[0]}
-                  </span>
-                </button>
-                <div className="absolute right-0 mt-2 w-48 bg-white shadow-md rounded-md border border-gray-100 hidden group-hover:block z-50">
-                  <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    👤 Profile
-                  </Link>
-                  <Link to="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    🧾 My Orders
-                  </Link>
-                  <Link to="/messages" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    💬 Messages
-                  </Link>
-                  <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    ⚙️ Settings
-                  </Link>
+                  <span className="text-sm font-medium">{user.displayName?.split(" ")[0]}</span>
+                  <ChevronDown size={18} />
+                </div>
 
-                  <Link to="http://localhost:8080/api/auth/logout" className="block px-4 py-2 text-sm text-red-500 hover:bg-red-100">
-                    🚪 Logout
+                {/* Dropdown */}
+                <div className="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-xl shadow-xl opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-2 pointer-events-none group-hover:pointer-events-auto transition-all duration-200 z-50">
+                  <Link
+                    to="/profile"
+                    className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-t-xl transition">
+                    <User size={16} /> Profile
+                  </Link>
+                  <Link
+                    to="/orders"
+                    className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition">
+                    <ShoppingCart size={16} /> My Orders
+                  </Link>
+                  <Link
+                    to="/settings"
+                    className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition">
+                    <Settings size={16} /> Settings
+                  </Link>
+                  <Link
+                    to="http://localhost:8080/api/auth/logout"
+                    className="flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50 rounded-b-xl transition">
+                    <LogOut size={16} /> Logout
                   </Link>
                 </div>
               </div>
@@ -84,10 +100,12 @@ export default function Header() {
               <div className="flex items-center gap-4">
                 <Link
                   to="/login"
-                  className="text-sm font-medium text-gray-600 hover:text-gray-600 transition">
+                  className="text-sm font-medium text-gray-700 hover:text-green-600 transition">
                   Login
                 </Link>
-                <Link to="/signup" className="text-sm font-medium text-white bg-green-600 px-4 py-2 rounded-full hover:bg-gray-700 transition">
+                <Link
+                  to="/signup"
+                  className="text-sm font-medium text-white bg-green-600 hover:bg-green-700 px-4 py-2 rounded-full transition">
                   Sign Up
                 </Link>
               </div>
@@ -141,30 +159,47 @@ export default function Header() {
             </Link>
           </div>
           {user ? (
-            <div className="mt-4 space-y-2">
-              <p className="text-gray-700 font-medium text-center">
-                Hello, {user.displayName?.split(" ")[0]}
-              </p>
-              <Link to="/profile" className="block text-center text-sm text-blue-600 hover:text-blue-800">
-                👤 Profile
-              </Link>
-              <Link to="/orders" className="block text-center text-sm text-blue-600 hover:text-blue-800">
-                🧾 My Orders
-              </Link>
-              <Link to="/messages" className="block text-center text-sm text-blue-600 hover:text-blue-800">
-                💬 Messages
-              </Link>
-              <Link to="/settings" className="block text-center text-sm text-blue-600 hover:text-blue-800">
-                ⚙️ Settings
-              </Link>
-              <Link to="http://localhost:8080/api/auth/logout" className="block text-center text-sm text-red-500 hover:text-red-700">
-                🚪 Logout
-              </Link>
+            <div className="w-full border-t border-gray-200 mt-4 pt-4">
+              <div className="flex items-center gap-3 text-gray-800">
+                <User size={22} />
+                <span className="text-base font-medium">{user.displayName?.split(" ")[0]}</span>
+              </div>
+              <div className="mt-4 flex flex-col space-y-3 text-gray-700">
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-2 text-sm hover:text-green-600 transition">
+                  <User size={16} /> Profile
+                </Link>
+                <Link
+                  to="/orders"
+                  className="flex items-center gap-2 text-sm hover:text-green-600 transition">
+                  <ShoppingCart size={16} /> My Orders
+                </Link>
+                <Link
+                  to="/settings"
+                  className="flex items-center gap-2 text-sm hover:text-green-600 transition">
+                  <Settings size={16} /> Settings
+                </Link>
+                <Link
+                  to="http://localhost:8080/api/auth/logout"
+                  className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 transition">
+                  <LogOut size={16} /> Logout
+                </Link>
+              </div>
             </div>
           ) : (
-            <button className="w-full mt-2 px-4 py-2 bg-green-600 text-white font-semibold rounded-full hover:bg-green-700 transition duration-200">
-              Shop Now
-            </button>
+            <div className="w-full border-t border-gray-200 mt-4 pt-4 flex flex-col space-y-3">
+              <Link
+                to="/login"
+                className="text-sm font-medium text-gray-700 hover:text-green-600 transition">
+                Login
+              </Link>
+              <Link
+                to="/signup"
+                className="text-sm font-medium text-white bg-green-600 hover:bg-green-700 px-4 py-2 rounded-full text-center transition">
+                Sign Up
+              </Link>
+            </div>
           )}
 
         </div>
