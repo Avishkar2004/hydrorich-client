@@ -12,7 +12,7 @@ function PgrList() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch('http://localhost:8000/api/pgr');
+                const res = await fetch('http://localhost:8080/api/pgr');
                 const data = await res.json();
                 setPgrProducts(data.products);
                 setFilteredProducts(data.products);

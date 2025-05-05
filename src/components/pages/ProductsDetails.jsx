@@ -3,22 +3,18 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircle, Star } from "lucide-react";
-import ReactImageMagnify from "react-image-magnify";
-import { div } from "framer-motion/client";
 
 const ProductDetails = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
-  const [pincode, setPincode] = useState("");
-  const [deliveryMessage, setDeliveryMessage] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/pgr/${id}`);
+        const res = await axios.get(`http://localhost:8080/api/pgr/${id}`);
         setProduct(res.data.product);
       } catch (err) {
         console.error("Error fetching product:", err);
@@ -36,8 +32,6 @@ const ProductDetails = () => {
     }
   }, [product]);
 
-
-
   if (loading) return <div className="text-center py-20">Loading...</div>;
   if (!product) return <div className="text-center text-red-600 mt-10">Product not found.</div>;
 
@@ -51,27 +45,15 @@ const ProductDetails = () => {
       <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 bg-white rounded-3xl shadow-lg p-8">
         {/* LEFT: Images */}
         <div>
-          <div className="w-full max-w-md mx-auto">
-            <ReactImageMagnify
-              {...{
-                smallImage: {
-                  alt: product.name,
-                  isFluidWidth: true,
-                  src: selectedImage,
-                },
-                largeImage: {
-                  src: selectedImage,
-                  width: 1200,
-                  height: 1800,
-                },
-                enlargedImageContainerDimensions: {
-                  width: "150%",
-                  height: "100%",
-                },
-                enlargedImagePosition: "beside",
-              }}
+          {/* Main Image with Zoom Effect */}
+          <div className="relative overflow-hidden group w-full max-w-md mx-auto border rounded-xl">
+            <img
+              src={selectedImage}
+              alt={product.name}
+              className="w-full h-auto transition-transform duration-300 group-hover:scale-125"
             />
           </div>
+
           {/* Thumbnails */}
           <div className="mt-6 grid grid-cols-4 gap-4">
             {product.images.map((img, idx) => (
@@ -80,11 +62,15 @@ const ProductDetails = () => {
                 src={img}
                 alt={`img-${idx}`}
                 onClick={() => setSelectedImage(img)}
-                className={`h-20 object-cover rounded-lg cursor-pointer border ${selectedImage === img ? "border-green-600 scale-105" : "border-gray-200 hover:scale-105"} transition-all duration-300`}
+                className={`h-20 object-cover rounded-lg cursor-pointer border ${selectedImage === img
+                    ? "border-green-600 scale-105"
+                    : "border-gray-200 hover:scale-105"
+                  } transition-all duration-300`}
               />
             ))}
           </div>
         </div>
+
         {/* RIGHT: Info */}
         <div className="flex flex-col justify-between space-y-6">
           <div>
@@ -94,7 +80,6 @@ const ProductDetails = () => {
               )}
               <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-medium">Best Seller</span>
             </div>
-
             <h1 className="text-3xl font-bold text-green-900">{product.name}</h1>
             <p className="text-sm mt-1 text-gray-600">{product.description}</p>
 
@@ -119,11 +104,10 @@ const ProductDetails = () => {
                     <button
                       key={idx}
                       onClick={() => setSelectedVariant(v)}
-                      className={`px-14 py-5 rounded-lg border text-sm font-medium transition-all
-            ${isSelected
+                      className={`px-14 py-5 rounded-lg border text-sm font-medium transition-all ${isSelected
                           ? "bg-green-50 text-green-700 border-green-500 shadow-sm"
-                          : "bg-white text-gray-500 border-gray-300 hover:border-green-500 hover:text-green-700"}
-          `}
+                          : "bg-white text-gray-500 border-gray-300 hover:border-green-500 hover:text-green-700"
+                        }`}
                     >
                       {v.name}
                     </button>
@@ -132,6 +116,7 @@ const ProductDetails = () => {
               </div>
             </div>
 
+            {/* Dosage Info */}
             {selectedVariant?.dosage && (
               <div className="mt-10">
                 <h2 className="text-xl font-bold text-green-800 mb-4 flex items-center gap-2">
@@ -157,6 +142,7 @@ const ProductDetails = () => {
                 </div>
               </div>
             )}
+
             {/* Highlights */}
             <div className="mt-6">
               <h2 className="font-semibold text-lg text-green-900">Product Highlights</h2>
@@ -166,6 +152,7 @@ const ProductDetails = () => {
                 <li className="flex items-center gap-2"><CheckCircle className="text-green-500" size={16} /> Genuine product guarantee</li>
               </ul>
             </div>
+
             {/* Reviews */}
             <div className="mt-6">
               <h2 className="font-semibold text-lg text-green-900">Customer Reviews</h2>
@@ -180,6 +167,7 @@ const ProductDetails = () => {
             </div>
           </div>
 
+          {/* Add to Cart Button */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
             <button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold text-lg shadow-md">
               🛒 Add to Cart

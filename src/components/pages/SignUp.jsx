@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const SignUp = () => {
@@ -34,6 +35,17 @@ const SignUp = () => {
             // Proceed with actual form submission logic (API call)
         }
     };
+
+    const handleGoogleLogin = () => {
+        window.open("http://localhost:8080/api/auth/google", "_self")
+    }
+
+    useEffect(() => {
+        axios.get("http://localhost:8080/api/auth/user", { withCredentials: true })
+            .then(res => {
+                console.log("User", res.data)
+            })
+    }, [])
 
     return (
         <div className="flex items-center justify-center bg-gray-50 px-4">
@@ -98,7 +110,7 @@ const SignUp = () => {
 
                     <button
                         type="button"
-                        onClick={() => console.log("Sign up with Google clicked")} // Replace with actual Google auth logic
+                        onClick={handleGoogleLogin} // Replace with actual Google auth logic
                         className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition duration-150"
                     >
                         <img
