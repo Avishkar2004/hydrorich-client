@@ -202,8 +202,8 @@ const ProductDetails = () => {
                   })
               }
               className={`flex-1 py-3 px-6 rounded-xl font-semibold text-lg shadow-md transition duration-300 ${isWishlisted
-                  ? "bg-red-500 text-white hover:bg-red-600"
-                  : "bg-gray-200 text-black hover:bg-gray-300"
+                ? "bg-red-500 text-white hover:bg-red-600"
+                : "bg-gray-200 text-black hover:bg-gray-300"
                 }`}
             >
               {isWishlisted ? "❤️ Remove from Wishlist" : "🤍 Add to Wishlist"}
