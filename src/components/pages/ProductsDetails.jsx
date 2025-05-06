@@ -209,8 +209,6 @@ const ProductDetails = () => {
               {isWishlisted ? "❤️ Remove from Wishlist" : "🤍 Add to Wishlist"}
             </button>
           </motion.div>
-
-
         </div>
       </div>
     </div>
