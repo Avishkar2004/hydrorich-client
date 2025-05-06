@@ -3,6 +3,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircle, Star } from "lucide-react";
+import useCartStore from "../../store/cartStore.js";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -31,6 +32,8 @@ const ProductDetails = () => {
       setSelectedVariant(product.variants?.[0]);
     }
   }, [product]);
+
+  const addToCart = useCartStore((state) => state.addToCart);
 
   if (loading) return <div className="text-center py-20">Loading...</div>;
   if (!product) return <div className="text-center text-red-600 mt-10">Product not found.</div>;
@@ -63,8 +66,8 @@ const ProductDetails = () => {
                 alt={`img-${idx}`}
                 onClick={() => setSelectedImage(img)}
                 className={`h-20 object-cover rounded-lg cursor-pointer border ${selectedImage === img
-                    ? "border-green-600 scale-105"
-                    : "border-gray-200 hover:scale-105"
+                  ? "border-green-600 scale-105"
+                  : "border-gray-200 hover:scale-105"
                   } transition-all duration-300`}
               />
             ))}
@@ -105,8 +108,8 @@ const ProductDetails = () => {
                       key={idx}
                       onClick={() => setSelectedVariant(v)}
                       className={`px-14 py-5 rounded-lg border text-sm font-medium transition-all ${isSelected
-                          ? "bg-green-50 text-green-700 border-green-500 shadow-sm"
-                          : "bg-white text-gray-500 border-gray-300 hover:border-green-500 hover:text-green-700"
+                        ? "bg-green-50 text-green-700 border-green-500 shadow-sm"
+                        : "bg-white text-gray-500 border-gray-300 hover:border-green-500 hover:text-green-700"
                         }`}
                     >
                       {v.name}
@@ -169,10 +172,14 @@ const ProductDetails = () => {
 
           {/* Add to Cart Button */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-            <button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold text-lg shadow-md">
+            <button
+              onClick={() => addToCart(product, selectedVariant)}
+              className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold text-lg shadow-md"
+            >
               🛒 Add to Cart
             </button>
           </motion.div>
+
         </div>
       </div>
     </div>
