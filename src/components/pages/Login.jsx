@@ -27,7 +27,7 @@ const Login = () => {
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
         } else {
-            console.log("Logging in with:", formData);
+            // console.log("Logging in with:", formData);
             // Connect to backend login API here
         }
     };

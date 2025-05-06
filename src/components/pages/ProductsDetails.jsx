@@ -4,9 +4,11 @@ import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircle, Star } from "lucide-react";
 import useCartStore from "../../store/cartStore.js";
+import useWishlistStore from "../../store/wishlistStore.js";
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const { addToWishlist, removeFromWishlist, wishlist } = useWishlistStore()
   const [product, setProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -34,6 +36,11 @@ const ProductDetails = () => {
   }, [product]);
 
   const addToCart = useCartStore((state) => state.addToCart);
+
+
+  const isWishlisted = wishlist.some(
+    (i) => i.productId === product?.productId && i.variantName === selectedVariant
+  );
 
   if (loading) return <div className="text-center py-20">Loading...</div>;
   if (!product) return <div className="text-center text-red-600 mt-10">Product not found.</div>;
@@ -171,14 +178,38 @@ const ProductDetails = () => {
           </div>
 
           {/* Add to Cart Button */}
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="mt-6 flex flex-col sm:flex-row sm:items-center gap-4"
+          >
             <button
               onClick={() => addToCart(product, selectedVariant)}
-              className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold text-lg shadow-md"
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-xl font-semibold text-lg shadow-md transition duration-300"
             >
               🛒 Add to Cart
             </button>
+
+            <button
+              onClick={() =>
+                isWishlisted
+                  ? removeFromWishlist(product.productId, selectedVariant)
+                  : addToWishlist({
+                    productId: product.productId,
+                    name: product.name,
+                    variantName: selectedVariant,
+                  })
+              }
+              className={`flex-1 py-3 px-6 rounded-xl font-semibold text-lg shadow-md transition duration-300 ${isWishlisted
+                  ? "bg-red-500 text-white hover:bg-red-600"
+                  : "bg-gray-200 text-black hover:bg-gray-300"
+                }`}
+            >
+              {isWishlisted ? "❤️ Remove from Wishlist" : "🤍 Add to Wishlist"}
+            </button>
           </motion.div>
+
 
         </div>
       </div>

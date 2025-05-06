@@ -31,7 +31,7 @@ const SignUp = () => {
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
         } else {
-            console.log("Form submitted:", formData);
+            // console.log("Form submitted:", formData);
             // Proceed with actual form submission logic (API call)
         }
     };
@@ -43,7 +43,7 @@ const SignUp = () => {
     useEffect(() => {
         axios.get("http://localhost:8080/api/auth/user", { withCredentials: true })
             .then(res => {
-                console.log("User", res.data)
+                // console.log("User", res.data)
             })
     }, [])
 

@@ -12,12 +12,14 @@ import {
   ChevronDown
 
 } from "lucide-react";
+import useWishlistStore from "../store/wishlistStore.js";
 
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const user = useAuth()
   const { cart } = useCartStores()
+  const { wishlist } = useWishlistStore()
   const navLinks = ["Products", "About Us", "Contact"];
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
@@ -58,6 +60,11 @@ export default function Header() {
           <div className="flex items-center space-x-4 ml-4">
             <Link to="/wishlist" className="text-gray-600 hover:text-green-600 transition">
               <Heart size={22} />
+              {wishlist.length > 0 && (
+                <span className="absolute -top-2 -right-3 bg-pink-500 text-white text-sm rounded-full px-2 py-0.5">
+                  {wishlist.length}
+                </span>
+              )}
             </Link>
             <Link to="/cart" className="relative">
               🛒 Cart

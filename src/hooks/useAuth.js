@@ -12,6 +12,6 @@ export const useAuth = () => {
       .then((res) => setUser(res.data))
       .catch(() => setUser(null));
   }, []);
-  console.log(user);
+  // console.log(user);
   return user;
 };

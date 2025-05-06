@@ -24,6 +24,7 @@ import CropOptions from "../components/pages/crop/CropOptions.jsx";
 import SignUp from "../components/pages/SignUp.jsx";
 import Login from "../components/pages/LogIn.jsx";
 import Cart from "../components/pages/Cart.jsx";
+import Wishlist from "../components/pages/Wishlist.jsx";
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -56,6 +57,7 @@ const AppRoutes = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/products" element={<Products />} />
                 <Route path="/cart" element={<Cart />} />
+                <Route path="/wishlist" element={<Wishlist />}/>
                 <Route path="/products/:id" element={<ProductDetails />} />
                 <Route path="/aboutus" element={<AboutUs />} />
                 <Route path="/contact" element={<Contact />} />
