@@ -14,13 +14,13 @@ import {
 } from "lucide-react";
 import useWishlistStore from "../store/wishlistStore.js";
 
-
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const user = useAuth()
   const { cart } = useCartStores()
   const { wishlist } = useWishlistStore()
   const navLinks = ["Products", "About Us", "Contact"];
+
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
@@ -43,7 +43,6 @@ export default function Header() {
             <Search className="absolute top-2.5 left-3 text-gray-500" size={20} />
           </div>
         </div>
-
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center space-x-6">
           {navLinks.map((link) => (
@@ -55,7 +54,6 @@ export default function Header() {
               {link}
             </Link>
           ))}
-
           {/* Icons */}
           <div className="flex items-center space-x-4 ml-4">
             <Link to="/wishlist" className="relative text-gray-600 hover:text-green-600 transition">
@@ -83,7 +81,6 @@ export default function Header() {
                   <span className="text-sm font-medium">{user.displayName?.split(" ")[0]}</span>
                   <ChevronDown size={18} />
                 </div>
-
                 {/* Dropdown */}
                 <div className="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-xl shadow-xl opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-2 pointer-events-none group-hover:pointer-events-auto transition-all duration-200 z-50">
                   <Link
@@ -124,7 +121,6 @@ export default function Header() {
             )}
           </div>
         </nav>
-
         {/* Mobile Hamburger */}
         <button
           className="md:hidden text-gray-700"
@@ -133,7 +129,6 @@ export default function Header() {
           {isOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
       </div>
-
       {/* Mobile Nav Dropdown */}
       {isOpen && (
         <div className="md:hidden bg-white px-4 pt-4 pb-6 space-y-4 shadow-md border-t border-gray-100">
@@ -146,7 +141,6 @@ export default function Header() {
             />
             <Search className="absolute top-2.5 left-3 text-gray-400" size={20} />
           </div>
-
           {/* Mobile Links */}
           {navLinks.map((link) => (
             <Link
@@ -219,7 +213,6 @@ export default function Header() {
               </Link>
             </div>
           )}
-
         </div>
       )}
     </header>

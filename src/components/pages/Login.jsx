@@ -40,6 +40,9 @@ const Login = () => {
         axios.get('http://localhost:8080/api/auth/user', { withCredentials: true })
             .then(res => {
                 console.log("User", res.data);
+            })
+            .catch(err => {
+                console.log("Error", err);
             });
     }, []);
 
