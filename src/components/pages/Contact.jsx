@@ -13,7 +13,6 @@ export default function Contact() {
                         Whether you're a passionate farmer or a curious customer, we'd love to hear from you.
                     </p>
                 </div>
-
                 {/* Form & Info */}
                 <div className="grid md:grid-cols-2 gap-12 items-center">
                     {/* Contact Form */}
@@ -51,7 +50,6 @@ export default function Contact() {
                             </button>
                         </form>
                     </div>
-
                     {/* Contact Info */}
                     <div className="text-center md:text-left space-y-8">
                         <div>
