@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { Leaf, Droplet, Calendar, Shield } from 'lucide-react';
+import { Leaf, Droplet, Calendar, Shield, ChevronRight } from 'lucide-react';
 
 const cropDetails = {
   soybean: {
@@ -108,31 +108,36 @@ const cropDetails = {
 const PesticideList = ({ pesticides }) => {
   return (
     <div className="mt-12">
-      <div className="flex items-center gap-2 mb-6">
-        <Shield className="text-green-600 w-6 h-6" />
+      <div className="flex items-center gap-3 mb-8">
+        <div className="p-2 bg-green-100 rounded-lg">
+          <Shield className="text-green-600 w-6 h-6" />
+        </div>
         <h3 className="text-2xl font-semibold text-green-700">Recommended Pesticides</h3>
       </div>
       <div className="grid gap-6">
         {pesticides.map((pesticide, index) => (
           <div 
             key={index} 
-            className="bg-white p-6 rounded-xl shadow-sm border border-green-100 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1"
+            className="group bg-white p-6 rounded-xl shadow-sm border border-green-100 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:border-green-200"
           >
-            <h4 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-              {pesticide.name}
-            </h4>
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                {pesticide.name}
+              </h4>
+              <ChevronRight className="w-5 h-5 text-green-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-              <div className="bg-green-50 p-3 rounded-lg">
-                <span className="font-medium text-green-700 block mb-1">Purpose</span>
+              <div className="bg-green-50 p-4 rounded-lg hover:bg-green-100 transition-colors">
+                <span className="font-medium text-green-700 block mb-2">Purpose</span>
                 <span className="text-gray-600">{pesticide.purpose}</span>
               </div>
-              <div className="bg-green-50 p-3 rounded-lg">
-                <span className="font-medium text-green-700 block mb-1">Application</span>
+              <div className="bg-green-50 p-4 rounded-lg hover:bg-green-100 transition-colors">
+                <span className="font-medium text-green-700 block mb-2">Application</span>
                 <span className="text-gray-600">{pesticide.application}</span>
               </div>
-              <div className="bg-green-50 p-3 rounded-lg">
-                <span className="font-medium text-green-700 block mb-1">Dosage</span>
+              <div className="bg-green-50 p-4 rounded-lg hover:bg-green-100 transition-colors">
+                <span className="font-medium text-green-700 block mb-2">Dosage</span>
                 <span className="text-gray-600">{pesticide.dosage}</span>
               </div>
             </div>
@@ -149,10 +154,11 @@ function CropOptions() {
 
   if (!crop) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center p-8 bg-white rounded-xl shadow-md">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
+        <div className="text-center p-8 bg-white rounded-2xl shadow-lg transform hover:scale-105 transition-transform">
           <div className="text-red-500 text-6xl mb-4">⚠️</div>
-          <div className="text-red-500 text-xl">Crop not found</div>
+          <div className="text-red-500 text-xl font-medium">Crop not found</div>
+          <p className="text-gray-500 mt-2">Please check the URL and try again</p>
         </div>
       </div>
     );
@@ -161,31 +167,39 @@ function CropOptions() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
       <div className="max-w-4xl mx-auto px-6 py-12">
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:shadow-xl transition-shadow">
           <div className="relative">
             <img
               src={crop.image}
               alt={crop.name}
               className="w-full h-[400px] object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-            <h2 className="absolute bottom-6 left-6 text-4xl font-bold text-white">
-              {crop.name}
-            </h2>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 right-0 p-8">
+              <h2 className="text-4xl font-bold text-white mb-2">{crop.name}</h2>
+              <div className="flex items-center gap-2 text-white/90">
+                <Calendar className="w-5 h-5" />
+                <span>Growing Season: {crop.growingSeason}</span>
+              </div>
+            </div>
           </div>
 
           <div className="p-8">
-            <div className="flex items-center gap-2 mb-6">
-              <Leaf className="text-green-600 w-5 h-5" />
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <Leaf className="text-green-600 w-5 h-5" />
+              </div>
               <h3 className="text-xl font-semibold text-gray-800">About the Crop</h3>
             </div>
             <p className="text-gray-700 mb-8 leading-relaxed">{crop.description}</p>
 
-            <div className="flex items-center gap-2 mb-6">
-              <Calendar className="text-green-600 w-5 h-5" />
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <Droplet className="text-green-600 w-5 h-5" />
+              </div>
               <h3 className="text-xl font-semibold text-gray-800">Growing Season</h3>
             </div>
-            <div className="bg-green-50 p-4 rounded-xl mb-8">
+            <div className="bg-green-50 p-6 rounded-xl mb-8 hover:bg-green-100 transition-colors">
               <p className="text-gray-700">
                 <span className="font-medium text-green-700">Best Time to Grow:</span> {crop.growingSeason}
               </p>
