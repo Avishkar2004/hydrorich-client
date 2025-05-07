@@ -25,6 +25,7 @@ import SignUp from "../components/pages/SignUp.jsx";
 import Login from "../components/pages/LogIn.jsx";
 import Cart from "../components/pages/Cart.jsx";
 import Wishlist from "../components/pages/Wishlist.jsx";
+import Profile from "../components/pages/Profile.jsx";
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -55,6 +56,7 @@ const AppRoutes = () => {
                 <Route path="/" element={<HomeWithExtras />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/profile" element={<Profile/>}/>
                 <Route path="/products" element={<Products />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/wishlist" element={<Wishlist />} />
