@@ -25,16 +25,44 @@ const SignUp = () => {
         return newErrors;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const validationErrors = validate();
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
         } else {
-            // console.log("Form submitted:", formData);
-            // Proceed with actual form submission logic (API call)
+            try {
+                const response = await axios.post("http://localhost:8080/api/auth/signup", formData, {
+                    withCredentials: true,
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (response.data.success) {
+                    alert("Account created successfully!");
+                    // Optionally redirect or reset form:
+                    setFormData({ name: "", email: "", password: "" });
+                }
+            } catch (error) {
+                if (error.response) {
+                    // Show backend validation or conflict errors
+                    const { data } = error.response;
+                    if (data.errors) {
+                        setErrors(data.errors); // validation errors from backend
+                    } else if (data.message) {
+                        alert(data.message);
+                    } else {
+                        alert("Something went wrong!");
+                    }
+                } else {
+                    console.error("Error:", error);
+                    alert("Server not responding.");
+                }
+            }
         }
     };
+
 
     const handleGoogleLogin = () => {
         window.open("http://localhost:8080/api/auth/google", "_self")
