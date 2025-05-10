@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ThumbsUp, ArrowDownWideNarrow, ArrowUpWideNarrow } from 'lucide-react';
 
-function PgrList() {
-    const [pgrProducts, setPgrProducts] = useState([]);
+function OrganicList() {
+    const [organicProducts, setOrganicProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [sortOption, setSortOption] = useState('');
     const [loading, setLoading] = useState(true);
@@ -14,10 +14,10 @@ function PgrList() {
             try {
                 const res = await fetch('http://localhost:8080/api/pgr');
                 const data = await res.json();
-                setPgrProducts(data.products);
+                setOrganicProducts(data.products);
                 setFilteredProducts(data.products);
             } catch (err) {
-                setError('Failed to load PGR products.');
+                setError('Failed to load Organic products.');
             } finally {
                 setLoading(false);
             }
@@ -26,7 +26,7 @@ function PgrList() {
     }, []);
 
     useEffect(() => {
-        let filtered = [...pgrProducts];
+        let filtered = [...organicProducts];
         if (sortOption === 'most-purchased') {
             filtered.sort((a, b) => b.total_sales - a.total_sales);
         } else if (sortOption === 'lowest-price') {
@@ -35,7 +35,7 @@ function PgrList() {
             filtered.sort((a, b) => b.variants[0]?.price - a.variants[0]?.price);
         }
         setFilteredProducts(filtered);
-    }, [sortOption, pgrProducts]);
+    }, [sortOption, organicProducts]);
 
     if (loading) return <div className="text-center py-10 text-xl text-gray-600">Loading...</div>;
     if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
@@ -43,7 +43,7 @@ function PgrList() {
     return (
         <div className="px-4 sm:px-8 md:px-12 py-10 bg-gray-50 min-h-screen">
             <h2 className="text-3xl font-bold text-center text-green-800 mb-8">
-                🌿 Best Growth Promoters / Plant Growth Regulators
+                🌱 Best Organic Products
             </h2>
 
             {/* Sort Buttons */}
@@ -56,10 +56,11 @@ function PgrList() {
                     <button
                         key={value}
                         onClick={() => setSortOption(value)}
-                        className={`flex items-center gap-2 px-5 py-2 rounded-full border transition-all duration-200 ${sortOption === value
-                            ? 'border-green-600 bg-green-100 text-green-800 font-medium'
-                            : 'border-gray-300 hover:bg-green-50 text-gray-700'
-                            }`}
+                        className={`flex items-center gap-2 px-5 py-2 rounded-full border transition-all duration-200 ${
+                            sortOption === value
+                                ? 'border-green-600 bg-green-100 text-green-800 font-medium'
+                                : 'border-gray-300 hover:bg-green-50 text-gray-700'
+                        }`}
                     >
                         {icon}
                         {label}
@@ -76,7 +77,7 @@ function PgrList() {
                     const originalPrice = firstVariant?.price + discount;
 
                     return (
-                        <Link to={`/pgr/${product.id}`} key={product.id}>
+                        <Link to={`/organic/${product.id}`} key={product.id}>
                             <div className="bg-white shadow rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300 group">
                                 <div className="relative p-4">
                                     <img
@@ -102,10 +103,11 @@ function PgrList() {
                                             </span>
                                         </div>
                                         <span
-                                            className={`text-xs font-semibold px-2 py-1 rounded-full ${product.in_stock > 0
-                                                ? 'bg-green-100 text-green-700'
-                                                : 'bg-red-100 text-red-600'
-                                                }`}
+                                            className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                                                product.in_stock > 0
+                                                    ? 'bg-green-100 text-green-700'
+                                                    : 'bg-red-100 text-red-600'
+                                            }`}
                                         >
                                             {product.in_stock > 0 ? 'In Stock' : 'Out of Stock'}
                                         </span>
@@ -120,4 +122,4 @@ function PgrList() {
     );
 }
 
-export default PgrList;
+export default OrganicList;

@@ -19,6 +19,7 @@ import Products from "../components/pages/Products.jsx";
 import Collection from "../components/ui/Collection.jsx";
 import { Rotate3D } from "lucide-react";
 import PgrList from "../components/pages/pgr/PgrList.jsx";
+import OrganicList from "../components/pages/organicproduct/OrganicList.jsx"
 import CropList from "../components/pages/crop/CropList.jsx";
 import CropOptions from "../components/pages/crop/CropOptions.jsx";
 import SignUp from "../components/pages/SignUp.jsx";
@@ -56,7 +57,7 @@ const AppRoutes = () => {
                 <Route path="/" element={<HomeWithExtras />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/profile" element={<Profile/>}/>
+                <Route path="/profile" element={<Profile />} />
                 <Route path="/products" element={<Products />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/wishlist" element={<Wishlist />} />
@@ -71,6 +72,9 @@ const AppRoutes = () => {
                 {/* For PGR */}
                 <Route path="/pgr" element={<PgrList />} />
                 <Route path="/pgr/:id" element={<ProductDetails />} />
+
+                {/* For organic products */}
+                <Route path="/organicproduct" element={<OrganicList />} />
             </Routes>
 
             <Footer />
