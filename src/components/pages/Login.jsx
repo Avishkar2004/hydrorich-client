@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 const Login = () => {
+    const navigate = useNavigate()
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [errors, setErrors] = useState({});
 
@@ -21,14 +22,32 @@ const Login = () => {
         return newErrors;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const validationErrors = validate();
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
         } else {
-            // console.log("Logging in with:", formData);
-            // Connect to backend login API here
+            try {
+                const response = await axios.post("http://localhost:8080/api/auth/login", formData, {
+                    withCredentials: true
+                })
+                if (response.data.success) {
+                    alert("Login successful");
+                    navigate("/");
+                }
+            } catch (error) {
+                if (error.message) {
+                    const { data } = error.response
+                    if (data.message) {
+                        alert(data.message)
+                    }
+                } else {
+                    console.error("Login error:", error)
+                    alert("Something went wrong")
+                }
+
+            }
         }
     };
 
