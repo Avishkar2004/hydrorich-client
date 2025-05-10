@@ -27,6 +27,9 @@ import Login from "../components/pages/LogIn.jsx";
 import Cart from "../components/pages/Cart.jsx";
 import Wishlist from "../components/pages/Wishlist.jsx";
 import Profile from "../components/pages/Profile.jsx";
+import MicronutrientsList from "../components/pages/micronutrients/MicronutrientsList.jsx";
+import InsecticideList from "../components/pages/Insecticide/InsecticideList.jsx";
+import FungicideList from "../components/fungicide/FungicideList.jsx";
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -75,6 +78,15 @@ const AppRoutes = () => {
 
                 {/* For organic products */}
                 <Route path="/organicproduct" element={<OrganicList />} />
+
+                {/* For micronutrients */}
+                <Route path="micro-nutrients" element={<MicronutrientsList />} />
+
+                {/* For insecticides */}
+                <Route path="/insecticide" element={<InsecticideList />} />
+
+                {/* For fungicides */}
+                <Route path="/fungicides" element={<FungicideList />} />
             </Routes>
 
             <Footer />
