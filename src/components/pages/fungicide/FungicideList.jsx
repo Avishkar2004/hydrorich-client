@@ -56,11 +56,10 @@ function FungicideList() {
                     <button
                         key={value}
                         onClick={() => setSortOption(value)}
-                        className={`flex items-center gap-2 px-5 py-2 rounded-full border transition-all duration-200 ${
-                            sortOption === value
-                                ? 'border-orange-600 bg-orange-100 text-orange-800 font-medium'
-                                : 'border-gray-300 hover:bg-orange-50 text-gray-700'
-                        }`}
+                        className={`flex items-center gap-2 px-5 py-2 rounded-full border transition-all duration-200 ${sortOption === value
+                            ? 'border-orange-600 bg-orange-100 text-orange-800 font-medium'
+                            : 'border-gray-300 hover:bg-orange-50 text-gray-700'
+                            }`}
                     >
                         {icon}
                         {label}
@@ -103,11 +102,10 @@ function FungicideList() {
                                             </span>
                                         </div>
                                         <span
-                                            className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                                                product.in_stock > 0
-                                                    ? 'bg-green-100 text-green-700'
-                                                    : 'bg-red-100 text-red-600'
-                                            }`}
+                                            className={`text-xs font-semibold px-2 py-1 rounded-full ${product.in_stock > 0
+                                                ? 'bg-green-100 text-green-700'
+                                                : 'bg-red-100 text-red-600'
+                                                }`}
                                         >
                                             {product.in_stock > 0 ? 'In Stock' : 'Out of Stock'}
                                         </span>
