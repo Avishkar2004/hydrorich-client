@@ -16,10 +16,14 @@ import useWishlistStore from "../store/wishlistStore.js";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const user = useAuth()
+  const { user, loading } = useAuth()
   const { cart } = useCartStores()
   const { wishlist } = useWishlistStore()
   const navLinks = ["Products", "About Us", "Contact"];
+
+  if (loading) {
+    return null; // or a loading spinner
+  }
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
@@ -78,7 +82,7 @@ export default function Header() {
                 {/* Trigger */}
                 <div className="flex items-center gap-2 text-gray-800 hover:text-green-600 transition cursor-pointer">
                   <User size={22} />
-                  <span className="text-sm font-medium">{user.displayName?.split(" ")[0]}</span>
+                  <span className="text-sm font-medium">{user.name || user.displayName?.split(" ")[0]}</span>
                   <ChevronDown size={18} />
                 </div>
                 {/* Dropdown */}
@@ -174,7 +178,7 @@ export default function Header() {
             <div className="w-full border-t border-gray-200 mt-4 pt-4">
               <div className="flex items-center gap-3 text-gray-800">
                 <User size={22} />
-                <span className="text-base font-medium">{user.displayName?.split(" ")[0]}</span>
+                <span className="text-base font-medium">{user.name || user.displayName?.split(" ")[0]}</span>
               </div>
               <div className="mt-4 flex flex-col space-y-3 text-gray-700">
                 <Link

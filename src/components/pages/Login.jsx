@@ -30,11 +30,14 @@ const Login = () => {
         } else {
             try {
                 const response = await axios.post("http://localhost:8080/api/auth/login", formData, {
-                    withCredentials: true
+                    withCredentials: true,
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
                 })
                 if (response.data.success) {
-                    alert("Login successful");
-                    navigate("/");
+                    // Refresh the page to update the auth state
+                    window.location.href = "/";
                 }
             } catch (error) {
                 if (error.message) {
