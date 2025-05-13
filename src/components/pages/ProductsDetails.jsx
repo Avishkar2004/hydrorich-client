@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { CheckCircle, Star } from "lucide-react";
 import useCartStore from "../../store/cartStore.js";
 import useWishlistStore from "../../store/wishlistStore.js";
+import AddToCart from "../AddToCart.jsx";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -184,13 +185,9 @@ const ProductDetails = () => {
             transition={{ delay: 0.4 }}
             className="mt-6 flex flex-col sm:flex-row sm:items-center gap-4"
           >
-            <button
-              onClick={() => addToCart(product, selectedVariant)}
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-xl font-semibold text-lg shadow-md transition duration-300"
-            >
-              🛒 Add to Cart
-            </button>
-
+            <div className="flex-1">
+              <AddToCart product={product} variant={selectedVariant} />
+            </div>
             <button
               onClick={() =>
                 isWishlisted
