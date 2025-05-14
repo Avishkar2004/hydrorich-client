@@ -13,7 +13,7 @@ const Cart = () => {
         if (user && !cartLoading) {
             syncCart();
         }
-    }, [user, syncCart, cartLoading]);
+    }, [user, syncCart]);
 
     // Calculate totals using correct property names
     const totalPrice = cart.reduce((acc, item) => {
