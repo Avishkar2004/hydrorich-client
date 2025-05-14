@@ -6,7 +6,7 @@ import {
     useLocation,
 } from "react-router-dom";
 import { useLayoutEffect } from "react";
-
+import { useAuth } from "../hooks/useAuth";
 
 import HomePage from "../components/pages/HomePage.jsx";
 import Header from "../components/Header";
@@ -53,6 +53,12 @@ const HomeWithExtras = () => (
 );
 
 const AppRoutes = () => {
+    const { checkAuth } = useAuth();
+
+    useEffect(() => {
+        checkAuth();
+    }, [checkAuth]);
+
     return (
         <Router>
             <Header />

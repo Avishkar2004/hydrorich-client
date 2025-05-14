@@ -86,27 +86,29 @@ export default function Header() {
                   <ChevronDown size={18} />
                 </div>
                 {/* Dropdown */}
-                <div className="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-xl shadow-xl opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-2 pointer-events-none group-hover:pointer-events-auto transition-all duration-200 z-50">
-                  <Link
-                    to="/profile"
-                    className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-t-xl transition">
-                    <User size={16} /> Profile
-                  </Link>
-                  <Link
-                    to="/orders"
-                    className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition">
-                    <ShoppingCart size={16} /> My Orders
-                  </Link>
-                  <Link
-                    to="/settings"
-                    className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition">
-                    <Settings size={16} /> Settings
-                  </Link>
-                  <Link
-                    to="http://localhost:8080/api/auth/logout"
-                    className="flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50 rounded-b-xl transition">
-                    <LogOut size={16} /> Logout
-                  </Link>
+                <div className="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 translate-y-2 pointer-events-none group-hover:pointer-events-auto transition-all duration-300 ease-in-out z-50">
+                  <div className="py-1">
+                    <Link
+                      to="/profile"
+                      className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-t-xl transition">
+                      <User size={16} /> Profile
+                    </Link>
+                    <Link
+                      to="/orders"
+                      className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition">
+                      <ShoppingCart size={16} /> My Orders
+                    </Link>
+                    <Link
+                      to="/settings"
+                      className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition">
+                      <Settings size={16} /> Settings
+                    </Link>
+                    <Link
+                      to="http://localhost:8080/api/auth/logout"
+                      className="flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50 rounded-b-xl transition">
+                      <LogOut size={16} /> Logout
+                    </Link>
+                  </div>
                 </div>
               </div>
             ) : (

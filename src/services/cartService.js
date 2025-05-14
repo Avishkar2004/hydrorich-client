@@ -8,29 +8,39 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true, // Enable sending cookies with requests
 });
 
-// Add request interceptor to add auth token
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+// Add response interceptor for better error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Redirect to login if unauthorized
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
 export const cartService = {
   // Add item to cart
-  addToCart: async (userId, productId, variantId, quantity) => {
+  addToCart: async (productId, variantId, quantity) => {
     try {
-      //   console.log('Cart Service - Making API call to add item:', { productId, variantId, quantity });
+      if (!productId || !variantId || !quantity) {
+        throw new Error("Missing required parameters");
+      }
+
       const response = await api.post("/add", {
-        userId: parseInt(userId),
         productId: parseInt(productId),
         variantId: parseInt(variantId),
         quantity: parseInt(quantity),
       });
-      //   console.log('Cart Service - API response:', response.data);
+
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Failed to add item to cart");
+      }
+
       return response.data;
     } catch (error) {
       console.error(
@@ -45,6 +55,11 @@ export const cartService = {
   getCart: async () => {
     try {
       const response = await api.get("/");
+
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Failed to fetch cart");
+      }
+
       return response.data;
     } catch (error) {
       console.error(
