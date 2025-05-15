@@ -20,9 +20,8 @@ const Checkout = () => {
     const [currentStep, setCurrentStep] = useState(1);
     const [loading, setLoading] = useState(false);
 
-    const totalPrice = cart.reduce((acc, item) => acc + item.variantPrice * item.quantity, 0);
-    const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-
+    const totalPrice = cart.reduce((acc, item) => acc + (item.price || 0) * (item.quantity || 0), 0)
+    const totalItems = cart.reduce((acc, item) => acc + (item.quantity || 0), 0)
     // Form states
     const [address, setAddress] = useState({
         fullName: "",
@@ -105,8 +104,8 @@ const Checkout = () => {
                     {steps.map((step, index) => (
                         <div key={step.id} className="flex items-center">
                             <div className={`flex items-center justify-center w-10 h-10 rounded-full ${currentStep >= step.id
-                                    ? "bg-green-600 text-white"
-                                    : "bg-gray-100 text-gray-400"
+                                ? "bg-green-600 text-white"
+                                : "bg-gray-100 text-gray-400"
                                 }`}>
                                 <step.icon size={20} />
                             </div>
@@ -335,26 +334,64 @@ const Checkout = () => {
                                     <h3 className="font-medium text-gray-800 mb-2">Order Items</h3>
                                     <div className="space-y-4">
                                         {cart.map((item, idx) => (
-                                            <div key={idx} className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
-                                                <div className="w-16 h-16 rounded-lg overflow-hidden border bg-white">
-                                                    <img
-                                                        src={item.productImage}
-                                                        alt={item.productTitle}
-                                                        className="w-full h-full object-cover"
-                                                    />
+                                            <div key={idx} className="flex flex-col bg-gray-50 p-4 rounded-lg">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-20 h-20 rounded-lg overflow-hidden border bg-white">
+                                                        <img
+                                                            src={item.image_url || '/placeholder-image.jpg'}
+                                                            alt={item.product_name || 'Product'}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h4 className="font-medium text-gray-800 text-lg">{item.product_name || 'Unknown Product'}</h4>
+                                                        <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+                                                            {item.category && (
+                                                                <p className="text-sm text-gray-500">
+                                                                    <span className="font-medium">Category:</span> {item.category}
+                                                                </p>
+                                                            )}
+                                                            <p className="text-sm text-gray-500">
+                                                                <span className="font-medium">Variant:</span> {item.variant_name || 'Default Variant'}
+                                                            </p>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className="flex-1">
-                                                    <h4 className="font-medium text-gray-800">{item.productTitle}</h4>
-                                                    <p className="text-sm text-gray-600">{item.variantName}</p>
-                                                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+
+                                                <div className="mt-3 pt-3 border-t border-gray-200 grid grid-cols-3 gap-2">
+                                                    <div>
+                                                        <p className="text-xs text-gray-500">Price Per Item</p>
+                                                        <p className="font-medium">₹{(item.price || 0).toLocaleString()}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs text-gray-500">Quantity</p>
+                                                        <p className="font-medium">{item.quantity || 0}</p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className="text-xs text-gray-500">Subtotal</p>
+                                                        <p className="font-medium text-green-600">₹{((item.price || 0) * (item.quantity || 1)).toLocaleString()}</p>
+                                                    </div>
                                                 </div>
-                                                <div className="text-right">
-                                                    <p className="font-medium text-gray-800">₹{(item.variantPrice * item.quantity).toLocaleString()}</p>
-                                                </div>
+
+                                                {item.description && (
+                                                    <div className="mt-2 pt-2 border-t border-gray-200">
+                                                        <p className="text-xs text-gray-500 mb-1">Product Description</p>
+                                                        <p className="text-sm text-gray-600">{item.description}</p>
+                                                    </div>
+                                                )}
+
+                                                {item.specifications && (
+                                                    <div className="mt-2">
+                                                        <p className="text-xs text-gray-500">Specifications</p>
+                                                        <p className="text-sm text-gray-600">{item.specifications}</p>
+                                                    </div>
+                                                )}
                                             </div>
                                         ))}
                                     </div>
                                 </div>
+
+
                             </div>
                             <div className="mt-6 flex justify-between">
                                 <button
