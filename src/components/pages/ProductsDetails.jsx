@@ -2,18 +2,21 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CheckCircle, Star } from "lucide-react";
+import { CheckCircle, Star, Heart } from "lucide-react";
 import useCartStore from "../../store/cartStore.js";
 import useWishlistStore from "../../store/wishlistStore.js";
 import AddToCart from "../AddToCart.jsx";
+import { useAuth } from "../../hooks/useAuth.js";
 
 const ProductDetails = () => {
   const { id } = useParams();
-  const { addToWishlist, removeFromWishlist, wishlist } = useWishlistStore()
+  const { user } = useAuth();
+  const { addToWishlist, removeFromWishlist, wishlist, isInWishlist } = useWishlistStore();
   const [product, setProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [addingToWishlist, setAddingToWishlist] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -38,18 +41,49 @@ const ProductDetails = () => {
 
   const addToCart = useCartStore((state) => state.addToCart);
 
+  const handleWishlistToggle = async () => {
+    if (!user) {
+      // Redirect to login or show login prompt
+      alert("Please login to add items to your wishlist");
+      return;
+    }
 
-  const isWishlisted = wishlist.some(
-    (i) => i.productId === product?.productId && i.variantName === selectedVariant
-  );
+    if (!product || !selectedVariant) return;
+
+    setAddingToWishlist(true);
+    try {
+      const productId = product.id || Number(id);
+      const variantId = selectedVariant.id;
+      
+      if (isInWishlist(productId, variantId)) {
+        // Find wishlist item id
+        const wishlistItem = wishlist.find(
+          item => item.product_id === productId && item.variant_id === variantId
+        );
+        if (wishlistItem) {
+          await removeFromWishlist(wishlistItem.wishlist_id);
+        }
+      } else {
+        await addToWishlist({ id: productId }, { id: variantId });
+      }
+    } catch (error) {
+      console.error("Error toggling wishlist:", error);
+    } finally {
+      setAddingToWishlist(false);
+    }
+  };
 
   if (loading) return <div className="text-center py-20">Loading...</div>;
   if (!product) return <div className="text-center text-red-600 mt-10">Product not found.</div>;
 
   const price = Number(selectedVariant?.price || 0);
   const discount = Number(selectedVariant?.discount_percent || 0);
-  const originalPrice = (price + discount).toFixed(0);
+  const originalPrice = (price / (1 - discount / 100)).toFixed(0);
   const finalPrice = price.toFixed(0);
+  
+  const productId = product.id || Number(id);
+  const variantId = selectedVariant?.id;
+  const itemInWishlist = user && productId && variantId ? isInWishlist(productId, variantId) : false;
 
   return (
     <div className="bg-gray-50 min-h-screen px-4 sm:px-10 py-12">
@@ -189,21 +223,21 @@ const ProductDetails = () => {
               <AddToCart product={product} variant={selectedVariant} />
             </div>
             <button
-              onClick={() =>
-                isWishlisted
-                  ? removeFromWishlist(product.productId, selectedVariant)
-                  : addToWishlist({
-                    productId: product.productId,
-                    name: product.name,
-                    variantName: selectedVariant,
-                  })
-              }
-              className={`flex-1 py-3 px-6 rounded-xl font-semibold text-lg shadow-md transition duration-300 ${isWishlisted
+              onClick={handleWishlistToggle}
+              disabled={addingToWishlist}
+              className={`flex-1 py-3 px-6 rounded-xl font-semibold text-lg shadow-md transition duration-300 flex items-center justify-center gap-2 ${itemInWishlist
                 ? "bg-red-500 text-white hover:bg-red-600"
-                : "bg-gray-200 text-black hover:bg-gray-300"
+                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
                 }`}
             >
-              {isWishlisted ? "❤️ Remove from Wishlist" : "🤍 Add to Wishlist"}
+              {addingToWishlist ? (
+                <span className="flex items-center"><span className="animate-spin mr-2">⭕</span> Processing...</span>
+              ) : (
+                <>
+                  <Heart className={itemInWishlist ? "fill-white" : ""} size={20} />
+                  {itemInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
+                </>
+              )}
             </button>
           </motion.div>
         </div>
