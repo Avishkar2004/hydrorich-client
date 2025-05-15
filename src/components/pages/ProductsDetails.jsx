@@ -54,7 +54,7 @@ const ProductDetails = () => {
     try {
       const productId = product.id || Number(id);
       const variantId = selectedVariant.id;
-      
+
       if (isInWishlist(productId, variantId)) {
         // Find wishlist item id
         const wishlistItem = wishlist.find(
@@ -80,7 +80,7 @@ const ProductDetails = () => {
   const discount = Number(selectedVariant?.discount_percent || 0);
   const originalPrice = (price / (1 - discount / 100)).toFixed(0);
   const finalPrice = price.toFixed(0);
-  
+
   const productId = product.id || Number(id);
   const variantId = selectedVariant?.id;
   const itemInWishlist = user && productId && variantId ? isInWishlist(productId, variantId) : false;

@@ -35,7 +35,7 @@ const AddToCart = ({ product, variant }) => {
 
     return (
         <div className="flex flex-col gap-2">
-            <button 
+            <button
                 onClick={handleAddToCart}
                 disabled={loading}
                 className='flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed'

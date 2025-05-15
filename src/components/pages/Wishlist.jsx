@@ -25,15 +25,15 @@ const Wishlist = () => {
                 id: item.product_id,
                 name: item.product_name
             };
-            
+
             const variant = {
                 id: item.variant_id,
                 name: item.variant_name,
                 price: item.price
             };
-            
+
             await addToCart(product, variant, 1);
-            
+
             // Optionally, you could show a success message or remove from wishlist
         } catch (error) {
             console.error("Error adding to cart:", error);
