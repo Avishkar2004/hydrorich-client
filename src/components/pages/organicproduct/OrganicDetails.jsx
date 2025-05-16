@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useParams } from "react-router-dom";
-import { motion } from "framer-motion";
-import { CheckCircle, Star, Heart } from "lucide-react";
-import useCartStore from "../../store/cartStore.js";
-import useWishlistStore from "../../store/wishlistStore.js";
-import AddToCart from "../AddToCart.jsx";
-import { useAuth } from "../../hooks/useAuth.js";
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { CheckCircle, Star, Heart, ShoppingCart } from 'lucide-react';
+import useCartStore from '../../../store/cartStore.js';
+import useWishlistStore from '../../../store/wishlistStore.js';
+import AddToCart from '../../AddToCart.jsx';
+import { useAuth } from '../../../hooks/useAuth.js';
 
-const ProductDetail = () => {
+function OrganicDetails() {
     const { id } = useParams();
     const { user } = useAuth();
     const { addToWishlist, removeFromWishlist, wishlist, isInWishlist } = useWishlistStore();
@@ -19,17 +18,18 @@ const ProductDetail = () => {
     const [addingToWishlist, setAddingToWishlist] = useState(false);
 
     useEffect(() => {
-        const fetchProduct = async () => {
+        const fetchProductDetails = async () => {
             try {
-                const res = await axios.get(`http://localhost:8080/api/pgr/${id}`);
-                setProduct(res.data.product);
+                const res = await fetch(`http://localhost:8080/api/organic/${id}`);
+                const data = await res.json();
+                setProduct(data.product);
             } catch (err) {
                 console.error("Error fetching product:", err);
             } finally {
                 setLoading(false);
             }
         };
-        fetchProduct();
+        fetchProductDetails();
     }, [id]);
 
     useEffect(() => {
@@ -39,11 +39,8 @@ const ProductDetail = () => {
         }
     }, [product]);
 
-    const addToCart = useCartStore((state) => state.addToCart);
-
     const handleWishlistToggle = async () => {
         if (!user) {
-            // Redirect to login or show login prompt
             alert("Please login to add items to your wishlist");
             return;
         }
@@ -56,7 +53,6 @@ const ProductDetail = () => {
             const variantId = selectedVariant.id;
 
             if (isInWishlist(productId, variantId)) {
-                // Find wishlist item id
                 const wishlistItem = wishlist.find(
                     item => item.product_id === productId && item.variant_id === variantId
                 );
@@ -121,11 +117,15 @@ const ProductDetail = () => {
                     <div>
                         <div className="flex items-center gap-3 mb-2">
                             {product.in_stock < 10 && (
-                                <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-medium">Limited Stock</span>
+                                <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-medium">
+                                    Limited Stock
+                                </span>
                             )}
-                            <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-medium">Best Seller</span>
+                            <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-medium">
+                                Best Seller
+                            </span>
                         </div>
-                        <h1 className="text-3xl font-bold text-green-900">{product.name}</h1>
+                        <h1 className="text-3xl font-bold text-green-900">{product.name} Avishkar</h1>
                         <p className="text-sm mt-1 text-gray-600">{product.description}</p>
 
                         {/* Pricing */}
@@ -140,58 +140,59 @@ const ProductDetail = () => {
                         </div>
 
                         {/* Variant Selection */}
-                        <div className="mt-4">
-                            <h2 className="font-semibold text-gray-900 text-base">Select Variant</h2>
-                            <div className="flex flex-wrap gap-3 mt-3">
-                                {product.variants.map((v, idx) => {
-                                    const isSelected = selectedVariant?.name === v.name;
-                                    return (
-                                        <button
-                                            key={idx}
-                                            onClick={() => setSelectedVariant(v)}
-                                            className={`px-14 py-5 rounded-lg border text-sm font-medium transition-all ${isSelected
-                                                ? "bg-green-50 text-green-700 border-green-500 shadow-sm"
-                                                : "bg-white text-gray-500 border-gray-300 hover:border-green-500 hover:text-green-700"
-                                                }`}
-                                        >
-                                            {v.name}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-
-                        {/* Dosage Info */}
-                        {selectedVariant?.dosage && (
-                            <div className="mt-10">
-                                <h2 className="text-xl font-bold text-green-800 mb-4 flex items-center gap-2">
-                                    🌱 Dosage & Usage Instructions
-                                </h2>
-                                <div className="bg-green-50 border border-green-200 rounded-2xl p-6 shadow-md space-y-4">
-                                    <div className="flex items-start gap-4">
-                                        <div className="text-green-700 text-xl">💊</div>
-                                        <div>
-                                            <p className="text-sm text-gray-600 font-medium">Dosage per unit</p>
-                                            <p className="text-base font-semibold text-gray-800">{selectedVariant.dosage.dosage_per_unit}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-4">
-                                        <div className="text-green-700 text-xl">📋</div>
-                                        <div>
-                                            <p className="text-sm text-gray-600 font-medium">Usage Instructions</p>
-                                            <p className="text-base font-semibold text-gray-800 whitespace-pre-line">
-                                                {selectedVariant.dosage.usage_instructions}
-                                            </p>
-                                        </div>
-                                    </div>
+                        {product.variants.length > 1 && (
+                            <div className="mt-4">
+                                <h2 className="font-semibold text-gray-900 text-base">Select Variant</h2>
+                                <div className="flex flex-wrap gap-3 mt-3">
+                                    {product.variants.map((v, idx) => {
+                                        const isSelected = selectedVariant?.name === v.name;
+                                        return (
+                                            <button
+                                                key={idx}
+                                                onClick={() => setSelectedVariant(v)}
+                                                className={`px-14 py-5 rounded-lg border text-sm font-medium transition-all ${isSelected
+                                                    ? "bg-green-50 text-green-700 border-green-500 shadow-sm"
+                                                    : "bg-white text-gray-500 border-gray-300 hover:border-green-500 hover:text-green-700"
+                                                    }`}
+                                            >
+                                                {v.name}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
+
+                        {/* Product Details */}
+                        <div className="mt-10">
+                            <h2 className="text-xl font-bold text-green-800 mb-4 flex items-center gap-2">
+                                🌱 Dosage & Usage Instructions
+                            </h2>
+                            <div className="bg-green-50 border border-green-200 rounded-2xl p-6 shadow-md space-y-4">
+                                <div className="flex items-start gap-4">
+                                    <div className="text-green-700 text-xl">💊</div>
+                                    <div>
+                                        <p className="text-sm text-gray-600 font-medium">Dosage per unit</p>
+                                        <p className="text-base font-semibold text-gray-800">{selectedVariant?.dosage?.dosage_per_unit || 'As per requirement'}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-4">
+                                    <div className="text-green-700 text-xl">📋</div>
+                                    <div>
+                                        <p className="text-sm text-gray-600 font-medium">Usage Instructions</p>
+                                        <p className="text-base font-semibold text-gray-800 whitespace-pre-line">
+                                            {selectedVariant?.dosage?.usage_instructions || 'Follow the recommended dosage on the product label. For best results, apply during early morning or evening hours.'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         {/* Highlights */}
                         <div className="mt-6">
                             <h2 className="font-semibold text-lg text-green-900">Product Highlights</h2>
                             <ul className="mt-3 space-y-2 text-sm text-gray-700">
+                                <li className="flex items-center gap-2"><CheckCircle className="text-green-500" size={16} /> 100% Organic</li>
                                 <li className="flex items-center gap-2"><CheckCircle className="text-green-500" size={16} /> Fast Shipping</li>
                                 <li className="flex items-center gap-2"><CheckCircle className="text-green-500" size={16} /> 7-day return policy</li>
                                 <li className="flex items-center gap-2"><CheckCircle className="text-green-500" size={16} /> Genuine product guarantee</li>
@@ -244,6 +245,6 @@ const ProductDetail = () => {
             </div>
         </div>
     );
-};
+}
 
-export default ProductDetail;
+export default OrganicDetails; 

@@ -3,12 +3,12 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircle, Star, Heart } from "lucide-react";
-import useCartStore from "../../store/cartStore.js";
-import useWishlistStore from "../../store/wishlistStore.js";
-import AddToCart from "../AddToCart.jsx";
-import { useAuth } from "../../hooks/useAuth.js";
+import useCartStore from "../../../store/cartStore.js";
+import useWishlistStore from "../../../store/wishlistStore.js";
+import AddToCart from "../../AddToCart.jsx";
+import { useAuth } from "../../../hooks/useAuth.js";
 
-const ProductDetails = () => {
+const PgrDetails = () => {
   const { id } = useParams();
   const { user } = useAuth();
   const { addToWishlist, removeFromWishlist, wishlist, isInWishlist } = useWishlistStore();
@@ -125,7 +125,7 @@ const ProductDetails = () => {
               )}
               <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-medium">Best Seller</span>
             </div>
-            <h1 className="text-3xl font-bold text-green-900">{product.name}</h1>
+            <h1 className="text-3xl font-bold text-green-900">{product.name} Avishkar</h1>
             <p className="text-sm mt-1 text-gray-600">{product.description}</p>
 
             {/* Pricing */}
@@ -246,4 +246,4 @@ const ProductDetails = () => {
   );
 };
 
-export default ProductDetails;
+export default PgrDetails;
