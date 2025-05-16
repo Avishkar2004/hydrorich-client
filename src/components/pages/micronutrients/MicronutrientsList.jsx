@@ -12,7 +12,7 @@ function MicronutrientsList() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch('http://localhost:8080/api/pgr');
+                const res = await fetch('http://localhost:8080/api/micronutrient');
                 const data = await res.json();
                 setMicronutrients(data.products);
                 setFilteredProducts(data.products);
@@ -56,11 +56,10 @@ function MicronutrientsList() {
                     <button
                         key={value}
                         onClick={() => setSortOption(value)}
-                        className={`flex items-center gap-2 px-5 py-2 rounded-full border transition-all duration-200 ${
-                            sortOption === value
+                        className={`flex items-center gap-2 px-5 py-2 rounded-full border transition-all duration-200 ${sortOption === value
                                 ? 'border-blue-600 bg-blue-100 text-blue-800 font-medium'
                                 : 'border-gray-300 hover:bg-blue-50 text-gray-700'
-                        }`}
+                            }`}
                     >
                         {icon}
                         {label}
@@ -103,11 +102,10 @@ function MicronutrientsList() {
                                             </span>
                                         </div>
                                         <span
-                                            className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                                                product.in_stock > 0
+                                            className={`text-xs font-semibold px-2 py-1 rounded-full ${product.in_stock > 0
                                                     ? 'bg-green-100 text-green-700'
                                                     : 'bg-red-100 text-red-600'
-                                            }`}
+                                                }`}
                                         >
                                             {product.in_stock > 0 ? 'In Stock' : 'Out of Stock'}
                                         </span>

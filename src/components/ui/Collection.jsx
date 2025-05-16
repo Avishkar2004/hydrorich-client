@@ -60,7 +60,7 @@ const Collection = () => {
         </Link>
 
         <Link
-          to="/micro-nutrients"
+          to="/micronutrients"
           className="flex flex-col items-center space-y-2 rounded-full hover:scale-105 transition duration-300"
         >
           <img
