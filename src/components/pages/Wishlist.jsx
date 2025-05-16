@@ -110,13 +110,15 @@ const Wishlist = () => {
                             className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-all duration-300"
                         >
                             <div className="relative">
-                                <Link to={`/product/${item.product_id}`}>
-                                    <div className="h-48 rounded-lg overflow-hidden bg-gray-50 mb-4">
+                                <Link to={`/products/${item.product_id}`} className="block">
+                                    <div className="aspect-square rounded-xl overflow-hidden bg-gray-50 mb-4 group">
                                         <img
                                             src={item.image_url || '/placeholder-image.jpg'}
                                             alt={item.product_name}
-                                            className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                                            className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-105"
+                                            loading="lazy"
                                         />
+                                        <div className="absolute inset-0 bg-black/0 transition-all duration-300" />
                                     </div>
                                 </Link>
                                 <button
@@ -128,7 +130,7 @@ const Wishlist = () => {
                                 </button>
                             </div>
 
-                            <Link to={`/product/${item.product_id}`} className="block group">
+                            <Link to={`/products/${item.product_id}`} className="block group">
                                 <h3 className="font-semibold text-lg text-gray-800 group-hover:text-green-600 transition-colors">
                                     {item.product_name}
                                 </h3>

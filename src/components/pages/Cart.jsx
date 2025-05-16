@@ -86,21 +86,27 @@ const Cart = () => {
                                 className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-all duration-300"
                             >
                                 <div className="flex gap-6">
-                                    <div className="w-24 h-24 rounded-lg overflow-hidden border bg-gray-50">
+                                    <Link
+                                        to={`/products/${item.product_id}`}
+                                        className="w-24 h-24 rounded-lg overflow-hidden border bg-gray-50 group"
+                                    >
                                         <img
                                             src={item.image_url || '/placeholder-image.jpg'}
                                             alt={item.product_name || 'Product'}
-                                            className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                                         />
-                                    </div>
+                                    </Link>
                                     <div className="flex-1">
                                         <div className="flex justify-between">
                                             <div>
-                                                <div className="group">
-                                                    <h2 className="font-semibold text-lg text-gray-800">
-                                                        Name: {item.product_name || 'Unknown Product'}
+                                                <Link
+                                                    to={`/products/${item.product_id}`}
+                                                    className="group"
+                                                >
+                                                    <h2 className="font-semibold text-lg text-gray-800 group-hover:text-green-600 transition-colors">
+                                                        {item.product_name || 'Unknown Product'}
                                                     </h2>
-                                                </div>
+                                                </Link>
                                                 <div className="flex items-center gap-2 mt-1">
                                                     <Tag size={14} className="text-gray-400" />
                                                     <p className="text-sm text-gray-500">

@@ -62,11 +62,13 @@ export default function Header() {
           <div className="flex items-center space-x-4 ml-4">
             <Link to="/wishlist" className="relative text-gray-600 hover:text-green-600 transition">
               <Heart size={22} />
-              {wishlist.length > 0 && (
+              {user && wishlist.length > 0 && (
                 <span className="absolute -top-2 -right-3 bg-pink-500 text-white text-[10px] rounded-full px-2 py-0.5">
                   {wishlist.length}
                 </span>
               )}
+
+
             </Link>
             <Link to="/cart" className="relative">
               🛒 Cart
@@ -161,7 +163,7 @@ export default function Header() {
           <div className="flex justify-between px-2">
             <Link to="/wishlist" className="text-gray-600 hover:text-green-600 relative">
               <Heart />
-              {wishlist.length > 0 && (
+              {user && wishlist.length > 0 && (
                 <span className="absolute -top-2 -right-3 bg-pink-500 text-white text-[10px] rounded-full px-2 py-0.5">
                   {wishlist.length}
                 </span>
