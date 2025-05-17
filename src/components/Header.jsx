@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Menu, X, ShoppingCart, Heart, User, Search } from "lucide-react";
 import Logo from "../assets/Logo.jpg";
 import { useAuth } from "../hooks/useAuth.js";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useCartStores from "../store/cartStore.js";
 import {
   LogOut,
@@ -10,16 +10,28 @@ import {
   MessageSquare,
   FileText,
   ChevronDown
-
 } from "lucide-react";
 import useWishlistStore from "../store/wishlistStore.js";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, loading } = useAuth()
-  const { cart } = useCartStores()
-  const { wishlist } = useWishlistStore()
+  const { user, loading, logout } = useAuth()
+  const navigate = useNavigate()
+  const { cart, clearCart } = useCartStores()
+  const { wishlist, clearWishlist } = useWishlistStore()
   const navLinks = ["Products", "About Us", "Contact"];
+
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      clearCart()
+      clearWishlist()
+      navigate("/login")
+    } catch (error) {
+      console.error("Error logging out:", error)
+    }
+  }
 
   if (loading) {
     return null; // or a loading spinner
@@ -105,11 +117,11 @@ export default function Header() {
                       className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition">
                       <Settings size={16} /> Settings
                     </Link>
-                    <Link
-                      to="http://localhost:8080/api/auth/logout"
+                    <button
+                      onClick={handleLogout}
                       className="flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50 rounded-b-xl transition">
                       <LogOut size={16} /> Logout
-                    </Link>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -200,11 +212,11 @@ export default function Header() {
                   className="flex items-center gap-2 text-sm hover:text-green-600 transition">
                   <Settings size={16} /> Settings
                 </Link>
-                <Link
-                  to="http://localhost:8080/api/auth/logout"
-                  className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 transition">
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50 rounded-b-xl transition">
                   <LogOut size={16} /> Logout
-                </Link>
+                </button>
               </div>
             </div>
           ) : (

@@ -98,6 +98,8 @@ const useWishlistStore = create(
       // Add method to clear wishlist locally
       clearLocalWishlist: () => {
         set({ wishlist: [] });
+        // Clear from localstorage
+        localStorage.removeItem("wishlist-storage");
       },
     }),
     {

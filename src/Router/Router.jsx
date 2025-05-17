@@ -37,6 +37,7 @@ import PgrDetails from "../components/pages/pgr/PgrDetails.jsx";
 import MicroNutrientDetails from "../components/pages/micronutrients/MicroNutrientDetails.jsx";
 import InsecticideDetails from "../components/pages/Insecticide/InsecticideDetails.jsx";
 import FungicideDetails from "../components/pages/fungicide/FungicideDetails.jsx";
+import Settings from "../components/pages/Settings.jsx";
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -71,18 +72,20 @@ const AppRoutes = () => {
             <Routes>
                 <Route element={<ScrollToTop />} />
                 <Route path="/" element={<HomeWithExtras />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/aboutus" element={<AboutUs />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="/cart" element={<Cart />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/profile" element={<Profile />} />
-                <Route path="/products" element={<Products />} />
-                <Route path="/cart" element={<Cart />} />
+                <Route path="/settings" element={<Settings />} />
                 <Route path="/checkout" element={<Checkout />} />
-                <Route path="/order-success" element={<OrderSuccess />} />
-                <Route path="/wishlist" element={<Wishlist />} />
-                <Route path="/products/:id" element={<ProductDetail />} />
-                <Route path="/aboutus" element={<AboutUs />} />
-                <Route path="/contact" element={<Contact />} />
 
+                <Route path="/order-success" element={<OrderSuccess />} />
+
+                <Route path="/products/:id" element={<ProductDetail />} />
                 {/* Crops */}
                 <Route path="/crops" element={<CropList />} />
                 <Route path="/crops/:name" element={<CropOptions />} />
