@@ -95,7 +95,7 @@ const Wishlist = () => {
                     <h2 className="text-xl font-semibold text-gray-800 mb-2">Your wishlist is empty</h2>
                     <p className="text-gray-600 mb-6">You haven't added any products to your wishlist yet.</p>
                     <Link
-                        to="/pgr"
+                        to="/pgrs"
                         className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition"
                     >
                         Start Shopping
@@ -103,68 +103,87 @@ const Wishlist = () => {
                     </Link>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {wishlist.map((item) => (
                         <div
                             key={item.wishlist_id}
-                            className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-all duration-300"
+                            className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 group relative overflow-hidden"
                         >
-                            <div className="relative">
+                            {/* Discount Badge */}
+                            {item.discount_percent > 0 && (
+                                <div className="absolute top-4 left-4 z-10 bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
+                                    {item.discount_percent}% OFF
+                                </div>
+                            )}
+
+                            {/* Product Image Section */}
+                            <div className="relative mb-6">
                                 <Link to={`/products/${item.product_id}`} className="block">
-                                    <div className="aspect-square rounded-xl overflow-hidden bg-gray-50 mb-4 group">
+                                    <div className="aspect-square rounded-xl overflow-hidden bg-gray-50 group">
                                         <img
                                             src={item.image_url || '/placeholder-image.jpg'}
                                             alt={item.product_name}
                                             className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-105"
                                             loading="lazy"
                                         />
-                                        <div className="absolute inset-0 bg-black/0 transition-all duration-300" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                     </div>
                                 </Link>
                                 <button
                                     onClick={() => removeFromWishlist(item.wishlist_id)}
-                                    className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-red-50 transition-colors"
+                                    className="absolute top-2 right-2 p-2.5 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-red-50 transition-all duration-300 transform hover:scale-110 z-10"
                                     title="Remove from wishlist"
                                 >
                                     <Trash2 size={18} className="text-red-500" />
                                 </button>
                             </div>
 
-                            <Link to={`/products/${item.product_id}`} className="block group">
-                                <h3 className="font-semibold text-lg text-gray-800 group-hover:text-green-600 transition-colors">
-                                    {item.product_name}
-                                </h3>
-                            </Link>
+                            {/* Product Info Section */}
+                            <div className="space-y-3">
+                                <Link to={`/products/${item.product_id}`} className="block group">
+                                    <h3 className="font-semibold text-lg text-gray-800 group-hover:text-red-600 transition-colors line-clamp-2">
+                                        {item.product_name}
+                                    </h3>
+                                </Link>
 
-                            <div className="flex items-center gap-2 mt-1">
-                                <Tag size={14} className="text-gray-400" />
-                                <p className="text-sm text-gray-500">
-                                    {item.variant_name}
-                                </p>
-                            </div>
+                                <div className="flex items-center gap-2">
+                                    <Tag size={14} className="text-gray-400" />
+                                    <p className="text-sm text-gray-500 line-clamp-1">
+                                        {item.variant_name}
+                                    </p>
+                                </div>
 
-                            <div className="mt-3 flex items-center justify-between">
-                                <div>
-                                    <span className="text-lg font-semibold text-green-600">
+                                <div className="flex items-baseline gap-2 pt-2">
+                                    <span className="text-xl font-bold text-gray-900">
                                         ₹{item.price.toLocaleString()}
                                     </span>
                                     {item.discount_percent > 0 && (
-                                        <span className="ml-2 text-xs font-medium bg-green-100 text-green-800 px-2 py-0.5 rounded">
-                                            {item.discount_percent}% off
+                                        <span className="text-sm text-gray-500 line-through">
+                                            ₹{Math.round(item.price * (1 + item.discount_percent / 100)).toLocaleString()}
                                         </span>
                                     )}
                                 </div>
+
+                                {/* Action Buttons */}
+                                <div className="flex gap-3 pt-4">
+                                    <button
+                                        onClick={() => handleAddToCart(item)}
+                                        className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-3 rounded-xl font-medium transition-all duration-300 hover:shadow-lg hover:shadow-red-200 flex items-center justify-center gap-2 group"
+                                    >
+                                        <ShoppingCart size={18} className="group-hover:scale-110 transition-transform" />
+                                        Add to Cart
+                                    </button>
+                                    <button
+                                        onClick={() => removeFromWishlist(item.wishlist_id)}
+                                        className="p-3 border border-gray-200 hover:border-red-200 hover:bg-red-50 rounded-xl transition-all duration-300"
+                                    >
+                                        <Trash2 size={18} className="text-gray-500 hover:text-red-500 transition-colors" />
+                                    </button>
+                                </div>
                             </div>
 
-                            <div className="mt-4 flex">
-                                <button
-                                    onClick={() => handleAddToCart(item)}
-                                    className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium transition flex items-center justify-center gap-2"
-                                >
-                                    <ShoppingCart size={18} />
-                                    Add to Cart
-                                </button>
-                            </div>
+                            {/* Hover Effect Border */}
+                            <div className="absolute inset-0 border-2 border-transparent group-hover:border-red-100 rounded-2xl transition-colors duration-300 pointer-events-none" />
                         </div>
                     ))}
                 </div>
