@@ -12,7 +12,7 @@ function FungicideList() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch('http://localhost:8080/api/pgr');
+                const res = await fetch('http://localhost:8080/api/fungicide');
                 const data = await res.json();
                 setFungicides(data.products);
                 setFilteredProducts(data.products);

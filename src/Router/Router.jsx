@@ -36,6 +36,7 @@ import ProductDetail from "../components/pages/ProductDetail.jsx";
 import PgrDetails from "../components/pages/pgr/PgrDetails.jsx";
 import MicroNutrientDetails from "../components/pages/micronutrients/MicroNutrientDetails.jsx";
 import InsecticideDetails from "../components/pages/Insecticide/InsecticideDetails.jsx";
+import FungicideDetails from "../components/pages/fungicide/FungicideDetails.jsx";
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -104,6 +105,7 @@ const AppRoutes = () => {
 
                 {/* For fungicides */}
                 <Route path="/fungicides" element={<FungicideList />} />
+                <Route path="/fungicides/:id" element={<FungicideDetails />} />
             </Routes>
 
             <Footer />
