@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ThumbsUp, ArrowDownWideNarrow, ArrowUpWideNarrow } from 'lucide-react';
 
-function InsecticideList() {
-    const [insecticides, setInsecticides] = useState([]);
+function AllProducts() {
+    const [pgrProducts, setPgrProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [sortOption, setSortOption] = useState('');
     const [loading, setLoading] = useState(true);
@@ -12,12 +12,12 @@ function InsecticideList() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch('http://localhost:8080/api/insecticides');
+                const res = await fetch('http://localhost:8080/api/products');
                 const data = await res.json();
-                setInsecticides(data.products);
+                setPgrProducts(data.products);
                 setFilteredProducts(data.products);
             } catch (err) {
-                setError('Failed to load Insecticide products.');
+                setError('Failed to load PGR products.');
             } finally {
                 setLoading(false);
             }
@@ -26,7 +26,7 @@ function InsecticideList() {
     }, []);
 
     useEffect(() => {
-        let filtered = [...insecticides];
+        let filtered = [...pgrProducts];
         if (sortOption === 'most-purchased') {
             filtered.sort((a, b) => b.total_sales - a.total_sales);
         } else if (sortOption === 'lowest-price') {
@@ -35,15 +35,15 @@ function InsecticideList() {
             filtered.sort((a, b) => b.variants[0]?.price - a.variants[0]?.price);
         }
         setFilteredProducts(filtered);
-    }, [sortOption, insecticides]);
+    }, [sortOption, pgrProducts]);
 
     if (loading) return <div className="text-center py-10 text-xl text-gray-600">Loading...</div>;
     if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
 
     return (
         <div className="px-4 sm:px-8 md:px-12 py-10 bg-gray-50 min-h-screen">
-            <h2 className="text-3xl font-bold text-center text-purple-800 mb-8">
-                🐛 Effective Insecticides
+            <h2 className="text-3xl font-bold text-center text-green-800 mb-8">
+                🌿 Best Growth Promoters / Plant Growth Regulators
             </h2>
 
             {/* Sort Buttons */}
@@ -57,8 +57,8 @@ function InsecticideList() {
                         key={value}
                         onClick={() => setSortOption(value)}
                         className={`flex items-center gap-2 px-5 py-2 rounded-full border transition-all duration-200 ${sortOption === value
-                            ? 'border-purple-600 bg-purple-100 text-purple-800 font-medium'
-                            : 'border-gray-300 hover:bg-purple-50 text-gray-700'
+                            ? 'border-green-600 bg-green-100 text-green-800 font-medium'
+                            : 'border-gray-300 hover:bg-green-50 text-gray-700'
                             }`}
                     >
                         {icon}
@@ -76,7 +76,7 @@ function InsecticideList() {
                     const originalPrice = firstVariant?.price + discount;
 
                     return (
-                        <Link to={`/insecticides/${product.id}`} key={product.id}>
+                        <Link to={`/products/${product.id}`} key={product.id}>
                             <div className="bg-white shadow rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300 group">
                                 <div className="relative p-4">
                                     <img
@@ -120,4 +120,4 @@ function InsecticideList() {
     );
 }
 
-export default InsecticideList;
+export default AllProducts;

@@ -125,7 +125,7 @@ function FungicideDetails() {
                                 Best Seller
                             </span>
                         </div>
-                        <h1 className="text-3xl font-bold text-green-900">{product.name} Avishkar</h1>
+                        <h1 className="text-3xl font-bold text-green-900">{product.name}</h1>
                         <p className="text-sm mt-1 text-gray-600">{product.description}</p>
 
                         {/* Pricing */}

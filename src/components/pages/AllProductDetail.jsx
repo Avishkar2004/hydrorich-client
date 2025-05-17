@@ -8,7 +8,7 @@ import useWishlistStore from "../../store/wishlistStore.js";
 import AddToCart from "../AddToCart.jsx";
 import { useAuth } from "../../hooks/useAuth.js";
 
-const ProductDetail = () => {
+const AllProductDetail = () => {
     const { id } = useParams();
     const { user } = useAuth();
     const { addToWishlist, removeFromWishlist, wishlist, isInWishlist } = useWishlistStore();
@@ -21,7 +21,7 @@ const ProductDetail = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const res = await axios.get(`http://localhost:8080/api/pgr/${id}`);
+                const res = await axios.get(`http://localhost:8080/api/products/${id}`);
                 setProduct(res.data.product);
             } catch (err) {
                 console.error("Error fetching product:", err);
@@ -125,7 +125,7 @@ const ProductDetail = () => {
                             )}
                             <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-medium">Best Seller</span>
                         </div>
-                        <h1 className="text-3xl font-bold text-green-900">{product.name}</h1>
+                        <h1 className="text-3xl font-bold text-green-900">{product.name} All Products</h1>
                         <p className="text-sm mt-1 text-gray-600">{product.description}</p>
 
                         {/* Pricing */}
@@ -246,4 +246,4 @@ const ProductDetail = () => {
     );
 };
 
-export default ProductDetail;
+export default AllProductDetail;
