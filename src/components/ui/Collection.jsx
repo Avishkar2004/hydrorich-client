@@ -36,7 +36,7 @@ const Collection = () => {
       {/* Collection */}
       <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-14 xl:gap-24">
         <Link
-          to="/pgr"
+          to="/pgrs"
           className="flex flex-col items-center space-y-2 rounded-full hover:scale-105 transition duration-300"
         >
           <img
@@ -48,7 +48,7 @@ const Collection = () => {
         </Link>
 
         <Link
-          to="/organicproduct"
+          to="/organicproducts"
           className="flex flex-col items-center space-y-2 rounded-full hover:scale-105 transition duration-300"
         >
           <img
@@ -72,7 +72,7 @@ const Collection = () => {
         </Link>
 
         <Link
-          to="/insecticide"
+          to="/insecticides"
           className="flex flex-col items-center space-y-2 rounded-full hover:scale-105 transition duration-300"
         >
           <img

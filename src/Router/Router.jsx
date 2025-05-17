@@ -35,6 +35,7 @@ import OrderSuccess from "../components/pages/OrderSuccess.jsx";
 import ProductDetail from "../components/pages/ProductDetail.jsx";
 import PgrDetails from "../components/pages/pgr/PgrDetails.jsx";
 import MicroNutrientDetails from "../components/pages/micronutrients/MicroNutrientDetails.jsx";
+import InsecticideDetails from "../components/pages/Insecticide/InsecticideDetails.jsx";
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -86,19 +87,20 @@ const AppRoutes = () => {
                 <Route path="/crops/:name" element={<CropOptions />} />
 
                 {/* For PGR */}
-                <Route path="/pgr" element={<PgrList />} />
-                <Route path="/pgr/:id" element={<PgrDetails />} />
+                <Route path="/pgrs" element={<PgrList />} />
+                <Route path="/pgrs/:id" element={<PgrDetails />} />
 
                 {/* For organic products */}
-                <Route path="/organicproduct" element={<OrganicList />} />
-                <Route path="/organic/:id" element={<OrganicDetails />} />
+                <Route path="/organicproducts" element={<OrganicList />} />
+                <Route path="/organicproducts/:id" element={<OrganicDetails />} />
 
                 {/* For micronutrients */}
                 <Route path="micronutrients" element={<MicronutrientsList />} />
                 <Route path="/micronutrients/:id" element={<MicroNutrientDetails />} />
 
                 {/* For insecticides */}
-                <Route path="/insecticide" element={<InsecticideList />} />
+                <Route path="/insecticides" element={<InsecticideList />} />
+                <Route path="/insecticides/:id" element={<InsecticideDetails />} />
 
                 {/* For fungicides */}
                 <Route path="/fungicides" element={<FungicideList />} />

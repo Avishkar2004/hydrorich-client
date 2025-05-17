@@ -76,7 +76,7 @@ function PgrList() {
                     const originalPrice = firstVariant?.price + discount;
 
                     return (
-                        <Link to={`/pgr/${product.id}`} key={product.id}>
+                        <Link to={`/pgrs/${product.id}`} key={product.id}>
                             <div className="bg-white shadow rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300 group">
                                 <div className="relative p-4">
                                     <img
