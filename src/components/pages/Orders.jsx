@@ -163,33 +163,39 @@ const Orders = () => {
                             </div>
 
                             <div className="mt-6">
-                                <h3 className="font-medium text-gray-800 mb-4">Order Items</h3>
+                                <h3 className="font-medium text-gray-800 mb-4">Order Items Details</h3>
                                 <div className="space-y-4">
-                                    {order.items.map((item, idx) => (
-                                        <div key={idx} className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
-                                            <div className="w-20 h-20 rounded-lg overflow-hidden border bg-white">
-                                                <img
-                                                    src={item.image_url || '/placeholder-image.jpg'}
-                                                    alt={item.product_name}
-                                                    className="w-full h-full object-cover"
-                                                />
+                                    {Array.isArray(order.items) && order.items.length > 0 ? (
+                                        order.items.map((item, idx) => (
+                                            <div key={idx} className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
+                                                <div className="w-20 h-20 rounded-lg overflow-hidden border bg-white">
+                                                    <img
+                                                        src={item.image_url || '/placeholder-image.jpg'}
+                                                        alt={item.product_name || 'Product'}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <h4 className="font-medium text-gray-800">{item.product_name || 'Product'}</h4>
+                                                    <p className="text-sm text-gray-600">
+                                                        Quantity: {item.quantity}
+                                                    </p>
+                                                    <p className="text-sm text-gray-600">
+                                                        Price: ₹{item.price_per_unit?.toLocaleString() || '0'}
+                                                    </p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="font-medium text-green-600">
+                                                        ₹{(item.price_per_unit * item.quantity)?.toLocaleString() || '0'}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div className="flex-1">
-                                                <h4 className="font-medium text-gray-800">{item.product_name}</h4>
-                                                <p className="text-sm text-gray-600">
-                                                    Quantity: {item.quantity}
-                                                </p>
-                                                <p className="text-sm text-gray-600">
-                                                    Price: ₹{item.price_per_unit.toLocaleString()}
-                                                </p>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="font-medium text-green-600">
-                                                    ₹{(item.price_per_unit * item.quantity).toLocaleString()}
-                                                </p>
-                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-center py-4 text-gray-500">
+                                            No items found in this order
                                         </div>
-                                    ))}
+                                    )}
                                 </div>
                             </div>
                         </div>
