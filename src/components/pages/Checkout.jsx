@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useCartStore from "../../store/cartStore.js";
 import { useAuth } from "../../hooks/useAuth.js";
+import { API_ENDPOINTS, getAuthHeader } from "../../config/api.js";
 import {
     CreditCard,
     MapPin,
@@ -60,16 +61,36 @@ const Checkout = () => {
     const handlePlaceOrder = async () => {
         setLoading(true);
         try {
-            // Here you would typically make an API call to create the order
-            // await orderService.createOrder({ address, paymentMethod, cardDetails, items: cart });
+            const orderData = {
+                totalAmount: totalPrice,
+                paymentMethod,
+                shippingAddress: address,
+                items: cart.map(item => ({
+                    product_id: item.product_id,
+                    variant_id: item.variant_id,
+                    quantity: item.quantity,
+                    price: item.price
+                }))
+            };
 
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            const response = await fetch(API_ENDPOINTS.orders, {
+                method: 'POST',
+                headers: getAuthHeader(),
+                credentials: 'include',
+                body: JSON.stringify(orderData)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to place order');
+            }
 
             clearCart();
             navigate("/order-success");
         } catch (error) {
             console.error("Error placing order:", error);
+            // You might want to show an error message to the user here
         } finally {
             setLoading(false);
         }

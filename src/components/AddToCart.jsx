@@ -16,7 +16,6 @@ const AddToCart = ({ product, variant }) => {
             navigate('/login');
             return;
         }
-
         try {
             setLoading(true);
             setError(null);

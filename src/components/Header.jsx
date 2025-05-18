@@ -100,7 +100,7 @@ export default function Header() {
                   <ChevronDown size={18} />
                 </div>
                 {/* Dropdown */}
-                <div className="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 translate-y-2 pointer-events-none group-hover:pointer-events-auto transition-all duration-500 ease-in-out z-50">
+                <div className="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 translate-y-2 pointer-events-none group-hover:pointer-events-auto transition-all duration-700 ease-in-out z-50">
                   <div className="py-1">
                     <Link
                       to="/profile"
