@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth.js";
 import { API_ENDPOINTS, getAuthHeader } from "../../config/api.js";
-import { Package, Loader2, Calendar, MapPin, CreditCard, ChevronRight, ShoppingBag, Truck, CheckCircle2, ArrowRight } from "lucide-react";
+import { Package, Loader2, Calendar, MapPin, CreditCard, ChevronRight, ShoppingBag, Truck, CheckCircle2, ArrowRight, ArrowLeft, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Orders = () => {
@@ -10,6 +10,7 @@ const Orders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [downloadingInvoices, setDownloadingInvoices] = useState({})
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -40,6 +41,62 @@ const Orders = () => {
 
         fetchOrders();
     }, []);
+
+
+    const downloadInvoice = async (orderId) => {
+        try {
+            setDownloadingInvoices(prev => ({ ...prev, [orderId]: true }))
+
+            // Add timeout to the fetch request
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+            const response = await fetch(API_ENDPOINTS.invoices.replace(":orderId", orderId), {
+                credentials: "include",
+                headers: getAuthHeader(),
+                signal: controller.signal
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to download invoice');
+            }
+
+            // Check if the response is actually a PDF
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/pdf')) {
+                throw new Error('Invalid response format');
+            }
+
+            const blob = await response.blob();
+
+            // Check if the blob is empty or too small
+            if (blob.size < 1000) { // Less than 1KB is probably an error
+                throw new Error('Invalid PDF file received');
+            }
+
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `invoice-${orderId}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+        } catch (error) {
+            console.error("Error downloading invoice:", error);
+            if (error.name === 'AbortError') {
+                alert("Download timed out. Please try again.");
+            } else {
+                alert(error.message || "Failed to download invoice. Please try again later.");
+            }
+        } finally {
+            setDownloadingInvoices(prev => ({ ...prev, [orderId]: false }))
+        }
+    };
+
 
     const getStatusColor = (status) => {
         switch (status.toLowerCase()) {
@@ -166,6 +223,22 @@ const Orders = () => {
                                         <h2 className="text-xl font-semibold text-gray-800">
                                             Order #{order.order_number}
                                         </h2>
+                                        <div
+                                            onClick={() => downloadInvoice(order.id)}
+                                            className="text-sm text-gray-600 mt-3 mb-3 cursor-pointer hover:text-green-600 transition-colors flex items-center gap-2"
+                                        >
+                                            {downloadingInvoices[order.id] ? (
+                                                <>
+                                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                                    <span>Downloading...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Download className="w-4 h-4" />
+                                                    <span>Download Invoice</span>
+                                                </>
+                                            )}
+                                        </div>
                                         <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
                                             <div className="flex items-center gap-1 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
                                                 <Calendar size={16} className="text-green-600" />
