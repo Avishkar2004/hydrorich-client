@@ -40,6 +40,7 @@ import FungicideDetails from "../components/pages/fungicide/FungicideDetails.jsx
 import Settings from "../components/pages/Settings.jsx";
 import AllProducts from "../components/pages/AllProducts.jsx";
 import AllProductDetail from "../components/pages/AllProductDetail.jsx";
+import FAQ from "../components/pages/FAQ";
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -111,6 +112,8 @@ const AppRoutes = () => {
                 {/* For fungicides */}
                 <Route path="/fungicides" element={<FungicideList />} />
                 <Route path="/fungicides/:id" element={<FungicideDetails />} />
+
+                <Route path="/faq" element={<FAQ />} />
             </Routes>
 
             <Footer />
