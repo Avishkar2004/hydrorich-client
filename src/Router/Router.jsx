@@ -14,7 +14,6 @@ import Footer from "../components/Footer"; // Make sure this exists
 import { BackgroundBeamsWithCollision } from "../components/ui/background-beams-with-collision";
 import AboutUs from "../components/pages/AboutUs";
 import Contact from "../components/pages/Contact";
-// import Products from "../components/pages/Products.jsx";
 import Collection from "../components/ui/Collection.jsx";
 import { Rotate3D } from "lucide-react";
 import PgrList from "../components/pages/pgr/PgrList.jsx";
