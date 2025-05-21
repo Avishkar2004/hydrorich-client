@@ -39,7 +39,9 @@ import FungicideDetails from "../components/pages/fungicide/FungicideDetails.jsx
 import Settings from "../components/pages/Settings.jsx";
 import AllProducts from "../components/pages/AllProducts.jsx";
 import AllProductDetail from "../components/pages/AllProductDetail.jsx";
-import FAQ from "../components/pages/FAQ";
+import FAQ from "../components/pages/FAQ.jsx";
+import Dashboard from "../components/admin/Dashboard.jsx";
+import ProtectedAdminRoute from "../components/admin/ProtectedAdminRoute.jsx";
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -74,6 +76,12 @@ const AppRoutes = () => {
             <Routes>
                 <Route element={<ScrollToTop />} />
                 <Route path="/" element={<HomeWithExtras />} />
+                
+                {/* Admin Routes */}
+                <Route element={<ProtectedAdminRoute />}>
+                    <Route path="/admin" element={<Dashboard />} />
+                </Route>
+
                 <Route path="/products" element={<AllProducts />} />
                 <Route path="/aboutus" element={<AboutUs />} />
                 <Route path="/contact" element={<Contact />} />

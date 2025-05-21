@@ -1,6 +1,40 @@
+import axios from 'axios';
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
+// Create axios instance with default config
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  }
+});
+
+// Add response interceptor for better error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Redirect to login page if unauthorized
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const API_ENDPOINTS = {
+  auth: {
+    user: '/api/auth/user',
+    login: '/api/auth/login',
+    logout: '/api/auth/logout',
+    google: '/api/auth/google'
+  },
+  admin: {
+    users: '/api/admin/users',
+    stats: '/api/admin/stats'
+  },
   orders: `${API_BASE_URL}/api/orders`,
   invoices: `${API_BASE_URL}/api/invoices/:orderId`,
   // Add other endpoints as needed
@@ -11,3 +45,5 @@ export const getAuthHeader = () => {
     "Content-Type": "application/json",
   };
 };
+
+export default api;
