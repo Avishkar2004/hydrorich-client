@@ -3,8 +3,8 @@ import { Navigate, Outlet } from 'react-router-dom';
 import api, { API_ENDPOINTS } from '../../config/api';
 
 export default function ProtectedAdminRoute() {
-    const [isAdmin, setIsAdmin] = useState(null);
-    const [error, setError] = useState(null);
+    const [isAdmin, setIsAdmin] = useState(null)
+    const [error, setError] = useState(null)
 
     useEffect(() => {
         const checkAdminStatus = async () => {
@@ -47,13 +47,13 @@ export default function ProtectedAdminRoute() {
         checkAdminStatus();
     }, []);
 
+
     if (isAdmin === null) {
-        return <div>Loading...</div>;
+        return <div>Loading...</div>
     }
-
     if (error) {
-        return <div>Error: {error}</div>;
+        return <div>Error: {error}</div>
     }
+    return isAdmin ? <Outlet /> : <Navigate to="/login" replace />
 
-    return isAdmin ? <Outlet /> : <Navigate to="/login" replace />;
-} 
+}

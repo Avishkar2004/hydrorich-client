@@ -76,7 +76,7 @@ const AppRoutes = () => {
             <Routes>
                 <Route element={<ScrollToTop />} />
                 <Route path="/" element={<HomeWithExtras />} />
-                
+
                 {/* Admin Routes */}
                 <Route element={<ProtectedAdminRoute />}>
                     <Route path="/admin" element={<Dashboard />} />
