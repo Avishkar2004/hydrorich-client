@@ -9,12 +9,7 @@ export default function ProtectedAdminRoute() {
     useEffect(() => {
         const checkAdminStatus = async () => {
             try {
-                console.log('Checking admin status...');
                 const response = await api.get(API_ENDPOINTS.auth.user);
-
-                console.log('Raw response:', response);
-                console.log('User data:', response.data);
-
                 if (!response.data || typeof response.data !== 'object') {
                     console.error('Invalid response format:', response.data);
                     setError('Invalid server response');
@@ -24,7 +19,6 @@ export default function ProtectedAdminRoute() {
 
                 // Check for admin email
                 const userEmail = response.data.email;
-                console.log('User email:', userEmail);
 
                 if (!userEmail) {
                     console.error('No email found in user data');
@@ -34,7 +28,6 @@ export default function ProtectedAdminRoute() {
                 }
 
                 const isUserAdmin = userEmail === 'avishkarkakde2004@gmail.com';
-                console.log('Is user admin:', isUserAdmin);
                 setIsAdmin(isUserAdmin);
             } catch (error) {
                 console.error('Auth check error:', error);

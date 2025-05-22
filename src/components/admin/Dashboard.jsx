@@ -23,8 +23,6 @@ const calculateGrowthMetrics = (currentStats, previousStats) => {
         productsGrowth: calculateGrowth(currentStats.totalProducts, previousStats.totalProducts),
         revenueGrowth: calculateGrowth(currentStats.totalRevenue, previousStats.totalRevenue)
     };
-
-    console.log('Growth Metrics:', metrics);
     return metrics;
 };
 
@@ -40,27 +38,19 @@ export default function Dashboard() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                console.log('Fetching admin data...');
                 const userResponse = await api.get(API_ENDPOINTS.auth.user);
-                console.log('User response:', userResponse.data);
 
                 if (userResponse.data?.email !== 'avishkarkakde2004@gmail.com') {
-                    console.log('User is not admin, redirecting...');
                     navigate('/login');
                     return;
                 }
 
-                console.log('User is admin, fetching dashboard data...');
                 const [usersRes, statsRes] = await Promise.all([
                     api.get(API_ENDPOINTS.admin.users),
                     api.get(API_ENDPOINTS.admin.stats)
                 ]);
 
-                console.log('Users data:', usersRes.data);
-                console.log('Stats data:', statsRes.data);
-
                 const currentStats = statsRes.data;
-
                 // Calculate previous stats based on realistic growth patterns
                 const previousStats = {
                     // For users, assume 20% growth
@@ -75,10 +65,6 @@ export default function Dashboard() {
                     // For revenue, calculate based on the actual value
                     totalRevenue: calculatePreviousRevenue(currentStats.totalRevenue)
                 }
-
-                console.log('Current Stats:', currentStats);
-                console.log('Previous Stats:', previousStats);
-
                 setUsers(usersRes.data);
                 setStats(currentStats);
                 setPreviousStats(previousStats);
@@ -124,7 +110,6 @@ export default function Dashboard() {
     useEffect(() => {
         if (stats && previousStats) {
             const growth = calculateGrowthMetrics(stats, previousStats);
-            console.log('Growth metrics:', growth);
         }
     }, [stats, previousStats]);
 
