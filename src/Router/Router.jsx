@@ -11,7 +11,6 @@ import { useAuth } from "../hooks/useAuth";
 import HomePage from "../components/pages/HomePage.jsx";
 import Header from "../components/Header";
 import Footer from "../components/Footer"; // Make sure this exists
-import { BackgroundBeamsWithCollision } from "../components/ui/background-beams-with-collision";
 import AboutUs from "../components/pages/AboutUs";
 import Contact from "../components/pages/Contact";
 import Collection from "../components/ui/Collection.jsx";
@@ -41,6 +40,7 @@ import AllProducts from "../components/pages/AllProducts.jsx";
 import AllProductDetail from "../components/pages/AllProductDetail.jsx";
 import FAQ from "../components/pages/FAQ.jsx";
 import Dashboard from "../components/admin/Dashboard.jsx";
+import AddProduct from "../components/admin/AddProduct.jsx";
 import ProtectedAdminRoute from "../components/admin/ProtectedAdminRoute.jsx";
 
 // Scroll to top on route change
@@ -58,7 +58,6 @@ const HomeWithExtras = () => (
     <>
         <HomePage />
         <Collection />
-        <BackgroundBeamsWithCollision />
     </>
 );
 
@@ -80,6 +79,7 @@ const AppRoutes = () => {
                 {/* Admin Routes */}
                 <Route element={<ProtectedAdminRoute />}>
                     <Route path="/admin" element={<Dashboard />} />
+                    <Route path="/admin/add-product" element={<AddProduct />} />
                 </Route>
 
                 <Route path="/products" element={<AllProducts />} />

@@ -33,7 +33,8 @@ export const API_ENDPOINTS = {
   },
   admin: {
     users: '/api/admin/users',
-    stats: '/api/admin/stats'
+    stats: '/api/admin/stats',
+    addProduct: '/api/products/add'
   },
   orders: `${API_BASE_URL}/api/orders`,
   invoices: `${API_BASE_URL}/api/invoices/:orderId`,
