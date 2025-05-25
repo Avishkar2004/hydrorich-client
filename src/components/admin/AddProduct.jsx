@@ -455,9 +455,8 @@ const AddProduct = () => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className={`px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all flex items-center space-x-2 ${
-                                    loading ? 'opacity-50 cursor-not-allowed' : ''
-                                }`}
+                                className={`px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all flex items-center space-x-2 ${loading ? 'opacity-50 cursor-not-allowed' : ''
+                                    }`}
                             >
                                 {loading ? (
                                     <>
