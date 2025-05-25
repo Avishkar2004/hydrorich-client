@@ -42,6 +42,7 @@ import FAQ from "../components/pages/FAQ.jsx";
 import Dashboard from "../components/admin/Dashboard.jsx";
 import AddProduct from "../components/admin/AddProduct.jsx";
 import ProtectedAdminRoute from "../components/admin/ProtectedAdminRoute.jsx";
+import AdminAllProducts from "../components/admin/AdminAllProducts.jsx";
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -80,6 +81,7 @@ const AppRoutes = () => {
                 <Route element={<ProtectedAdminRoute />}>
                     <Route path="/admin" element={<Dashboard />} />
                     <Route path="/admin/add-product" element={<AddProduct />} />
+                    <Route path="/admin/all-products" element={<AdminAllProducts />} />
                 </Route>
 
                 <Route path="/products" element={<AllProducts />} />

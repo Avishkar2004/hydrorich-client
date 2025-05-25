@@ -35,6 +35,7 @@ export const API_ENDPOINTS = {
     users: "/api/admin/users",
     stats: "/api/admin/stats",
     addProduct: "/api/products/add",
+    products: "/api/products",
   },
   orders: `${API_BASE_URL}/api/orders`,
   invoices: `${API_BASE_URL}/api/invoices/:orderId`,
