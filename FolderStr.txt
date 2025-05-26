@@ -54,3 +54,17 @@ agro-product/
 ├── vite.config.js
 ├── package.json
 └── README.md
+
+
+
+Order status tracking
+Email marketing integration
+Two-factor authentication
+IP whitelisting
+
+SEO Management
+Meta tag management
+Sitemap generation
+URL structure management
+SEO analytics
+Keyword tracking

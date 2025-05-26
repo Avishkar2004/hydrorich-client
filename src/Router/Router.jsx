@@ -43,6 +43,7 @@ import Dashboard from "../components/admin/Dashboard.jsx";
 import AddProduct from "../components/admin/AddProduct.jsx";
 import ProtectedAdminRoute from "../components/admin/ProtectedAdminRoute.jsx";
 import AdminAllProducts from "../components/admin/AdminAllProducts.jsx";
+import OrderTracking from '../components/pages/OrderTracking';
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -96,6 +97,7 @@ const AppRoutes = () => {
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/orders" element={<Orders />} />
                 <Route path="/order-success" element={<OrderSuccess />} />
+                <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
 
                 <Route path="/products/:id" element={<AllProductDetail />} />
                 {/* Crops */}

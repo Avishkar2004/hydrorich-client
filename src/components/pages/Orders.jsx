@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth.js";
 import { API_ENDPOINTS, getAuthHeader } from "../../config/api.js";
-import { Package, Loader2, Calendar, MapPin, CreditCard, ChevronRight, ShoppingBag, Truck, CheckCircle2, ArrowRight, ArrowLeft, Download } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Package, Loader2, Calendar, MapPin, CreditCard, ChevronRight, ShoppingBag, Truck, CheckCircle2, ArrowRight, ArrowLeft, Download, FileDown } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
 
 const Orders = () => {
     const { user } = useAuth();
@@ -256,6 +256,22 @@ const Orders = () => {
                                         <span className="text-2xl font-bold text-green-600">
                                             ₹{order.total_amount.toLocaleString()}
                                         </span>
+                                        <div className="mt-4 flex gap-2">
+                                            <Link
+                                                to={`/order-tracking/${order.id}`}
+                                                className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-300"
+                                            >
+                                                <Truck className="w-4 h-4" />
+                                                Track Order
+                                            </Link>
+                                            <button
+                                                onClick={() => downloadInvoice(order.id)}
+                                                className="inline-flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-all duration-300"
+                                            >
+                                                <FileDown className="w-4 h-4" />
+                                                {downloadingInvoices[order.id] ? 'Downloading...' : 'Invoice'}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 
