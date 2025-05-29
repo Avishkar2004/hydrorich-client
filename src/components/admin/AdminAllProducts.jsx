@@ -93,7 +93,7 @@ const AdminAllProducts = () => {
                 <div className="bg-white rounded-2xl shadow-sm p-6 mb-8 border border-gray-100">
                     <div className="flex justify-between items-center">
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900">Product Management</h1>
+                            <h1 className="text-2xl font-bold text-gray-900">Product Management an an Admin</h1>
                             <p className="mt-1 text-sm text-gray-500">Manage your product inventory and details</p>
                         </div>
                         <Link
@@ -180,8 +180,8 @@ const AdminAllProducts = () => {
                                     </div>
                                     <div className="col-span-2">
                                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${product.in_stock
-                                                ? 'bg-green-50 text-green-700'
-                                                : 'bg-red-50 text-red-700'
+                                            ? 'bg-green-50 text-green-700'
+                                            : 'bg-red-50 text-red-700'
                                             }`}>
                                             {product.in_stock ? 'In Stock' : 'Out of Stock'}
                                         </span>
