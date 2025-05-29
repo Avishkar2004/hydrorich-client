@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Leaf, Droplet, Calendar, Shield, ChevronRight } from 'lucide-react';
+import { Leaf, Droplet, Calendar, Shield, ChevronRight, AlertCircle, BarChart2, Clock, Thermometer, Cloud } from 'lucide-react';
 
 const cropDetails = {
   soybean: {
@@ -105,6 +105,204 @@ const cropDetails = {
   },
 };
 
+
+const AIPredictions = ({ cropName }) => {
+  const [predictions, setPredictions] = useState({
+    yield: null,
+    diseases: [],
+    schedule: null,
+    weather: null
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulated API call - Replace with actual API endpoint
+    const fetchPredictions = async () => {
+      try {
+        // This would be your actual API call
+        const response = await fetch(`http://localhost:8080/api/crops/${cropName}/predictions`);
+        const data = await response.json();
+        setPredictions(data);
+      } catch (error) {
+        console.error('Error fetching predictions:', error);
+        // Fallback data for demonstration
+        setPredictions({
+          yield: {
+            predicted: '4.5 tons/acre',
+            confidence: 85,
+            factors: ['Optimal rainfall', 'Good soil quality', 'Favorable temperature']
+          },
+          diseases: [
+            {
+              name: 'Leaf Blight',
+              probability: 15,
+              prevention: 'Apply preventive fungicide spray'
+            },
+            {
+              name: 'Root Rot',
+              probability: 5,
+              prevention: 'Ensure proper drainage'
+            }
+          ],
+          schedule: {
+            planting: '2024-06-15',
+            irrigation: ['2024-06-20', '2024-07-05', '2024-07-20'],
+            fertilization: ['2024-06-25', '2024-07-15'],
+            harvest: '2024-09-15'
+          },
+          weather: {
+            temperature: '28°C',
+            rainfall: '75mm',
+            humidity: '65%'
+          }
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPredictions();
+  }, [cropName]);
+
+  if (loading) {
+    return (
+      <div className="animate-pulse space-y-4">
+        <div className="h-8 bg-gray-200 rounded w-3/4"></div>
+        <div className="h-32 bg-gray-200 rounded"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8">
+      {/* Yield Prediction */}
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-green-100">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 bg-green-100 rounded-lg">
+            <BarChart2 className="text-green-600 w-5 h-5" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-800">AI Yield Prediction</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-green-50 p-4 rounded-lg">
+            <span className="font-medium text-green-700 block mb-2">Predicted Yield</span>
+            <span className="text-2xl font-bold text-gray-800">{predictions.yield.predicted}</span>
+          </div>
+          <div className="bg-green-50 p-4 rounded-lg">
+            <span className="font-medium text-green-700 block mb-2">Confidence</span>
+            <span className="text-2xl font-bold text-gray-800">{predictions.yield.confidence}%</span>
+          </div>
+          <div className="bg-green-50 p-4 rounded-lg">
+            <span className="font-medium text-green-700 block mb-2">Key Factors</span>
+            <ul className="text-sm text-gray-600">
+              {predictions.yield.factors.map((factor, index) => (
+                <li key={index} className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                  {factor}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Disease Prediction */}
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-green-100">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 bg-green-100 rounded-lg">
+            <AlertCircle className="text-green-600 w-5 h-5" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-800">Disease Risk Assessment</h3>
+        </div>
+        <div className="grid gap-4">
+          {predictions.diseases.map((disease, index) => (
+            <div key={index} className="bg-green-50 p-4 rounded-lg">
+              <div className="flex justify-between items-center mb-2">
+                <h4 className="font-medium text-gray-800">{disease.name}</h4>
+                <span className={`px-3 py-1 rounded-full text-sm ${disease.probability > 10 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+                  }`}>
+                  {disease.probability}% Risk
+                </span>
+              </div>
+              <p className="text-sm text-gray-600">{disease.prevention}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Growing Schedule */}
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-green-100">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 bg-green-100 rounded-lg">
+            <Clock className="text-green-600 w-5 h-5" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-800">AI-Generated Growing Schedule</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-green-50 p-4 rounded-lg">
+            <span className="font-medium text-green-700 block mb-2">Planting Date</span>
+            <span className="text-gray-800">{predictions.schedule.planting}</span>
+          </div>
+          <div className="bg-green-50 p-4 rounded-lg">
+            <span className="font-medium text-green-700 block mb-2">Harvest Date</span>
+            <span className="text-gray-800">{predictions.schedule.harvest}</span>
+          </div>
+          <div className="bg-green-50 p-4 rounded-lg">
+            <span className="font-medium text-green-700 block mb-2">Irrigation Schedule</span>
+            <ul className="text-sm text-gray-600">
+              {predictions.schedule.irrigation.map((date, index) => (
+                <li key={index} className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                  {date}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="bg-green-50 p-4 rounded-lg">
+            <span className="font-medium text-green-700 block mb-2">Fertilization Schedule</span>
+            <ul className="text-sm text-gray-600">
+              {predictions.schedule.fertilization.map((date, index) => (
+                <li key={index} className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                  {date}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Weather Conditions */}
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-green-100">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 bg-green-100 rounded-lg">
+            <Cloud className="text-green-600 w-5 h-5" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-800">Current Weather Conditions</h3>
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="bg-green-50 p-4 rounded-lg text-center">
+            <Thermometer className="w-6 h-6 text-green-600 mx-auto mb-2" />
+            <span className="font-medium text-green-700 block">Temperature</span>
+            <span className="text-gray-800">{predictions.weather.temperature}</span>
+          </div>
+          <div className="bg-green-50 p-4 rounded-lg text-center">
+            <Droplet className="w-6 h-6 text-green-600 mx-auto mb-2" />
+            <span className="font-medium text-green-700 block">Rainfall</span>
+            <span className="text-gray-800">{predictions.weather.rainfall}</span>
+          </div>
+          <div className="bg-green-50 p-4 rounded-lg text-center">
+            <Cloud className="w-6 h-6 text-green-600 mx-auto mb-2" />
+            <span className="font-medium text-green-700 block">Humidity</span>
+            <span className="text-gray-800">{predictions.weather.humidity}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 const PesticideList = ({ pesticides }) => {
   return (
     <div className="mt-12">
@@ -116,8 +314,8 @@ const PesticideList = ({ pesticides }) => {
       </div>
       <div className="grid gap-6">
         {pesticides.map((pesticide, index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             className="group bg-white p-6 rounded-xl shadow-sm border border-green-100 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:border-green-200"
           >
             <div className="flex items-center justify-between mb-4">
@@ -147,6 +345,7 @@ const PesticideList = ({ pesticides }) => {
     </div>
   );
 };
+
 
 function CropOptions() {
   const { name } = useParams();
@@ -204,6 +403,9 @@ function CropOptions() {
                 <span className="font-medium text-green-700">Best Time to Grow:</span> {crop.growingSeason}
               </p>
             </div>
+
+            {/* AI Predictions Section */}
+            <AIPredictions cropName={name} />
 
             <PesticideList pesticides={crop.pesticides} />
           </div>
