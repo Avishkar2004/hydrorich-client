@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { CheckCircle2, Clock, Package, Truck, AlertCircle, ArrowLeft, MapPin, CreditCard, ShoppingBag, Loader2, Calendar, ChevronRight, LoaderPinwheel } from 'lucide-react';
 import api from '../../config/api';
 import { io } from 'socket.io-client';
@@ -64,7 +64,7 @@ const OrderTracking = () => {
     const getStatusIcon = (status) => {
         switch (status) {
             case 'pending': return <Clock className="w-5 h-5" />;
-            case 'processing': return <LoaderPinwheel className="w-5 h-5 animate-bounce" />;
+            case 'processing': return <LoaderPinwheel className="w-5 h-5 animate-spin" />;
             case 'shipped': return <Truck className="w-5 h-5" />;
             case 'delivered': return <CheckCircle2 className="w-5 h-5" />;
             case 'cancelled': return <Package className="w-5 h-5" />;
@@ -209,7 +209,6 @@ const OrderTracking = () => {
                                 </div>
                             </div>
                         </div>
-
                         {/* Order Items */}
                         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                             <div className="p-6">
@@ -294,10 +293,10 @@ const OrderTracking = () => {
                             <div className="p-6">
                                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Need Help?</h3>
                                 <p className="text-gray-600 mb-4">If you have any questions about your order, our support team is here to help.</p>
-                                <button className="w-full inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all duration-300">
+                                <Link to="/contact" className="w-full inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all duration-300">
                                     Contact Support
                                     <ChevronRight size={16} />
-                                </button>
+                                </Link>
                             </div>
                         </div>
                     </div>
