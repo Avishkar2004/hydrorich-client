@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth.js";
 import { API_ENDPOINTS, getAuthHeader } from "../../config/api.js";
-import { Package, Loader2, Calendar, MapPin, CreditCard, ChevronRight, ShoppingBag, Truck, CheckCircle2, ArrowRight, ArrowLeft, Download, FileDown } from "lucide-react";
+import { Package, Loader2, Calendar, MapPin, CreditCard, ChevronRight, ShoppingBag, Truck, CheckCircle2, ArrowRight, ArrowLeft, Download, FileDown, Clock } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 
 const Orders = () => {
@@ -10,7 +10,7 @@ const Orders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [downloadingInvoices, setDownloadingInvoices] = useState({})
+    const [downloadingInvoices, setDownloadingInvoices] = useState({});
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -26,10 +26,13 @@ const Orders = () => {
 
                 const data = await response.json();
                 if (data && data.success && Array.isArray(data.data)) {
-                    setOrders(data.data);
+                    // Sort orders by created_at in descending order (newest first)
+                    const sortedOrders = data.data.sort((a, b) =>
+                        new Date(b.created_at) - new Date(a.created_at)
+                    );
+                    setOrders(sortedOrders);
                 } else {
                     setOrders([]);
-                    console.error('Invalid orders data structure:', data);
                 }
             } catch (err) {
                 setError(err.message);
@@ -42,14 +45,11 @@ const Orders = () => {
         fetchOrders();
     }, []);
 
-
     const downloadInvoice = async (orderId) => {
         try {
-            setDownloadingInvoices(prev => ({ ...prev, [orderId]: true }))
-
-            // Add timeout to the fetch request
+            setDownloadingInvoices(prev => ({ ...prev, [orderId]: true }));
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
 
             const response = await fetch(API_ENDPOINTS.invoices.replace(":orderId", orderId), {
                 credentials: "include",
@@ -60,20 +60,16 @@ const Orders = () => {
             clearTimeout(timeoutId);
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to download invoice');
+                throw new Error('Failed to download invoice');
             }
 
-            // Check if the response is actually a PDF
             const contentType = response.headers.get('content-type');
             if (!contentType || !contentType.includes('application/pdf')) {
                 throw new Error('Invalid response format');
             }
 
             const blob = await response.blob();
-
-            // Check if the blob is empty or too small
-            if (blob.size < 1000) { // Less than 1KB is probably an error
+            if (blob.size < 1000) {
                 throw new Error('Invalid PDF file received');
             }
 
@@ -87,66 +83,58 @@ const Orders = () => {
             a.remove();
         } catch (error) {
             console.error("Error downloading invoice:", error);
-            if (error.name === 'AbortError') {
-                alert("Download timed out. Please try again.");
-            } else {
-                alert(error.message || "Failed to download invoice. Please try again later.");
-            }
+            alert(error.name === 'AbortError' ? "Download timed out. Please try again." : error.message || "Failed to download invoice.");
         } finally {
-            setDownloadingInvoices(prev => ({ ...prev, [orderId]: false }))
+            setDownloadingInvoices(prev => ({ ...prev, [orderId]: false }));
         }
     };
 
-
     const getStatusColor = (status) => {
         switch (status.toLowerCase()) {
-            case 'pending':
-                return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-            case 'processing':
-                return 'bg-blue-100 text-blue-800 border-blue-200';
-            case 'shipped':
-                return 'bg-purple-100 text-purple-800 border-purple-200';
-            case 'delivered':
-                return 'bg-green-100 text-green-800 border-green-200';
-            case 'cancelled':
-                return 'bg-red-100 text-red-800 border-red-200';
-            default:
-                return 'bg-gray-100 text-gray-800 border-gray-200';
+            case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+            case 'processing': return 'bg-blue-100 text-blue-800 border-blue-200';
+            case 'shipped': return 'bg-purple-100 text-purple-800 border-purple-200';
+            case 'delivered': return 'bg-green-100 text-green-800 border-green-200';
+            case 'cancelled': return 'bg-red-100 text-red-800 border-red-200';
+            default: return 'bg-gray-100 text-gray-800 border-gray-200';
         }
     };
 
     const getStatusIcon = (status) => {
         switch (status.toLowerCase()) {
-            case 'pending':
-                return <ShoppingBag className="w-5 h-5" />;
-            case 'processing':
-                return <Loader2 className="w-5 h-5 animate-spin" />;
-            case 'shipped':
-                return <Truck className="w-5 h-5" />;
-            case 'delivered':
-                return <CheckCircle2 className="w-5 h-5" />;
-            default:
-                return <Package className="w-5 h-5" />;
+            case 'pending': return <Clock className="w-4 h-4" />;
+            case 'processing': return <Loader2 className="w-4 h-4 animate-spin" />;
+            case 'shipped': return <Truck className="w-4 h-4" />;
+            case 'delivered': return <CheckCircle2 className="w-4 h-4" />;
+            case 'cancelled': return <Package className="w-4 h-4" />;
+            default: return <Package className="w-4 h-4" />;
+        }
+    };
+
+    const getPaymentStatusColor = (status) => {
+        switch (status.toLowerCase()) {
+            case 'completed': return 'bg-green-100 text-green-800 border-green-200';
+            case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+            case 'failed': return 'bg-red-100 text-red-800 border-red-200';
+            default: return 'bg-gray-100 text-gray-800 border-gray-200';
         }
     };
 
     if (!user) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 bg-gradient-to-b from-gray-50 to-white">
-                <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full text-center transform transition-all duration-300 hover:scale-105 border border-gray-100">
-                    <div className="bg-green-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Package size={40} className="text-green-600" />
+            <div className="flex items-center justify-center min-h-[60vh] px-4">
+                <div className="bg-white p-6 rounded-xl shadow-sm max-w-sm w-full text-center border border-gray-100">
+                    <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Package size={32} className="text-green-600" />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-4">Sign In Required</h2>
-                    <p className="text-gray-600 mb-8">
-                        Please sign in to view your orders.
-                    </p>
+                    <h2 className="text-xl font-bold text-gray-800 mb-3">Sign In Required</h2>
+                    <p className="text-gray-600 mb-6">Please sign in to view your orders.</p>
                     <button
                         onClick={() => navigate("/login")}
-                        className="inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
+                        className="inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-all duration-300"
                     >
                         Sign In to Continue
-                        <ChevronRight size={20} />
+                        <ChevronRight size={18} />
                     </button>
                 </div>
             </div>
@@ -155,9 +143,9 @@ const Orders = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[60vh] bg-gradient-to-b from-gray-50 to-white">
-                <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="w-12 h-12 animate-spin text-green-600" />
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="flex flex-col items-center gap-3">
+                    <Loader2 className="w-10 h-10 animate-spin text-green-600" />
                     <p className="text-gray-600">Loading your orders...</p>
                 </div>
             </div>
@@ -166,12 +154,12 @@ const Orders = () => {
 
     if (error) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 bg-gradient-to-b from-gray-50 to-white">
-                <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full text-center border border-red-100">
-                    <div className="bg-red-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Package size={40} className="text-red-600" />
+            <div className="flex items-center justify-center min-h-[60vh] px-4">
+                <div className="bg-white p-6 rounded-xl shadow-sm max-w-sm w-full text-center border border-red-100">
+                    <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Package size={32} className="text-red-600" />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-4">Error</h2>
+                    <h2 className="text-xl font-bold text-gray-800 mb-3">Error</h2>
                     <p className="text-gray-600">{error}</p>
                 </div>
             </div>
@@ -180,21 +168,19 @@ const Orders = () => {
 
     if (orders.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 bg-gradient-to-b from-gray-50 to-white">
-                <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full text-center transform transition-all duration-300 hover:scale-105 border border-gray-100">
-                    <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Package size={40} className="text-gray-400" />
+            <div className="flex items-center justify-center min-h-[60vh] px-4">
+                <div className="bg-white p-6 rounded-xl shadow-sm max-w-sm w-full text-center border border-gray-100">
+                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Package size={32} className="text-gray-400" />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-4">No Orders Yet</h2>
-                    <p className="text-gray-600 mb-8">
-                        You haven't placed any orders yet. Start shopping to see your orders here.
-                    </p>
+                    <h2 className="text-xl font-bold text-gray-800 mb-3">No Orders Yet</h2>
+                    <p className="text-gray-600 mb-6">Start shopping to see your orders here.</p>
                     <button
                         onClick={() => navigate("/products")}
-                        className="inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
+                        className="inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-all duration-300"
                     >
                         Start Shopping
-                        <ChevronRight size={20} />
+                        <ChevronRight size={18} />
                     </button>
                 </div>
             </div>
@@ -202,117 +188,103 @@ const Orders = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-            <div className="max-w-7xl mx-auto px-4 py-10">
-                <div className="flex items-center justify-between mb-8">
-                    <h1 className="text-3xl font-bold text-gray-800">My Orders</h1>
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8">
+            <div className="max-w-5xl mx-auto px-4">
+                <div className="flex items-center justify-between mb-6">
+                    <h1 className="text-2xl font-bold text-gray-800">My Orders</h1>
                     <button
                         onClick={() => navigate("/products")}
                         className="inline-flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors"
                     >
                         Continue Shopping
-                        <ArrowRight size={20} />
+                        <ArrowRight size={18} />
                     </button>
                 </div>
-                <div className="space-y-8">
+                <div className="space-y-6">
                     {orders.map((order) => (
-                        <div key={order.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transform transition-all duration-300 hover:shadow-md">
-                            <div className="p-6">
-                                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                        <div key={order.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div className="p-5">
+                                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
                                     <div>
-                                        <h2 className="text-xl font-semibold text-gray-800">
+                                        <h2 className="text-lg font-semibold text-gray-800">
                                             Order #{order.order_number}
                                         </h2>
-                                        <div
-                                            onClick={() => downloadInvoice(order.id)}
-                                            className="text-sm text-gray-600 mt-3 mb-3 cursor-pointer hover:text-green-600 transition-colors flex items-center gap-2"
-                                        >
-                                            {downloadingInvoices[order.id] ? (
-                                                <>
-                                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                                    <span>Downloading...</span>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Download className="w-4 h-4" />
-                                                    <span>Download Invoice</span>
-                                                </>
-                                            )}
-                                        </div>
-                                        <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                                            <div className="flex items-center gap-1 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
-                                                <Calendar size={16} className="text-green-600" />
-                                                <span>
-                                                    {new Date(order.created_at).toLocaleDateString()}
-                                                </span>
+                                        <div className="flex items-center gap-3 mt-2 text-sm text-gray-600">
+                                            <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-full border border-gray-100">
+                                                <Calendar size={14} className="text-green-600" />
+                                                <span>{new Date(order.created_at).toLocaleDateString()}</span>
                                             </div>
-                                            <div className={`flex items-center gap-1 px-3 py-1 rounded-full border ${getStatusColor(order.status)}`}>
+                                            <div className={`flex items-center gap-1 px-2 py-1 rounded-full border ${getStatusColor(order.status)}`}>
                                                 {getStatusIcon(order.status)}
                                                 <span className="capitalize">{order.status}</span>
                                             </div>
+                                            <div className={`flex items-center gap-1 px-2 py-1 rounded-full border ${getPaymentStatusColor(order.payment_status)}`}>
+                                                <CreditCard size={14} className="text-green-600" />
+                                                <span className="capitalize">{order.payment_status}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="mt-4 md:mt-0">
-                                        <span className="text-2xl font-bold text-green-600">
+                                    <div className="mt-3 md:mt-0 text-right">
+                                        <span className="text-xl font-bold text-green-600">
                                             ₹{order.total_amount.toLocaleString()}
                                         </span>
-                                        <div className="mt-4 flex gap-2">
+                                        <div className="mt-3 flex gap-2">
                                             <Link
                                                 to={`/order-tracking/${order.id}`}
-                                                className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-300"
+                                                className="inline-flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition-all duration-300 text-sm"
                                             >
-                                                <Truck className="w-4 h-4" />
-                                                Track Order
+                                                <Truck className="w-3.5 h-3.5" />
+                                                Track
                                             </Link>
                                             <button
                                                 onClick={() => downloadInvoice(order.id)}
-                                                className="inline-flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-all duration-300"
+                                                className="inline-flex items-center justify-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg transition-all duration-300 text-sm"
                                             >
-                                                <FileDown className="w-4 h-4" />
+                                                <FileDown className="w-3.5 h-3.5" />
                                                 {downloadingInvoices[order.id] ? 'Downloading...' : 'Invoice'}
                                             </button>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <h3 className="font-medium text-gray-800 mb-2 flex items-center gap-2">
-                                            <MapPin size={18} className="text-green-600" />
+                                        <h3 className="font-medium text-gray-800 mb-2 flex items-center gap-1.5 text-sm">
+                                            <MapPin size={16} className="text-green-600" />
                                             Delivery Address
                                         </h3>
-                                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 hover:border-green-200 transition-colors">
+                                        <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 text-sm">
                                             <p className="font-medium">{order.shipping_address.fullName}</p>
                                             <p className="text-gray-600">{order.shipping_address.street}</p>
                                             <p className="text-gray-600">
                                                 {order.shipping_address.city}, {order.shipping_address.state} - {order.shipping_address.pincode}
                                             </p>
-                                            <p className="text-gray-600">Phone: {order.shipping_address.phone}</p>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <h3 className="font-medium text-gray-800 mb-2 flex items-center gap-2">
-                                            <CreditCard size={18} className="text-green-600" />
+                                        <h3 className="font-medium text-gray-800 mb-2 flex items-center gap-1.5 text-sm">
+                                            <CreditCard size={16} className="text-green-600" />
                                             Payment Details
                                         </h3>
-                                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 hover:border-green-200 transition-colors">
+                                        <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 text-sm">
                                             <p className="font-medium capitalize">{order.payment_method}</p>
                                             <p className="text-gray-600 capitalize">Status: {order.payment_status}</p>
+                                            <p className="text-gray-600">Last Updated: {new Date(order.updated_at).toLocaleDateString()}</p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="mt-8">
-                                    <h3 className="font-medium text-gray-800 mb-4 flex items-center gap-2">
-                                        <ShoppingBag size={18} className="text-green-600" />
+                                <div className="mt-4">
+                                    <h3 className="font-medium text-gray-800 mb-3 flex items-center gap-1.5 text-sm">
+                                        <ShoppingBag size={16} className="text-green-600" />
                                         Order Items
                                     </h3>
-                                    <div className="space-y-4">
+                                    <div className="space-y-3">
                                         {Array.isArray(order.items) && order.items.length > 0 ? (
                                             order.items.map((item, idx) => (
-                                                <div key={idx} className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg border border-gray-100 transform transition-all duration-300 hover:bg-gray-100 hover:border-green-200">
-                                                    <div className="w-20 h-20 rounded-lg overflow-hidden border bg-white shadow-sm">
+                                                <div key={idx} className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                                    <div className="w-16 h-16 rounded-lg overflow-hidden border bg-white">
                                                         <img
                                                             src={item.image_url || '/placeholder-image.jpg'}
                                                             alt={item.product_name || 'Product'}
@@ -320,23 +292,18 @@ const Orders = () => {
                                                         />
                                                     </div>
                                                     <div className="flex-1">
-                                                        <h4 className="font-medium text-gray-800">{item.product_name || 'Product'}</h4>
-                                                        <p className="text-sm text-gray-600">
-                                                            Quantity: {item.quantity}
-                                                        </p>
-                                                        <p className="text-sm text-gray-600">
-                                                            Price: ₹{item.price_per_unit?.toLocaleString() || '0'}
-                                                        </p>
+                                                        <h4 className="font-medium text-gray-800 text-sm">{item.product_name || 'Product'}</h4>
+                                                        <p className="text-xs text-gray-600">Qty: {item.quantity}</p>
                                                     </div>
                                                     <div className="text-right">
-                                                        <p className="font-medium text-green-600">
+                                                        <p className="text-sm font-medium text-green-600">
                                                             ₹{(item.price_per_unit * item.quantity)?.toLocaleString() || '0'}
                                                         </p>
                                                     </div>
                                                 </div>
                                             ))
                                         ) : (
-                                            <div className="text-center py-4 text-gray-500 bg-gray-50 rounded-lg border border-gray-100">
+                                            <div className="text-center py-3 text-gray-500 bg-gray-50 rounded-lg border border-gray-100 text-sm">
                                                 No items found in this order
                                             </div>
                                         )}
