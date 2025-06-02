@@ -34,7 +34,7 @@ export default function SearchResults() {
                 {searchResults.map((product) => (
                     <Link
                         key={product._id}
-                        to={`/product/${product._id}`}
+                        to={`/products/${product._id}`}
                         className="flex items-center gap-4 p-2 hover:bg-gray-50 rounded-lg transition"
                     >
                         <img
