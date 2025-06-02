@@ -25,9 +25,7 @@ export default function SearchResults() {
     }
 
     if (!searchResults.length) {
-        return <div className='absolute top-full left-0 right-0 bg-white shadow-lg rounded-lg p-4 mt-2 max-h-96 overflow-y-auto'>
-            <h2 className='text-gray-600 text-sm font-medium'>No results found</h2>
-        </div>;
+        return null;
     }
 
     return (
