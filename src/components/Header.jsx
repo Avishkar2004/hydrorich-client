@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Menu, X, ShoppingCart, Heart, User, Search } from "lucide-react";
 import Logo from "../assets/Logo.jpg";
 import { useAuth } from "../hooks/useAuth.js";
 import { Link, useNavigate } from "react-router-dom";
 import useCartStores from "../store/cartStore.js";
+import useSearchStore from "../store/searchStore.js";
+import SearchResults from "./ui/SearchResults.jsx";
 import {
   LogOut,
   Settings,
@@ -19,7 +21,33 @@ export default function Header() {
   const navigate = useNavigate()
   const { cart, clearCart } = useCartStores()
   const { wishlist, clearWishlist } = useWishlistStore()
+  const { searchQuery, setSearchQuery, searchProducts, clearSearch } = useSearchStore()
+  const searchRef = useRef(null)
   const navLinks = ["Products", "About Us", "Contact"];
+
+  // Handle click outside to close search results
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        clearSearch();
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [clearSearch]);
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery) {
+        searchProducts(searchQuery);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, searchProducts]);
+
 
 
   const handleLogout = async () => {
@@ -49,14 +77,17 @@ export default function Header() {
           />
         </Link>
         {/* Search Bar (Desktop Only) */}
-        <div className="hidden md:flex flex-1 mx-6 max-w-xl">
+        <div className="hidden md:flex flex-1 mx-6 max-w-xl" ref={searchRef}>
           <div className="relative w-full">
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search for products..."
               className="w-full border border-gray-400 rounded-full py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-green-600"
             />
             <Search className="absolute top-2.5 left-3 text-gray-500" size={20} />
+            <SearchResults />
           </div>
         </div>
         {/* Desktop Nav */}
@@ -153,13 +184,16 @@ export default function Header() {
       {isOpen && (
         <div className="md:hidden bg-white px-4 pt-4 pb-6 space-y-4 shadow-md border-t border-gray-100">
           {/* Mobile Search */}
-          <div className="relative">
+          <div className="relative" ref={searchRef}>
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search..."
               className="w-full border border-gray-300 rounded-full py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-green-600"
             />
             <Search className="absolute top-2.5 left-3 text-gray-400" size={20} />
+            <SearchResults />
           </div>
           {/* Mobile Links */}
           {navLinks.map((link) => (
