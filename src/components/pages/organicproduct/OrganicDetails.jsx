@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { CheckCircle, Star, Heart, ShoppingCart } from 'lucide-react';
 import useCartStore from '../../../store/cartStore.js';
 import useWishlistStore from '../../../store/wishlistStore.js';
-import AddToCart from '../../AddToCart.jsx';
+import AddToCart from '../../pages/AddToCart.jsx';
 import { useAuth } from '../../../hooks/useAuth.js';
 
 function OrganicDetails() {

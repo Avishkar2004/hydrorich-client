@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import useCartStore from '../store/cartStore.js';
+import useCartStore from '../../store/cartStore.js';
 import { Loader2 } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth.js';
+import { useAuth } from '../../hooks/useAuth.js';
 import { useNavigate } from 'react-router-dom';
 
 const AddToCart = ({ product, variant }) => {
