@@ -20,8 +20,8 @@ const SignUp = () => {
         if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email)) {
             newErrors.email = "Enter a valid email address.";
         }
-        if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(formData.password)) {
-            newErrors.password = "Password must be at least 8 characters and include letters and numbers.";
+        if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/.test(formData.password)) {
+            newErrors.password = "Password must be at least 8 characters and include letters and numbers. Special characters (@$!%*#?&) are allowed. "
         }
         return newErrors;
     };
@@ -79,7 +79,7 @@ const SignUp = () => {
     return (
         <div className="flex items-center justify-center bg-gray-50 px-4">
             <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-md mt-10">
-                <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">Create Your Account</h2>
+                <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">Create Your New Account</h2>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
