@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Menu, X, ShoppingCart, Heart, User, Search } from "lucide-react";
+import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
+
 import Logo from "../assets/Logo.jpg";
 import { useAuth } from "../hooks/useAuth.js";
 import { Link, useNavigate } from "react-router-dom";
@@ -104,14 +106,16 @@ export default function Header() {
           {/* Icons */}
           <div className="flex items-center space-x-4 ml-4">
             <Link to="/wishlist" className="relative text-gray-600 hover:text-green-600 transition">
-              <Heart size={22} />
+              {user && wishlist.length > 0 ? (
+                <AiFillHeart size={22} className="text-pink-500" />
+              ) : (
+                <AiOutlineHeart size={22} />
+              )}
               {user && wishlist.length > 0 && (
                 <span className="absolute -top-2 -right-3 bg-pink-500 text-white text-[10px] rounded-full px-2 py-0.5">
                   {wishlist.length}
                 </span>
               )}
-
-
             </Link>
             <Link to="/cart" className="relative">
               🛒 Cart
@@ -208,11 +212,13 @@ export default function Header() {
           {/* Icons */}
           <div className="flex justify-between px-2">
             <Link to="/wishlist" className="text-gray-600 hover:text-green-600 relative">
-              <Heart />
-              {user && wishlist.length > 0 && (
+              {user && wishlist.length > 0 ? (
                 <span className="absolute -top-2 -right-3 bg-pink-500 text-white text-[10px] rounded-full px-2 py-0.5">
+                  <Heart />
                   {wishlist.length}
                 </span>
+              ) : (
+                <Heart />
               )}
             </Link>
             <Link to="/cart" className="relative">
