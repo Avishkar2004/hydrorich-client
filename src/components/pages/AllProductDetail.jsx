@@ -98,7 +98,6 @@ const AllProductDetail = () => {
                             className="w-full h-auto transition-transform duration-300 group-hover:scale-125"
                         />
                     </div>
-
                     {/* Thumbnails */}
                     <div className="mt-6 grid grid-cols-4 gap-4">
                         {product.images.map((img, idx) => (
@@ -115,7 +114,6 @@ const AllProductDetail = () => {
                         ))}
                     </div>
                 </div>
-
                 {/* RIGHT: Info */}
                 <div className="flex flex-col justify-between space-y-6">
                     <div>
@@ -160,7 +158,6 @@ const AllProductDetail = () => {
                                 })}
                             </div>
                         </div>
-
                         {/* Dosage Info */}
                         {selectedVariant?.dosage && (
                             <div className="mt-10">
