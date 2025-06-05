@@ -8,7 +8,7 @@ import {
 import { useLayoutEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 
-import HomePage from "../components/pages/HomePage.jsx";
+import HomePage from "../components/ui/HomePage.jsx";
 import Header from "../components/Header";
 import Footer from "../components/Footer"; // Make sure this exists
 import AboutUs from "../components/pages/AboutUs";
@@ -44,6 +44,7 @@ import AddProduct from "../components/admin/AddProduct.jsx";
 import ProtectedAdminRoute from "../components/admin/ProtectedAdminRoute.jsx";
 import AdminAllProducts from "../components/admin/AdminAllProducts.jsx";
 import OrderTracking from '../components/pages/OrderTracking';
+import SustainabilityTips from "../components/ui/SustainabilityTips.jsx";
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -60,6 +61,7 @@ const HomeWithExtras = () => (
     <>
         <HomePage />
         <Collection />
+        <SustainabilityTips />
     </>
 );
 

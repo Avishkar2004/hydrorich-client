@@ -37,7 +37,7 @@ export default function Home() {
         </div>
 
         {/* Action Section */}
-        <div className="bg-white/50 backdrop-blur-sm rounded-3xl p-8 shadow-lg">
+        <div className="bg-white/50 backdrop-blur-sm rounded-3xl p-8 shadow-lg mb-16">
           <div className="flex justify-center gap-6 flex-wrap items-center">
             <Link to="/products">
               <button className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white font-medium rounded-full hover:from-green-700 hover:to-green-800 transition duration-300 text-sm shadow-md hover:shadow-lg">
@@ -54,6 +54,51 @@ export default function Home() {
                 <div className="text-green-700 font-semibold text-sm mt-1">Crop's</div>
               </div>
             </Link>
+          </div>
+        </div>
+
+        {/* Statistics Section */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+          <div className="bg-white p-6 rounded-xl shadow-md text-center">
+            <div className="text-3xl font-bold text-green-600 mb-2">500+</div>
+            <div className="text-gray-600">Happy Farmers</div>
+          </div>
+          <div className="bg-white p-6 rounded-xl shadow-md text-center">
+            <div className="text-3xl font-bold text-green-600 mb-2">1000+</div>
+            <div className="text-gray-600">Acres Monitored</div>
+          </div>
+          <div className="bg-white p-6 rounded-xl shadow-md text-center">
+            <div className="text-3xl font-bold text-green-600 mb-2">95%</div>
+            <div className="text-gray-600">Success Rate</div>
+          </div>
+          <div className="bg-white p-6 rounded-xl shadow-md text-center">
+            <div className="text-3xl font-bold text-green-600 mb-2">24/7</div>
+            <div className="text-gray-600">Support</div>
+          </div>
+        </div>
+
+        {/* Testimonials Section */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">What Our Farmers Say</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white p-6 rounded-xl shadow-md">
+              <div className="text-yellow-400 mb-4">★★★★★</div>
+              <p className="text-gray-600 mb-4">"Hydrorich AI has transformed our farming practices. The predictive analytics are spot on!"</p>
+              <div className="font-semibold text-gray-800">- Rajesh Kumar</div>
+              <div className="text-sm text-gray-500">Organic Farmer</div>
+            </div>
+            <div className="bg-white p-6 rounded-xl shadow-md">
+              <div className="text-yellow-400 mb-4">★★★★★</div>
+              <p className="text-gray-600 mb-4">"The smart irrigation system has helped us save water and improve crop yield significantly."</p>
+              <div className="font-semibold text-gray-800">- Priya Sharma</div>
+              <div className="text-sm text-gray-500">Commercial Farmer</div>
+            </div>
+            <div className="bg-white p-6 rounded-xl shadow-md">
+              <div className="text-yellow-400 mb-4">★★★★★</div>
+              <p className="text-gray-600 mb-4">"The AI-powered insights have made farming more efficient and sustainable for us."</p>
+              <div className="font-semibold text-gray-800">- Amit Patel</div>
+              <div className="text-sm text-gray-500">Tech-Savvy Farmer</div>
+            </div>
           </div>
         </div>
       </div>
