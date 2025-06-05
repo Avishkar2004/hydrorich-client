@@ -39,6 +39,7 @@ export const API_ENDPOINTS = {
   },
   orders: `${API_BASE_URL}/api/orders`,
   invoices: `${API_BASE_URL}/api/invoices/:orderId`,
+  contact: `${API_BASE_URL}/api/contact`,
   // Add other endpoints as needed
 };
 
