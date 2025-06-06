@@ -12,6 +12,7 @@ const Contact = () => {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState(null);
+    const [aiResponse, setAiResponse] = useState(null)
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -48,6 +49,7 @@ const Contact = () => {
 
         setIsSubmitting(true);
         setSubmitStatus(null);
+        setAiResponse(null)
 
         try {
             const response = await fetch(API_ENDPOINTS.contact, {
@@ -62,6 +64,7 @@ const Contact = () => {
 
             if (response.ok) {
                 setSubmitStatus('success');
+                setAiResponse(data.aiResponse)
                 setFormData({ name: '', email: '', subject: '', message: '' });
             } else {
                 setSubmitStatus('error');
@@ -203,13 +206,21 @@ const Contact = () => {
                                 {errors.submit}
                             </div>
                         )}
-
                         {submitStatus === 'success' && (
                             <div className="p-3 bg-green-50 text-green-600 rounded-lg text-sm">
                                 Thank you for your message! We'll get back to you soon.
+                                {aiResponse && (
+                                    <div className='p-4 bg-gray-50 rounded-lg'>
+                                        <h3 className="font-medium text-gray-800 mb-2">Initial Response:</h3>
+                                        <div className='prose prose-sm text-gray-800'>
+                                            {aiResponse.split("\n").map((paragragh, index) => (
+                                                <p className='mb-2' key={index}>{paragragh}</p>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
-
                         <button
                             type="submit"
                             disabled={isSubmitting}
