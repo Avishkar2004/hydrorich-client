@@ -234,4 +234,4 @@ function InsecticideDetails() {
     );
 }
 
-export default InsecticideDetails; 
+export default InsecticideDetails;

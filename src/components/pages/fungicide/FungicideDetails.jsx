@@ -234,4 +234,4 @@ function FungicideDetails() {
     );
 }
 
-export default FungicideDetails; 
+export default FungicideDetails;
