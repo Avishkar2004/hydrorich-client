@@ -22,7 +22,7 @@ const AddToCart = ({ product, variant }) => {
             await addToCart(product, variant, 1);
         } catch (err) {
             console.error('Error adding to cart:', err);
-            if (err.message === 'User not authenticated') {
+            if (err.message === 'User not ') {
                 navigate('/login');
             } else {
                 setError(err.message || 'Failed to add item to cart');

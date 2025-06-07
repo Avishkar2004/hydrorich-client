@@ -6,6 +6,7 @@ import useCartStore from '../../../store/cartStore.js';
 import useWishlistStore from '../../../store/wishlistStore.js';
 import AddToCart from '../../pages/AddToCart.jsx';
 import { useAuth } from '../../../hooks/useAuth.js';
+import AddToWishlist from '../AddToWishlist.jsx';
 
 function OrganicDetails() {
     const { id } = useParams();
@@ -223,23 +224,10 @@ function OrganicDetails() {
                         <div className="flex-1">
                             <AddToCart product={product} variant={selectedVariant} />
                         </div>
-                        <button
-                            onClick={handleWishlistToggle}
-                            disabled={addingToWishlist}
-                            className={`flex-1 py-3 px-6 rounded-xl font-semibold text-lg shadow-md transition duration-300 flex items-center justify-center gap-2 ${itemInWishlist
-                                ? "bg-red-500 text-white hover:bg-red-600"
-                                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                                }`}
-                        >
-                            {addingToWishlist ? (
-                                <span className="flex items-center"><span className="animate-spin mr-2">⭕</span> Processing...</span>
-                            ) : (
-                                <>
-                                    <Heart className={itemInWishlist ? "fill-white" : ""} size={20} />
-                                    {itemInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
-                                </>
-                            )}
-                        </button>
+                        <div className="flex-1">
+                            <AddToWishlist product={product} variant={selectedVariant} />
+                        </div>
+
                     </motion.div>
                 </div>
             </div>

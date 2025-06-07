@@ -222,7 +222,7 @@ const AllProductDetail = () => {
                         <button
                             onClick={handleWishlistToggle}
                             disabled={addingToWishlist}
-                            className={`flex-1 py-3 px-6 rounded-xl font-semibold text-lg shadow-md transition duration-300 flex items-center justify-center gap-2 ${itemInWishlist
+                            className={`flex-1 py-2 px-6 rounded-xl font-semibold text-lg shadow-md transition duration-300 flex items-center justify-center gap-2 ${itemInWishlist
                                 ? "bg-red-500 text-white hover:bg-red-600"
                                 : "bg-gray-200 text-gray-800 hover:bg-gray-300"
                                 }`}
