@@ -1,22 +1,19 @@
-import React, { useState, useEffect } from "react"
-import useWishlistStore from "../../store/wishlistStore.js"
+import React, { useState } from "react"
 import { Heart, Loader2 } from "lucide-react"
+import useWishlistStore from "../../store/wishlistStore.js"
 import { useAuth } from "../../hooks/useAuth.js"
 import { useNavigate } from "react-router-dom"
 
 const AddToWishlist = ({ product, variant }) => {
     const { user } = useAuth()
+    const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
+
     const addToWishlist = useWishlistStore((state) => state.addToWishlist)
     const removeFromWishlist = useWishlistStore((state) => state.removeFromWishlist)
-    const wishlistItems = useWishlistStore((state) => state.items)
-    const navigate = useNavigate()
-
-    // Check if product is in wishlist
-    const isInWishlist = wishlistItems?.some(
-        (item) => item.product.id === product.id &&
-            (!variant || item.variant?.id === variant.id)
+    const isInWishlist = useWishlistStore((state) =>
+        state.isInWishlist(product?.id, variant?.id)
     )
 
     const handleWishlist = async () => {
@@ -24,13 +21,18 @@ const AddToWishlist = ({ product, variant }) => {
             navigate("/login")
             return
         }
+        if (!product || !variant) {
+            setError("Product or variant information is missing")
+            return
+        }
         try {
             setLoading(true)
             setError(null)
+
             if (isInWishlist) {
-                await removeFromWishlist(product._id, variant?._id)
+                await removeFromWishlist(product.id, variant.id)
             } else {
-                await addToWishlist(product, variant, 1)
+                await addToWishlist(product, variant)
             }
         } catch (err) {
             console.error("Error updating wishlist:", err)

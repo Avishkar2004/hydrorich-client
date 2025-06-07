@@ -6,7 +6,7 @@ import useCartStore from '../../../store/cartStore.js';
 import useWishlistStore from '../../../store/wishlistStore.js';
 import AddToCart from '../../pages/AddToCart.jsx';
 import { useAuth } from '../../../hooks/useAuth.js';
-import AddToWishlist from '../AddToWishlist.jsx';
+import AddToWishlist from "../AddToWishlist.jsx";
 
 function OrganicDetails() {
     const { id } = useParams();
