@@ -10,7 +10,9 @@
     "resolveJsonModule": true,
     "noEmit": true,
     "target": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"]
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "types": ["react", "react-dom"],
+    "skipLibCheck": true
   },
   "include": ["src"]
 }
