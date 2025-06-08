@@ -45,6 +45,7 @@ export const API_ENDPOINTS = {
     insecticides: `${API_BASE_URL}/api/insecticides`,
     fungicides: `${API_BASE_URL}/api/fungicides`,
   },
+  allProducts: `${API_BASE_URL}/api/products`,
   orders: `${API_BASE_URL}/api/orders`,
   invoices: `${API_BASE_URL}/api/invoices/:orderId`,
   contact: `${API_BASE_URL}/api/contact`,
