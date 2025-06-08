@@ -52,8 +52,8 @@ const AddToWishlist = ({ product, variant }) => {
                 onClick={handleWishlist}
                 disabled={loading}
                 className={`flex items-center justify-center gap-2 ${isInWishlist
-                    ? "bg-red-600 hover:bg-red-700"
-                    : "bg-green-600 hover:bg-green-700"
+                    ? " bg-green-600 hover:bg-green-700"
+                    : "bg-red-600 hover:bg-red-700"
                     } text-white px-6 py-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed`}
             >
                 {loading ? (

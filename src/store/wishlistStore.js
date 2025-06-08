@@ -42,7 +42,6 @@ const useWishlistStore = create(
         try {
           set({ loading: true, error: null });
           const response = await wishlistService.removeItem(wishlistId);
-
           if (response.success) {
             // Get updated wishlist from backend
             const wishlistResponse = await wishlistService.getWishlist();
