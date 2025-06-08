@@ -21,7 +21,7 @@ import OrganicDetails from "../components/pages/organicproduct/OrganicDetails.js
 import CropList from "../components/pages/crop/CropList.jsx";
 import CropOptions from "../components/pages/crop/CropOptions.jsx";
 import SignUp from "../components/pages/SignUp.jsx";
-import Login from "../components/pages/LogIn.jsx";
+import Login from "../components/pages/Login.jsx";
 import Cart from "../components/pages/Cart.jsx";
 import Wishlist from "../components/pages/Wishlist.jsx";
 import Profile from "../components/pages/Profile.jsx";
