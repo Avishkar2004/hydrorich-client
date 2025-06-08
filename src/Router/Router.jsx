@@ -10,7 +10,7 @@ import { useAuth } from "../hooks/useAuth";
 
 import HomePage from "../components/ui/HomePage.jsx";
 import Header from "../components/Header";
-import Footer from "../components/Footer"; // Make sure this exists
+import Footer from "../components/Footer";
 import AboutUs from "../components/pages/AboutUs";
 import Contact from "../components/pages/Contact";
 import Collection from "../components/ui/Collection.jsx";
