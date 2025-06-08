@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ThumbsUp, ArrowDownWideNarrow, ArrowUpWideNarrow } from 'lucide-react';
+import { API_ENDPOINTS } from '../../../config/api.js';
 
 function PgrList() {
     const [pgrProducts, setPgrProducts] = useState([]);
@@ -12,7 +13,7 @@ function PgrList() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch('http://localhost:8080/api/pgr');
+                const res = await fetch(API_ENDPOINTS.products.pgr);
                 const data = await res.json();
                 setPgrProducts(data.products);
                 setFilteredProducts(data.products);

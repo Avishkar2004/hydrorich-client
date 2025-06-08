@@ -6,7 +6,6 @@ import useCartStore from '../../../store/cartStore.js';
 import useWishlistStore from '../../../store/wishlistStore.js';
 import AddToCart from '../../pages/AddToCart.jsx';
 import { useAuth } from '../../../hooks/useAuth.js';
-import AddToWishlist from '../AddToWishlist.jsx';
 
 function MicroNutrientDetails() {
     const { id } = useParams();
@@ -21,7 +20,7 @@ function MicroNutrientDetails() {
     useEffect(() => {
         const fetchProductDetails = async () => {
             try {
-                const res = await fetch(`http://localhost:8080/api/micronutrient/${id}`);
+                const res = await fetch(`http://localhost:8080/api/micronutrients/${id}`);
                 const data = await res.json();
                 setProduct(data.product);
             } catch (err) {

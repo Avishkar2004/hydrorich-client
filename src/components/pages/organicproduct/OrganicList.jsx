@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ThumbsUp, ArrowDownWideNarrow, ArrowUpWideNarrow } from 'lucide-react';
+import { API_ENDPOINTS } from '../../../config/api.js';
 
 function OrganicList() {
     const [organicProducts, setOrganicProducts] = useState([]);
@@ -12,7 +13,7 @@ function OrganicList() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch('http://localhost:8080/api/organic');
+                const res = await fetch(`${API_ENDPOINTS.products.organic}`);
                 const data = await res.json();
                 setOrganicProducts(data.products);
                 setFilteredProducts(data.products);

@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { API_ENDPOINTS } from "../../config/api.js";
 
 const SignUp = () => {
     const navigate = useNavigate()
@@ -33,7 +34,7 @@ const SignUp = () => {
             setErrors(validationErrors);
         } else {
             try {
-                const response = await axios.post("http://localhost:8080/api/auth/signup", formData, {
+                const response = await axios.post(API_ENDPOINTS.auth.signup, formData, {
                     withCredentials: true,
                     headers: {
                         "Content-Type": "application/json"
@@ -66,15 +67,8 @@ const SignUp = () => {
 
 
     const handleGoogleLogin = () => {
-        window.open("http://localhost:8080/api/auth/google", "_self")
+        window.open(API_ENDPOINTS.auth.google, "_self")
     }
-
-    useEffect(() => {
-        axios.get("http://localhost:8080/api/auth/user", { withCredentials: true })
-            .then(res => {
-                // console.log("User", res.data)
-            })
-    }, [])
 
     return (
         <div className="flex items-center justify-center bg-gray-50 px-4">

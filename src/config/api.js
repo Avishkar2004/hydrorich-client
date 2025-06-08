@@ -26,16 +26,24 @@ api.interceptors.response.use(
 
 export const API_ENDPOINTS = {
   auth: {
-    user: "/api/auth/user",
-    login: "/api/auth/login",
-    logout: "/api/auth/logout",
-    google: "/api/auth/google",
+    user: `${API_BASE_URL}/api/auth/user`,
+    login: `${API_BASE_URL}/api/auth/login`,
+    signup: `${API_BASE_URL}/api/auth/signup`,
+    logout: `${API_BASE_URL}/api/auth/logout`,
+    google: `${API_BASE_URL}/api/auth/google`,
   },
   admin: {
     users: "/api/admin/users",
     stats: "/api/admin/stats",
     addProduct: "/api/products/add",
     products: "/api/products",
+  },
+  products: {
+    pgr: `${API_BASE_URL}/api/pgrs`,
+    organic: `${API_BASE_URL}/api/organics`,
+    micronutrient: `${API_BASE_URL}/api/micronutrients`,
+    insecticides: `${API_BASE_URL}/api/insecticides`,
+    fungicides: `${API_BASE_URL}/api/fungicides`,
   },
   orders: `${API_BASE_URL}/api/orders`,
   invoices: `${API_BASE_URL}/api/invoices/:orderId`,

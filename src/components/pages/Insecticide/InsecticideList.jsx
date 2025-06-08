@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ThumbsUp, ArrowDownWideNarrow, ArrowUpWideNarrow } from 'lucide-react';
+import { API_ENDPOINTS } from '../../../config/api.js';
 
 function InsecticideList() {
     const [insecticides, setInsecticides] = useState([]);
@@ -12,7 +13,7 @@ function InsecticideList() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch('http://localhost:8080/api/insecticides');
+                const res = await fetch(`${API_ENDPOINTS.products.insecticides}`);
                 const data = await res.json();
                 setInsecticides(data.products);
                 setFilteredProducts(data.products);

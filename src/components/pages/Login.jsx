@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_ENDPOINTS } from "../../config/api.js";
 const Login = () => {
     const navigate = useNavigate()
     const [formData, setFormData] = useState({ email: "", password: "" });
@@ -29,7 +30,7 @@ const Login = () => {
             setErrors(validationErrors);
         } else {
             try {
-                const response = await axios.post("http://localhost:8080/api/auth/login", formData, {
+                const response = await axios.post(API_ENDPOINTS.auth.login, formData, {
                     withCredentials: true,
                     headers: {
                         "Content-Type": "application/json"
@@ -55,19 +56,8 @@ const Login = () => {
     };
 
     const handleGoogleLogin = () => {
-        window.open('http://localhost:8080/api/auth/google', '_self');
+        window.open(API_ENDPOINTS.auth.google, '_self');
     };
-
-    useEffect(() => {
-        axios.get('http://localhost:8080/api/auth/user', { withCredentials: true })
-            .then(res => {
-                console.log("User", res.data);
-            })
-            .catch(err => {
-                console.log("Error", err);
-            });
-    }, []);
-
 
     return (
         <div className="flex items-center justify-center bg-gray-50 px-4">

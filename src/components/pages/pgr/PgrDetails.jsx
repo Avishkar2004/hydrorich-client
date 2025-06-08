@@ -7,7 +7,7 @@ import useCartStore from "../../../store/cartStore.js";
 import useWishlistStore from "../../../store/wishlistStore.js";
 import AddToCart from "../../pages/AddToCart.jsx";
 import { useAuth } from "../../../hooks/useAuth.js";
-import AddToWishlist from "../AddToWishlist.jsx";
+import { API_ENDPOINTS } from "../../../config/api.js";
 
 const PgrDetails = () => {
   const { id } = useParams();
@@ -22,7 +22,7 @@ const PgrDetails = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get(`http://localhost:8080/api/pgr/${id}`);
+        const res = await axios.get(`http://localhost:8080/api/pgrs/${id}`);
         setProduct(res.data.product);
       } catch (err) {
         console.error("Error fetching product:", err);

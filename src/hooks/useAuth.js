@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { authService } from "../services/authService.js";
 import useCartStore from "../store/cartStore.js";
+import { API_ENDPOINTS } from "../config/api.js";
 
 const useAuthStore = create((set) => ({
   user: null,
@@ -26,7 +27,7 @@ const useAuthStore = create((set) => ({
 
   logout: async () => {
     try {
-      await fetch("http://localhost:8080/api/auth/logout", {
+      await fetch(API_ENDPOINTS.auth.logout, {
         credentials: "include",
       });
       set({ user: null });
