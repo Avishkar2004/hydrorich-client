@@ -148,8 +148,8 @@ const AdminMessenger = () => {
                 >
                   <div
                     className={`max-w-[70%] rounded-lg p-3 ${message.is_admin
-                        ? 'bg-green-600 text-white'
-                        : 'bg-gray-100 text-gray-800'
+                      ? 'bg-green-600 text-white'
+                      : 'bg-gray-100 text-gray-800'
                       }`}
                   >
                     <p className="text-sm font-semibold mb-1">
