@@ -18,41 +18,70 @@ const AdminMessenger = () => {
   const socketRef = useRef(null);
 
   useEffect(() => {
+    if (!user) return;
+
     // Initialize socket connection
-    socketRef.current = io(import.meta.env.VITE_API_URL || 'http://localhost:8080', {
-      withCredentials: true
+    socketRef.current = io(API_ENDPOINTS.socket, {
+      withCredentials: true,
+      auth: {
+        token: user.token
+      }
     });
 
     // Join admin room
-    socketRef.current.emit('joinAdmin');
+    socketRef.current.emit('join_admin_room');
 
     // Listen for new messages
     socketRef.current.on('newMessage', (message) => {
       console.log('New message received:', message);
       if (selectedUser && message.sender_id === selectedUser.id) {
-        setMessages(prev => [...prev, message]);
+        setMessages(prevMessages => {
+          // Check if message already exists
+          if (prevMessages.some(m => m.id === message.id)) {
+            return prevMessages;
+          }
+          return [...prevMessages, message];
+        });
         scrollToBottom();
       }
+      // Refresh users list to show new message sender
+      fetchUsers();
     });
 
-    // Fetch users and messages
+    // Listen for admin room join confirmation
+    socketRef.current.on('admin_room_joined', () => {
+      console.log('Admin room joined successfully');
+    });
+
+    // Listen for errors
+    socketRef.current.on('error', (error) => {
+      console.error('Socket error:', error);
+      setError('Connection error. Please refresh the page.');
+    });
+
+    // Fetch users immediately
     fetchUsers();
 
     return () => {
-      socketRef.current.disconnect();
+      if (socketRef.current) {
+        socketRef.current.off('newMessage');
+        socketRef.current.off('admin_room_joined');
+        socketRef.current.off('error');
+        socketRef.current.disconnect();
+      }
     };
-  }, []);
+  }, [user, selectedUser]);
 
   useEffect(() => {
     if (selectedUser) {
-      fetchMessages();
+      fetchMessages(selectedUser.id);
     }
   }, [selectedUser]);
 
   const fetchUsers = async () => {
     try {
       // First get all messages to find users who have sent messages
-      const messagesResponse = await axios.get(API_ENDPOINTS.messages.list, {
+      const messagesResponse = await axios.get(API_ENDPOINTS.messages.admin, {
         withCredentials: true
       });
 
@@ -91,7 +120,7 @@ const AdminMessenger = () => {
       }
 
       // Filter users who have sent messages and are not admin
-      const usersWithMessages = allUsers.filter(user =>
+      const usersWithMessages = allUsers.filter(user => 
         uniqueUserIds.includes(user.id) && user.role !== 'admin'
       );
 
@@ -105,17 +134,26 @@ const AdminMessenger = () => {
     }
   };
 
-  const fetchMessages = async () => {
-    if (!selectedUser) return;
-
+  const fetchMessages = async (userId) => {
     try {
-      const response = await axios.get(`${API_ENDPOINTS.messages.admin}/${selectedUser.id}`, {
+      const response = await axios.get(`${API_ENDPOINTS.messages.admin}?userId=${userId}`, {
         withCredentials: true
       });
-      setMessages(response.data.data);
+
+      let messagesData = [];
+      if (response.data && Array.isArray(response.data)) {
+        messagesData = response.data;
+      } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
+        messagesData = response.data.data;
+      }
+
+      // Sort messages by timestamp
+      messagesData.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      setMessages(messagesData);
       scrollToBottom();
     } catch (error) {
       console.error('Error fetching messages:', error);
+      setError('Failed to load messages. Please try again.');
     }
   };
 
@@ -127,27 +165,35 @@ const AdminMessenger = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSubmit = async (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !selectedUser) return;
 
     setSending(true);
     try {
-      const response = await axios.post(API_ENDPOINTS.messages.admin.send,
+      const response = await axios.post(
+        API_ENDPOINTS.messages.create,
         {
-          content: newMessage,
-          receiverId: selectedUser.id,
-          senderId: user.id
+          receiver_id: selectedUser.id,
+          content: newMessage.trim()
         },
-        { withCredentials: true }
+        {
+          withCredentials: true
+        }
       );
 
-      // Add the sent message to the local state
-      setMessages(prev => [...prev, response.data.data]);
+      let sentMessage;
+      if (response.data && response.data.data) {
+        sentMessage = response.data.data;
+      } else {
+        sentMessage = response.data;
+      }
+
+      setMessages(prev => [...prev, sentMessage]);
       setNewMessage('');
-      scrollToBottom();
     } catch (error) {
       console.error('Error sending message:', error);
+      setError('Failed to send message. Please try again.');
     } finally {
       setSending(false);
     }
@@ -194,7 +240,10 @@ const AdminMessenger = () => {
             users.map((user) => (
               <div
                 key={user.id}
-                onClick={() => setSelectedUser(user)}
+                onClick={() => {
+                  setSelectedUser(user);
+                  fetchMessages(user.id);
+                }}
                 className={`p-8 cursor-pointer hover:bg-gray-100 transition-colors ${selectedUser?.id === user.id ? 'bg-gray-100 border-l-4 border-green-600' : ''}`}
               >
                 <p className="font-medium text-gray-800">{user.name || 'Unknown User'}</p>
@@ -209,11 +258,9 @@ const AdminMessenger = () => {
       <div className="flex-1 flex flex-col">
         {selectedUser ? (
           <>
-            <div className="p-4 border-b bg-green-50">
-              <h2 className="text-xl font-semibold text-gray-800">
-                Chat with {selectedUser.name}
-              </h2>
-              <p className="text-sm text-gray-600">{selectedUser.email}</p>
+            <div className="p-4 border-b bg-white">
+              <h3 className="text-lg font-semibold text-gray-800">{selectedUser.name || 'Unknown User'}</h3>
+              <p className="text-sm text-gray-500">{selectedUser.email || 'No email available'}</p>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
@@ -237,8 +284,8 @@ const AdminMessenger = () => {
                       <p className="text-sm font-semibold mb-1">
                         {message.sender_id === user.id ? 'You' : selectedUser.name}
                       </p>
-                      <p className="text-sm">{message.message}</p>
-                      <p className="text-xs mt-1 opacity-70">
+                      <p>{message.content || message.message}</p>
+                      <p className="text-xs mt-1 opacity-75">
                         {new Date(message.created_at).toLocaleTimeString()}
                       </p>
                     </div>
@@ -248,15 +295,14 @@ const AdminMessenger = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            <form onSubmit={handleSubmit} className="p-4 border-t bg-white">
+            <form onSubmit={handleSendMessage} className="p-4 border-t bg-white">
               <div className="flex space-x-2">
                 <input
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type your message..."
-                  className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 bg-gray-50"
-                  disabled={sending}
+                  className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
                 <button
                   type="submit"
@@ -277,7 +323,7 @@ const AdminMessenger = () => {
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center text-gray-500">
-            Select a user to start chatting
+            <p>Select a user to start chatting</p>
           </div>
         )}
       </div>

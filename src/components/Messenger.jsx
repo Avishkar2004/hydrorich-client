@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../config/api.js';
-import { Send, Loader2 } from 'lucide-react';
+import { Send, Loader2, LogIn } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth.js';
+import { Link } from 'react-router-dom';
 
 const Messenger = () => {
-  const {user} = useAuth()
+  const { user } = useAuth();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
@@ -15,17 +16,29 @@ const Messenger = () => {
   const socketRef = useRef(null);
 
   useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
     // Initialize socket connection
     socketRef.current = io(import.meta.env.VITE_API_URL || 'http://localhost:8080', {
       withCredentials: true
     });
 
     // Join user's room
-    socketRef.current.emit('join', localStorage.getItem('userId'));
+    socketRef.current.emit('join', user.id);
 
     // Listen for new messages
     socketRef.current.on('newMessage', (message) => {
-      setMessages(prev => [...prev, message]);
+      console.log('New message received:', message);
+      setMessages(prev => {
+        // Check if message already exists
+        if (prev.some(m => m.id === message.id)) {
+          return prev;
+        }
+        return [...prev, message];
+      });
       scrollToBottom();
     });
 
@@ -33,16 +46,29 @@ const Messenger = () => {
     fetchMessages();
 
     return () => {
-      socketRef.current.disconnect();
+      if (socketRef.current) {
+        socketRef.current.off('newMessage');
+        socketRef.current.disconnect();
+      }
     };
-  }, []);
+  }, [user]);
 
   const fetchMessages = async () => {
     try {
       const response = await axios.get(API_ENDPOINTS.messages.list, {
         withCredentials: true
       });
-      setMessages(response.data.data);
+
+      let messagesData = [];
+      if (response.data && Array.isArray(response.data)) {
+        messagesData = response.data;
+      } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
+        messagesData = response.data.data;
+      }
+
+      // Sort messages by timestamp
+      messagesData.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      setMessages(messagesData);
       setLoading(false);
       scrollToBottom();
     } catch (error) {
@@ -66,15 +92,21 @@ const Messenger = () => {
     setSending(true);
     try {
       const response = await axios.post(API_ENDPOINTS.messages.send,
-        { 
-          content: newMessage,
+        {
+          content: newMessage.trim(),
           receiverId: 'admin'
         },
         { withCredentials: true }
       );
-      
-      // Add the sent message to the local state
-      setMessages(prev => [...prev, response.data.data]);
+
+      let sentMessage;
+      if (response.data && response.data.data) {
+        sentMessage = response.data.data;
+      } else {
+        sentMessage = response.data;
+      }
+
+      setMessages(prev => [...prev, sentMessage]);
       setNewMessage('');
       scrollToBottom();
     } catch (error) {
@@ -88,6 +120,34 @@ const Messenger = () => {
     return (
       <div className="flex justify-center items-center h-[600px] bg-white rounded-lg shadow-lg">
         <Loader2 className="w-8 h-8 animate-spin text-green-600" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[600px] bg-white rounded-lg shadow-lg p-8">
+        <div className="text-center">
+          <LogIn className="w-16 h-16 text-green-600 mx-auto mb-4" />
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2">Login Required</h2>
+          <p className="text-gray-600 mb-6">
+            Please login to chat with our admin team. We're here to help!
+          </p>
+          <div className="space-x-4">
+            <Link
+              to="/login"
+              className="inline-block px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
+            >
+              Login
+            </Link>
+            <Link
+              to="/register"
+              className="inline-block px-6 py-3 border border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition duration-200"
+            >
+              Register
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
@@ -111,19 +171,19 @@ const Messenger = () => {
           messages.map((message) => (
             <div
               key={message.id}
-              className={`flex ${message.sender_id === localStorage.getItem('userId') ? 'justify-end' : 'justify-start'}`}
+              className={`flex ${message.sender_id === user.id ? 'justify-end' : 'justify-start'}`}
             >
               <div
                 className={`max-w-[70%] rounded-lg p-3 ${
-                  message.sender_id === localStorage.getItem('userId')
+                  message.sender_id === user.id
                     ? 'bg-green-600 text-white'
                     : 'bg-white text-gray-800 shadow-sm'
                 }`}
               >
                 <p className="text-sm font-semibold mb-1">
-                  {message.sender_id === localStorage.getItem('userId') ? 'Admin' : 'You'}
+                  {message.sender_id === user.id ? 'You' : 'Admin'}
                 </p>
-                <p className="text-sm">{message.message}</p>
+                <p className="text-sm">{message.content || message.message}</p>
                 <p className="text-xs mt-1 opacity-70">
                   {new Date(message.created_at).toLocaleTimeString()}
                 </p>
