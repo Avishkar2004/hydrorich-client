@@ -24,7 +24,7 @@ api.interceptors.response.use(
   }
 );
 
-export const API_ENDPOINTS = {
+const API_ENDPOINTS = {
   auth: {
     user: `${API_BASE_URL}/api/auth/user`,
     login: `${API_BASE_URL}/api/auth/login`,
@@ -49,8 +49,21 @@ export const API_ENDPOINTS = {
   orders: `${API_BASE_URL}/api/orders`,
   invoices: `${API_BASE_URL}/api/invoices/:orderId`,
   contact: `${API_BASE_URL}/api/contact`,
+  messages: {
+    list: `${API_BASE_URL}/api/messages`,
+    send: `${API_BASE_URL}/api/messages/send`,
+    admin: {
+      list: `${API_BASE_URL}/api/messages/admin`,
+      send: `${API_BASE_URL}/api/messages/admin/send`,
+    },
+  },
+  users: {
+    list: "/api/users",
+  },
   // Add other endpoints as needed
 };
+
+export { API_ENDPOINTS };
 
 export const getAuthHeader = () => {
   return {

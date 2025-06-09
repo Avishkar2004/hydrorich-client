@@ -321,6 +321,19 @@ const Dashboard = () => {
                             </svg>
                             Add Product
                         </Link>
+                        <Link
+                            to="/admin/messages"
+                            onClick={() => setActiveView('Admin-Messages')}
+                            className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg ${activeView === 'Admin-Messages'
+                                ? 'bg-blue-50 text-blue-600'
+                                : 'text-gray-600 hover:bg-gray-50'
+                                }`}
+                        >
+                            <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                            Admin Messages
+                        </Link>
                     </div>
                 </nav>
                 <div className="absolute bottom-0 w-64 p-4 border-t bg-gradient-to-r from-blue-50 to-white">

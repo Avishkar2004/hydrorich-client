@@ -45,6 +45,8 @@ import ProtectedAdminRoute from "../components/admin/ProtectedAdminRoute.jsx";
 import AdminAllProducts from "../components/admin/AdminAllProducts.jsx";
 import OrderTracking from '../components/pages/OrderTracking';
 import SustainabilityTips from "../components/ui/SustainabilityTips.jsx";
+import Messenger from "../components/Messenger.jsx";
+import AdminMessenger from "../components/admin/AdminMessenger.jsx";
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -85,6 +87,7 @@ const AppRoutes = () => {
                     <Route path="/admin" element={<Dashboard />} />
                     <Route path="/admin/add-product" element={<AddProduct />} />
                     <Route path="/admin/all-products" element={<AdminAllProducts />} />
+                    <Route path="/admin/messages" element={<AdminMessenger />} />
                 </Route>
 
                 <Route path="/products" element={<AllProducts />} />
@@ -100,6 +103,7 @@ const AppRoutes = () => {
                 <Route path="/orders" element={<Orders />} />
                 <Route path="/order-success" element={<OrderSuccess />} />
                 <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
+                <Route path="/messages" element={<Messenger />} />
 
                 <Route path="/products/:id" element={<AllProductDetail />} />
                 {/* Crops */}
