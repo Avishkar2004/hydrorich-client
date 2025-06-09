@@ -60,6 +60,7 @@ const API_ENDPOINTS = {
   users: {
     list: "/api/users",
   },
+  socket: API_BASE_URL
   // Add other endpoints as needed
 };
 

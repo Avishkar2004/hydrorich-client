@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import axios from 'axios';
-import { API_ENDPOINTS } from '../../config/api';
+import { API_ENDPOINTS } from '../../config/api.js';
 import { Send, Loader2 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -18,7 +18,10 @@ const AdminMessenger = () => {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
     // Initialize socket connection
     socketRef.current = io(API_ENDPOINTS.socket, {
@@ -82,7 +85,10 @@ const AdminMessenger = () => {
     try {
       // First get all messages to find users who have sent messages
       const messagesResponse = await axios.get(API_ENDPOINTS.messages.admin, {
-        withCredentials: true
+        withCredentials: true,
+        headers: {
+          'Authorization': `Bearer ${user.token}`
+        }
       });
 
       // Handle different possible response structures
@@ -109,7 +115,10 @@ const AdminMessenger = () => {
 
       // Fetch all users first
       const allUsersResponse = await axios.get(API_ENDPOINTS.users.list, {
-        withCredentials: true
+        withCredentials: true,
+        headers: {
+          'Authorization': `Bearer ${user.token}`
+        }
       });
 
       let allUsers = [];
@@ -120,7 +129,7 @@ const AdminMessenger = () => {
       }
 
       // Filter users who have sent messages and are not admin
-      const usersWithMessages = allUsers.filter(user => 
+      const usersWithMessages = allUsers.filter(user =>
         uniqueUserIds.includes(user.id) && user.role !== 'admin'
       );
 
@@ -137,7 +146,10 @@ const AdminMessenger = () => {
   const fetchMessages = async (userId) => {
     try {
       const response = await axios.get(`${API_ENDPOINTS.messages.admin}?userId=${userId}`, {
-        withCredentials: true
+        withCredentials: true,
+        headers: {
+          'Authorization': `Bearer ${user.token}`
+        }
       });
 
       let messagesData = [];
@@ -178,7 +190,10 @@ const AdminMessenger = () => {
           content: newMessage.trim()
         },
         {
-          withCredentials: true
+          withCredentials: true,
+          headers: {
+            'Authorization': `Bearer ${user.token}`
+          }
         }
       );
 
@@ -191,6 +206,7 @@ const AdminMessenger = () => {
 
       setMessages(prev => [...prev, sentMessage]);
       setNewMessage('');
+      scrollToBottom();
     } catch (error) {
       console.error('Error sending message:', error);
       setError('Failed to send message. Please try again.');
