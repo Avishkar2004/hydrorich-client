@@ -52,13 +52,15 @@ const API_ENDPOINTS = {
   messages: {
     list: `${API_BASE_URL}/api/messages`,
     send: `${API_BASE_URL}/api/messages/send`,
+    create: `${API_BASE_URL}/api/messages/send`,
     admin: {
       list: `${API_BASE_URL}/api/messages/admin`,
-      send: `${API_BASE_URL}/api/messages/admin/send`,
+      send: `${API_BASE_URL}/api/messages/admin/send`
     },
+    unread: `${API_BASE_URL}/api/messages/unread`
   },
   users: {
-    list: "/api/users",
+    list: `${API_BASE_URL}/api/users`,
   },
   socket: API_BASE_URL
   // Add other endpoints as needed

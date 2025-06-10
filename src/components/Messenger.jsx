@@ -22,15 +22,18 @@ const Messenger = () => {
     }
 
     // Initialize socket connection
-    socketRef.current = io(import.meta.env.VITE_API_URL || 'http://localhost:8080', {
-      withCredentials: true
+    socketRef.current = io(API_ENDPOINTS.socket, {
+      withCredentials: true,
+      auth: {
+        token: user.token
+      }
     });
 
     // Join user's room
     socketRef.current.emit('join', user.id);
 
     // Listen for new messages
-    socketRef.current.on('newMessage', (message) => {
+    socketRef.current.on('new_message', (message) => {
       console.log('New message received:', message);
       setMessages(prev => {
         // Check if message already exists
@@ -47,7 +50,7 @@ const Messenger = () => {
 
     return () => {
       if (socketRef.current) {
-        socketRef.current.off('newMessage');
+        socketRef.current.off('new_message');
         socketRef.current.disconnect();
       }
     };
@@ -55,16 +58,22 @@ const Messenger = () => {
 
   const fetchMessages = async () => {
     try {
+      console.log('Fetching messages...');
       const response = await axios.get(API_ENDPOINTS.messages.list, {
-        withCredentials: true
+        withCredentials: true,
+        headers: {
+          'Authorization': `Bearer ${user.token}`
+        }
       });
 
-      let messagesData = [];
-      if (response.data && Array.isArray(response.data)) {
-        messagesData = response.data;
-      } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
-        messagesData = response.data.data;
+      console.log('Messages response:', response.data);
+
+      if (!response.data || !response.data.success) {
+        throw new Error('Invalid response from server');
       }
+
+      const messagesData = response.data.data || [];
+      console.log('Processed messages:', messagesData);
 
       // Sort messages by timestamp
       messagesData.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
@@ -91,21 +100,28 @@ const Messenger = () => {
 
     setSending(true);
     try {
-      const response = await axios.post(API_ENDPOINTS.messages.send,
+      console.log('Sending message to admin...');
+      const response = await axios.post(
+        API_ENDPOINTS.messages.send,
         {
-          content: newMessage.trim(),
-          receiverId: 'admin'
+          receiver_id: 'admin',
+          content: newMessage.trim()
         },
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: {
+            'Authorization': `Bearer ${user.token}`
+          }
+        }
       );
 
-      let sentMessage;
-      if (response.data && response.data.data) {
-        sentMessage = response.data.data;
-      } else {
-        sentMessage = response.data;
+      console.log('Send message response:', response.data);
+
+      if (!response.data || !response.data.success) {
+        throw new Error('Invalid response from server');
       }
 
+      const sentMessage = response.data.data;
       setMessages(prev => [...prev, sentMessage]);
       setNewMessage('');
       scrollToBottom();
@@ -170,20 +186,19 @@ const Messenger = () => {
         ) : (
           messages.map((message) => (
             <div
-              key={message.id}
+              key={`${message.id}-${message.created_at}`}
               className={`flex ${message.sender_id === user.id ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-[70%] rounded-lg p-3 ${
-                  message.sender_id === user.id
+                className={`max-w-[70%] rounded-lg p-3 ${message.sender_id === user.id
                     ? 'bg-green-600 text-white'
                     : 'bg-white text-gray-800 shadow-sm'
-                }`}
+                  }`}
               >
                 <p className="text-sm font-semibold mb-1">
-                  {message.sender_id === user.id ? 'You' : 'Admin'}
+                  {message.sender_id === user.id ? 'You' : message.sender_name || 'Admin'}
                 </p>
-                <p className="text-sm">{message.content || message.message}</p>
+                <p className="text-sm">{message.content}</p>
                 <p className="text-xs mt-1 opacity-70">
                   {new Date(message.created_at).toLocaleTimeString()}
                 </p>
@@ -202,17 +217,15 @@ const Messenger = () => {
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type your message..."
-            className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 bg-gray-50"
-            disabled={sending}
+            className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           />
           <button
             type="submit"
             disabled={sending || !newMessage.trim()}
-            className={`px-4 py-2 rounded-lg transition duration-200 flex items-center space-x-2 ${
-              sending || !newMessage.trim()
+            className={`px-4 py-2 rounded-lg transition duration-200 flex items-center space-x-2 ${sending || !newMessage.trim()
                 ? 'bg-gray-300 cursor-not-allowed'
                 : 'bg-green-600 hover:bg-green-700 text-white'
-            }`}
+              }`}
           >
             {sending ? (
               <Loader2 className="w-5 h-5 animate-spin" />

@@ -16,6 +16,8 @@ const AdminMessenger = () => {
   const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimeoutRef = useRef(null);
 
   useEffect(() => {
     if (!user) {
@@ -35,11 +37,10 @@ const AdminMessenger = () => {
     socketRef.current.emit('join_admin_room');
 
     // Listen for new messages
-    socketRef.current.on('newMessage', (message) => {
+    socketRef.current.on('new_message', (message) => {
       console.log('New message received:', message);
       if (selectedUser && message.sender_id === selectedUser.id) {
         setMessages(prevMessages => {
-          // Check if message already exists
           if (prevMessages.some(m => m.id === message.id)) {
             return prevMessages;
           }
@@ -49,6 +50,13 @@ const AdminMessenger = () => {
       }
       // Refresh users list to show new message sender
       fetchUsers();
+    });
+
+    // Listen for typing indicators
+    socketRef.current.on('user_typing', (data) => {
+      if (selectedUser && data.user_id === selectedUser.id) {
+        setIsTyping(data.isTyping);
+      }
     });
 
     // Listen for admin room join confirmation
@@ -67,7 +75,8 @@ const AdminMessenger = () => {
 
     return () => {
       if (socketRef.current) {
-        socketRef.current.off('newMessage');
+        socketRef.current.off('new_message');
+        socketRef.current.off('user_typing');
         socketRef.current.off('admin_room_joined');
         socketRef.current.off('error');
         socketRef.current.disconnect();
@@ -77,35 +86,41 @@ const AdminMessenger = () => {
 
   useEffect(() => {
     if (selectedUser) {
+      // Join the chat room with the selected user
+      socketRef.current?.emit('join_chat', selectedUser.id);
       fetchMessages(selectedUser.id);
     }
+    return () => {
+      if (selectedUser) {
+        // Leave the chat room when component unmounts or user changes
+        socketRef.current?.emit('leave_chat', selectedUser.id);
+      }
+    };
   }, [selectedUser]);
 
   const fetchUsers = async () => {
     try {
+      console.log('Fetching messages for admin...');
       // First get all messages to find users who have sent messages
-      const messagesResponse = await axios.get(API_ENDPOINTS.messages.admin, {
+      const messagesResponse = await axios.get(API_ENDPOINTS.messages.admin.list, {
         withCredentials: true,
         headers: {
           'Authorization': `Bearer ${user.token}`
         }
       });
 
-      // Handle different possible response structures
-      let messages = [];
-      if (messagesResponse.data && Array.isArray(messagesResponse.data)) {
-        messages = messagesResponse.data;
-      } else if (messagesResponse.data && messagesResponse.data.data && Array.isArray(messagesResponse.data.data)) {
-        messages = messagesResponse.data.data;
-      } else {
-        console.error('Unexpected messages response structure:', messagesResponse.data);
-        setUsers([]);
-        setLoading(false);
-        return;
+      console.log('Messages response:', messagesResponse.data);
+
+      if (!messagesResponse.data || !messagesResponse.data.success) {
+        throw new Error('Invalid response from server');
       }
+
+      const messages = messagesResponse.data.data || [];
+      console.log('Processed messages:', messages);
 
       // Get unique user IDs from messages
       const uniqueUserIds = [...new Set(messages.map(msg => msg.sender_id))];
+      console.log('Unique user IDs:', uniqueUserIds);
 
       if (uniqueUserIds.length === 0) {
         setUsers([]);
@@ -113,26 +128,29 @@ const AdminMessenger = () => {
         return;
       }
 
-      // Fetch all users first
-      const allUsersResponse = await axios.get(API_ENDPOINTS.users.list, {
-        withCredentials: true,
-        headers: {
-          'Authorization': `Bearer ${user.token}`
-        }
-      });
-
-      let allUsers = [];
-      if (allUsersResponse.data && Array.isArray(allUsersResponse.data)) {
-        allUsers = allUsersResponse.data;
-      } else if (allUsersResponse.data && allUsersResponse.data.data && Array.isArray(allUsersResponse.data.data)) {
-        allUsers = allUsersResponse.data.data;
-      }
-
-      // Filter users who have sent messages and are not admin
-      const usersWithMessages = allUsers.filter(user =>
-        uniqueUserIds.includes(user.id) && user.role !== 'admin'
+      // Fetch user details for each unique user
+      const usersWithMessages = await Promise.all(
+        uniqueUserIds.map(async (userId) => {
+          try {
+            const userResponse = await axios.get(`${API_ENDPOINTS.users.list}/${userId}`, {
+              withCredentials: true,
+              headers: {
+                'Authorization': `Bearer ${user.token}`
+              }
+            });
+            return userResponse.data.data;
+          } catch (error) {
+            console.error(`Error fetching user ${userId}:`, error);
+            return {
+              id: userId,
+              name: user.name || user.displayName?.split(" ")[0],
+              email: user.email || "No email available"
+            };
+          }
+        })
       );
 
+      console.log('Users with messages:', usersWithMessages);
       setUsers(usersWithMessages);
       setLoading(false);
     } catch (error) {
@@ -145,22 +163,22 @@ const AdminMessenger = () => {
 
   const fetchMessages = async (userId) => {
     try {
-      const response = await axios.get(`${API_ENDPOINTS.messages.admin}?userId=${userId}`, {
+      console.log('Fetching messages for user:', userId);
+      const response = await axios.get(`${API_ENDPOINTS.messages.admin.list}?userId=${userId}`, {
         withCredentials: true,
         headers: {
           'Authorization': `Bearer ${user.token}`
         }
       });
 
-      let messagesData = [];
-      if (response.data && Array.isArray(response.data)) {
-        messagesData = response.data;
-      } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
-        messagesData = response.data.data;
+      console.log('Messages response:', response.data);
+
+      if (!response.data || !response.data.success) {
+        throw new Error('Invalid response from server');
       }
 
-      // Sort messages by timestamp
-      messagesData.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      const messagesData = response.data.data || [];
+      console.log('Sorted messages:', messagesData);
       setMessages(messagesData);
       scrollToBottom();
     } catch (error) {
@@ -177,34 +195,45 @@ const AdminMessenger = () => {
     scrollToBottom();
   }, [messages]);
 
+  const handleTyping = () => {
+    if (selectedUser) {
+      socketRef.current?.emit('typing', { receiver_id: selectedUser.id });
+
+      // Clear existing timeout
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+
+      // Set new timeout to stop typing indicator
+      typingTimeoutRef.current = setTimeout(() => {
+        socketRef.current?.emit('stop_typing', { receiver_id: selectedUser.id });
+      }, 2000);
+    }
+  };
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !selectedUser) return;
 
     setSending(true);
     try {
-      const response = await axios.post(
-        API_ENDPOINTS.messages.create,
-        {
-          receiver_id: selectedUser.id,
-          content: newMessage.trim()
-        },
-        {
-          withCredentials: true,
-          headers: {
-            'Authorization': `Bearer ${user.token}`
-          }
-        }
-      );
+      // Emit the message through socket
+      socketRef.current?.emit('send_message', {
+        receiver_id: selectedUser.id,
+        content: newMessage.trim()
+      });
 
-      let sentMessage;
-      if (response.data && response.data.data) {
-        sentMessage = response.data.data;
-      } else {
-        sentMessage = response.data;
-      }
+      // Optimistically add message to UI
+      const optimisticMessage = {
+        id: Date.now(), // Temporary ID
+        sender_id: user.id,
+        receiver_id: selectedUser.id,
+        content: newMessage.trim(),
+        created_at: new Date().toISOString(),
+        sender_name: user.name
+      };
 
-      setMessages(prev => [...prev, sentMessage]);
+      setMessages(prev => [...prev, optimisticMessage]);
       setNewMessage('');
       scrollToBottom();
     } catch (error) {
@@ -243,26 +272,23 @@ const AdminMessenger = () => {
     <div className="flex h-[800px] bg-white rounded-lg shadow-lg">
       {/* Users List */}
       <div className="w-1/4 border-r bg-gray-50">
-        <div className="p-4 border-b bg-green-50">
-          <h2 className="text-xl font-semibold text-gray-800">Users with Messages</h2>
-          <p className="text-sm text-gray-600">Select a user to view conversation</p>
+        <div className="p-4 border-b">
+          <h2 className="text-lg font-semibold text-gray-800">Users</h2>
         </div>
         <div className="overflow-y-auto h-[calc(100%-4rem)]">
           {users.length === 0 ? (
             <div className="p-4 text-center text-gray-500">
-              No users have sent messages yet
+              No users with messages
             </div>
           ) : (
             users.map((user) => (
               <div
                 key={user.id}
-                onClick={() => {
-                  setSelectedUser(user);
-                  fetchMessages(user.id);
-                }}
-                className={`p-8 cursor-pointer hover:bg-gray-100 transition-colors ${selectedUser?.id === user.id ? 'bg-gray-100 border-l-4 border-green-600' : ''}`}
+                onClick={() => setSelectedUser(user)}
+                className={`p-4 cursor-pointer hover:bg-gray-100 transition-colors ${selectedUser?.id === user.id ? 'bg-green-50' : ''
+                  }`}
               >
-                <p className="font-medium text-gray-800">{user.name || 'Unknown User'}</p>
+                <h3 className="font-medium text-gray-800">{user.name || 'Unknown User'}</h3>
                 <p className="text-sm text-gray-500">{user.email || 'No email available'}</p>
               </div>
             ))
@@ -280,13 +306,12 @@ const AdminMessenger = () => {
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-              {messages?.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-gray-500">
-                  <p className="text-lg">No messages yet</p>
-                  <p className="text-sm">Start the conversation</p>
+              {messages.length === 0 ? (
+                <div className="flex items-center justify-center h-full text-gray-500">
+                  <p>No messages yet</p>
                 </div>
               ) : (
-                messages?.map((message) => (
+                messages.map((message) => (
                   <div
                     key={message.id}
                     className={`flex ${message.sender_id === user.id ? 'justify-end' : 'justify-start'}`}
@@ -300,8 +325,8 @@ const AdminMessenger = () => {
                       <p className="text-sm font-semibold mb-1">
                         {message.sender_id === user.id ? 'You' : selectedUser.name}
                       </p>
-                      <p>{message.content || message.message}</p>
-                      <p className="text-xs mt-1 opacity-75">
+                      <p className="text-sm">{message.content}</p>
+                      <p className="text-xs mt-1 opacity-70">
                         {new Date(message.created_at).toLocaleTimeString()}
                       </p>
                     </div>

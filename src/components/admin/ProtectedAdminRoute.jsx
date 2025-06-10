@@ -1,10 +1,38 @@
 import { useEffect, useState } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Link, Navigate, Outlet } from 'react-router-dom';
 import api, { API_ENDPOINTS } from '../../config/api';
+import { FaExclamationTriangle } from 'react-icons/fa';
+
+const ErrorMessage = ({ message }) => (
+  <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+    <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
+      <div className="text-red-500 text-5xl mb-4">
+        <FaExclamationTriangle className="mx-auto" />
+      </div>
+      <h2 className="text-2xl font-semibold text-gray-800 mb-4">Access Denied</h2>
+      <p className="text-gray-600 mb-6">{message}</p>
+      <Link
+        to="/login"
+        className="block w-full bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
+      >
+        Go to Login
+      </Link>
+    </div>
+  </div>
+);
+
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+      <p className="mt-4 text-gray-600">Verifying admin access...</p>
+    </div>
+  </div>
+);
 
 export default function ProtectedAdminRoute() {
-    const [isAdmin, setIsAdmin] = useState(null)
-    const [error, setError] = useState(null)
+    const [isAdmin, setIsAdmin] = useState(null);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const checkAdminStatus = async () => {
@@ -12,7 +40,7 @@ export default function ProtectedAdminRoute() {
                 const response = await api.get(API_ENDPOINTS.auth.user);
                 if (!response.data || typeof response.data !== 'object') {
                     console.error('Invalid response format:', response.data);
-                    setError('Invalid server response');
+                    setError('Invalid server response. Please try again later.');
                     setIsAdmin(false);
                     return;
                 }
@@ -22,17 +50,24 @@ export default function ProtectedAdminRoute() {
 
                 if (!userEmail) {
                     console.error('No email found in user data');
-                    setError('User email not found');
+                    setError('User email not found. Please log in again.');
                     setIsAdmin(false);
                     return;
                 }
 
                 const isUserAdmin = userEmail === 'avishkarkakde2004@gmail.com';
+                if (!isUserAdmin) {
+                    setError('You need admin privileges to access this page. Please log in with admin credentials.');
+                }
                 setIsAdmin(isUserAdmin);
             } catch (error) {
                 console.error('Auth check error:', error);
                 console.error('Error response:', error.response);
-                setError(error.message);
+                if (error.response?.status === 401) {
+                    setError('Your session has expired. Please log in again.');
+                } else {
+                    setError('Failed to verify admin access. Please try again later.');
+                }
                 setIsAdmin(false);
             }
         };
@@ -40,13 +75,13 @@ export default function ProtectedAdminRoute() {
         checkAdminStatus();
     }, []);
 
-
     if (isAdmin === null) {
-        return <div>Loading...</div>
+        return <LoadingSpinner />;
     }
-    if (error) {
-        return <div>Error: {error}</div>
-    }
-    return isAdmin ? <Outlet /> : <Navigate to="/login" replace />
 
+    if (error) {
+        return <ErrorMessage message={error} />;
+    }
+
+    return isAdmin ? <Outlet /> : <Navigate to="/login" replace />;
 }

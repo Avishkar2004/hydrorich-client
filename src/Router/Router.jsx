@@ -47,6 +47,7 @@ import OrderTracking from '../components/pages/OrderTracking';
 import SustainabilityTips from "../components/ui/SustainabilityTips.jsx";
 import Messenger from "../components/Messenger.jsx";
 import AdminMessenger from "../components/admin/AdminMessenger.jsx";
+import MessageBox from "../components/ui/MessageBox.jsx";
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -63,6 +64,7 @@ const HomeWithExtras = () => (
     <>
         <HomePage />
         <Collection />
+        <MessageBox />
         <SustainabilityTips />
     </>
 );
