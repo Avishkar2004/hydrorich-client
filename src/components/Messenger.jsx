@@ -205,8 +205,8 @@ const Messenger = () => {
             >
               <div
                 className={`max-w-[70%] rounded-2xl p-4 ${message.sender_id === user.id
-                    ? 'bg-green-600 text-white shadow-lg'
-                    : 'bg-white text-gray-800 shadow-md'
+                  ? 'bg-green-600 text-white shadow-lg'
+                  : 'bg-white text-gray-800 shadow-md'
                   }`}
               >
                 <div className="flex items-center space-x-2 mb-2">
@@ -244,8 +244,8 @@ const Messenger = () => {
             type="submit"
             disabled={sending || !newMessage.trim()}
             className={`p-3 rounded-full transition duration-200 flex items-center justify-center ${sending || !newMessage.trim()
-                ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
+              ? 'bg-gray-300 cursor-not-allowed'
+              : 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
               }`}
           >
             {sending ? (

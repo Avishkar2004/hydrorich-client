@@ -311,9 +311,8 @@ const AdminMessenger = () => {
                   setSelectedUser(user);
                   fetchMessages(user.id);
                 }}
-                className={`p-4 cursor-pointer transition-colors ${
-                  selectedUser?.id === user.id ? 'bg-green-50 border-l-4 border-green-600' : 'hover:bg-gray-100'
-                }`}
+                className={`p-4 cursor-pointer transition-colors ${selectedUser?.id === user.id ? 'bg-green-50 border-l-4 border-green-600' : 'hover:bg-gray-100'
+                  }`}
               >
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
@@ -362,16 +361,14 @@ const AdminMessenger = () => {
                     className={`flex ${message.sender_id === user.id ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
-                      className={`max-w-[70%] rounded-2xl p-4 ${
-                        message.sender_id === user.id
+                      className={`max-w-[70%] rounded-2xl p-4 ${message.sender_id === user.id
                           ? 'bg-green-600 text-white shadow-lg'
                           : 'bg-white text-gray-800 shadow-md'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center space-x-2 mb-2">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          message.sender_id === user.id ? 'bg-green-500' : 'bg-gray-200'
-                        }`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${message.sender_id === user.id ? 'bg-green-500' : 'bg-gray-200'
+                          }`}>
                           <User className={`w-4 h-4 ${message.sender_id === user.id ? 'text-white' : 'text-gray-600'}`} />
                         </div>
                         <p className="text-sm font-semibold">
@@ -402,11 +399,10 @@ const AdminMessenger = () => {
                 <button
                   type="submit"
                   disabled={sending || !newMessage.trim()}
-                  className={`p-3 rounded-full transition duration-200 flex items-center justify-center ${
-                    sending || !newMessage.trim()
+                  className={`p-3 rounded-full transition duration-200 flex items-center justify-center ${sending || !newMessage.trim()
                       ? 'bg-gray-300 cursor-not-allowed'
                       : 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
-                  }`}
+                    }`}
                 >
                   {sending ? (
                     <Loader2 className="w-6 h-6 animate-spin" />
