@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../../config/api.js';
-import { Send, Loader2 } from 'lucide-react';
+import { Send, Loader2, MessageCircle, Clock, User, Search } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
 const AdminMessenger = () => {
@@ -217,25 +217,39 @@ const AdminMessenger = () => {
 
     setSending(true);
     try {
+      console.log('Sending message to user:', selectedUser.id);
+      const response = await axios.post(
+        API_ENDPOINTS.messages.admin.send,
+        {
+          receiver_id: selectedUser.id,
+          content: newMessage.trim()
+        },
+        {
+          withCredentials: true,
+          headers: {
+            'Authorization': `Bearer ${user.token}`
+          }
+        }
+      );
+
+      console.log('Send message response:', response.data);
+
+      if (!response.data || !response.data.success) {
+        throw new Error('Invalid response from server');
+      }
+
+      const sentMessage = response.data.data;
+      setMessages(prev => [...prev, sentMessage]);
+      setNewMessage('');
+      scrollToBottom();
+
       // Emit the message through socket
       socketRef.current?.emit('send_message', {
         receiver_id: selectedUser.id,
-        content: newMessage.trim()
-      });
-
-      // Optimistically add message to UI
-      const optimisticMessage = {
-        id: Date.now(), // Temporary ID
-        sender_id: user.id,
-        receiver_id: selectedUser.id,
         content: newMessage.trim(),
-        created_at: new Date().toISOString(),
+        sender_id: user.id,
         sender_name: user.name
-      };
-
-      setMessages(prev => [...prev, optimisticMessage]);
-      setNewMessage('');
-      scrollToBottom();
+      });
     } catch (error) {
       console.error('Error sending message:', error);
       setError('Failed to send message. Please try again.');
@@ -269,27 +283,47 @@ const AdminMessenger = () => {
   }
 
   return (
-    <div className="flex h-[800px] bg-white rounded-lg shadow-lg">
+    <div className="flex h-[800px] bg-white rounded-2xl shadow-xl overflow-hidden">
       {/* Users List */}
       <div className="w-1/4 border-r bg-gray-50">
-        <div className="p-4 border-b">
-          <h2 className="text-lg font-semibold text-gray-800">Users</h2>
+        <div className="p-6 bg-gradient-to-r from-green-600 to-green-700 text-white">
+          <h2 className="text-xl font-bold mb-2">Support Inbox</h2>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search users..."
+              className="w-full p-2 pl-8 bg-white/20 rounded-lg text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50"
+            />
+            <Search className="w-4 h-4 absolute left-2 top-3 text-white/70" />
+          </div>
         </div>
-        <div className="overflow-y-auto h-[calc(100%-4rem)]">
+        <div className="overflow-y-auto h-[calc(100%-8rem)]">
           {users.length === 0 ? (
-            <div className="p-4 text-center text-gray-500">
-              No users with messages
+            <div className="p-6 text-center text-gray-500">
+              <MessageCircle className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+              <p>No active conversations</p>
             </div>
           ) : (
             users.map((user) => (
               <div
                 key={user.id}
-                onClick={() => setSelectedUser(user)}
-                className={`p-4 cursor-pointer hover:bg-gray-100 transition-colors ${selectedUser?.id === user.id ? 'bg-green-50' : ''
-                  }`}
+                onClick={() => {
+                  setSelectedUser(user);
+                  fetchMessages(user.id);
+                }}
+                className={`p-4 cursor-pointer transition-colors ${
+                  selectedUser?.id === user.id ? 'bg-green-50 border-l-4 border-green-600' : 'hover:bg-gray-100'
+                }`}
               >
-                <h3 className="font-medium text-gray-800">{user.name || 'Unknown User'}</h3>
-                <p className="text-sm text-gray-500">{user.email || 'No email available'}</p>
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                    <User className="w-5 h-5 text-gray-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-800">{user.name || 'Unknown User'}</h3>
+                    <p className="text-sm text-gray-500">{user.email || 'No email available'}</p>
+                  </div>
+                </div>
               </div>
             ))
           )}
@@ -300,33 +334,53 @@ const AdminMessenger = () => {
       <div className="flex-1 flex flex-col">
         {selectedUser ? (
           <>
-            <div className="p-4 border-b bg-white">
-              <h3 className="text-lg font-semibold text-gray-800">{selectedUser.name || 'Unknown User'}</h3>
-              <p className="text-sm text-gray-500">{selectedUser.email || 'No email available'}</p>
+            <div className="p-6 bg-white border-b">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                  <User className="w-6 h-6 text-gray-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800">{selectedUser.name || 'Unknown User'}</h3>
+                  <p className="text-sm text-gray-500">{selectedUser.email || 'No email available'}</p>
+                </div>
+              </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50">
               {messages.length === 0 ? (
                 <div className="flex items-center justify-center h-full text-gray-500">
-                  <p>No messages yet</p>
+                  <div className="text-center">
+                    <MessageCircle className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                    <p className="text-xl font-semibold mb-2">No messages yet</p>
+                    <p className="text-sm text-gray-400">Start the conversation</p>
+                  </div>
                 </div>
               ) : (
                 messages.map((message) => (
                   <div
-                    key={message.id}
+                    key={`${message.id}-${message.created_at}`}
                     className={`flex ${message.sender_id === user.id ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
-                      className={`max-w-[70%] rounded-lg p-3 ${message.sender_id === user.id
-                        ? 'bg-green-600 text-white'
-                        : 'bg-white text-gray-800 shadow-sm'
-                        }`}
+                      className={`max-w-[70%] rounded-2xl p-4 ${
+                        message.sender_id === user.id
+                          ? 'bg-green-600 text-white shadow-lg'
+                          : 'bg-white text-gray-800 shadow-md'
+                      }`}
                     >
-                      <p className="text-sm font-semibold mb-1">
-                        {message.sender_id === user.id ? 'You' : selectedUser.name}
-                      </p>
-                      <p className="text-sm">{message.content}</p>
-                      <p className="text-xs mt-1 opacity-70">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          message.sender_id === user.id ? 'bg-green-500' : 'bg-gray-200'
+                        }`}>
+                          <User className={`w-4 h-4 ${message.sender_id === user.id ? 'text-white' : 'text-gray-600'}`} />
+                        </div>
+                        <p className="text-sm font-semibold">
+                          {message.sender_id === user.id ? 'You' : message.sender_name || 'User'}
+                        </p>
+                      </div>
+                      <p className="text-sm mb-2">{message.content}</p>
+                      <p className="text-xs opacity-70 flex items-center">
+                        <Clock className="w-3 h-3 mr-1" />
                         {new Date(message.created_at).toLocaleTimeString()}
                       </p>
                     </div>
@@ -336,27 +390,28 @@ const AdminMessenger = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            <form onSubmit={handleSendMessage} className="p-4 border-t bg-white">
-              <div className="flex space-x-2">
+            <form onSubmit={handleSendMessage} className="p-4 bg-white border-t">
+              <div className="flex space-x-3">
                 <input
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type your message..."
-                  className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="flex-1 p-3 border-2 border-gray-200 rounded-full focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition duration-200"
                 />
                 <button
                   type="submit"
                   disabled={sending || !newMessage.trim()}
-                  className={`px-4 py-2 rounded-lg transition duration-200 flex items-center space-x-2 ${sending || !newMessage.trim()
-                    ? 'bg-gray-300 cursor-not-allowed'
-                    : 'bg-green-600 hover:bg-green-700 text-white'
-                    }`}
+                  className={`p-3 rounded-full transition duration-200 flex items-center justify-center ${
+                    sending || !newMessage.trim()
+                      ? 'bg-gray-300 cursor-not-allowed'
+                      : 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
+                  }`}
                 >
                   {sending ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <Loader2 className="w-6 h-6 animate-spin" />
                   ) : (
-                    <Send className="w-5 h-5" />
+                    <Send className="w-6 h-6" />
                   )}
                 </button>
               </div>
@@ -364,7 +419,11 @@ const AdminMessenger = () => {
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center text-gray-500">
-            <p>Select a user to start chatting</p>
+            <div className="text-center">
+              <MessageCircle className="w-20 h-20 mx-auto mb-4 text-gray-400" />
+              <p className="text-xl font-semibold mb-2">Select a user to start chatting</p>
+              <p className="text-sm text-gray-400">Choose from the list on the left</p>
+            </div>
           </div>
         )}
       </div>
