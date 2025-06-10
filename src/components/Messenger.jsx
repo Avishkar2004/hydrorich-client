@@ -191,12 +191,12 @@ const Messenger = () => {
             >
               <div
                 className={`max-w-[70%] rounded-lg p-3 ${message.sender_id === user.id
-                    ? 'bg-green-600 text-white'
-                    : 'bg-white text-gray-800 shadow-sm'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-white text-gray-800 shadow-sm'
                   }`}
               >
                 <p className="text-sm font-semibold mb-1">
-                  {message.sender_id === user.id ? 'You' : message.sender_name || 'Admin'}
+                  {message.sender_id === user.id ? user.name || user.displayName?.split(" ")[0] : message.sender_name || 'Admin'}
                 </p>
                 <p className="text-sm">{message.content}</p>
                 <p className="text-xs mt-1 opacity-70">
@@ -223,8 +223,8 @@ const Messenger = () => {
             type="submit"
             disabled={sending || !newMessage.trim()}
             className={`px-4 py-2 rounded-lg transition duration-200 flex items-center space-x-2 ${sending || !newMessage.trim()
-                ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-green-600 hover:bg-green-700 text-white'
+              ? 'bg-gray-300 cursor-not-allowed'
+              : 'bg-green-600 hover:bg-green-700 text-white'
               }`}
           >
             {sending ? (
