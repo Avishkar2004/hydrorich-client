@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../../config/api.js';
 import { Send, Loader2, MessageCircle, Clock, User, Search } from 'lucide-react';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth.js';
 
 const AdminMessenger = () => {
   const { user } = useAuth();
@@ -100,63 +100,40 @@ const AdminMessenger = () => {
 
   const fetchUsers = async () => {
     try {
-      console.log('Fetching messages for admin...');
-      // First get all messages to find users who have sent messages
-      const messagesResponse = await axios.get(API_ENDPOINTS.messages.admin.list, {
+      setLoading(true);
+      const response = await axios.get(API_ENDPOINTS.messages.admin.list, {
         withCredentials: true,
         headers: {
           'Authorization': `Bearer ${user.token}`
         }
       });
 
-      console.log('Messages response:', messagesResponse.data);
-
-      if (!messagesResponse.data || !messagesResponse.data.success) {
+      if (!response.data || !response.data.success) {
         throw new Error('Invalid response from server');
       }
 
-      const messages = messagesResponse.data.data || [];
-      console.log('Processed messages:', messages);
+      const messages = response.data.data || [];
 
-      // Get unique user IDs from messages
-      const uniqueUserIds = [...new Set(messages.map(msg => msg.sender_id))];
-      console.log('Unique user IDs:', uniqueUserIds);
+      // Get unique users from messages
+      const uniqueUsers = messages.reduce((acc, message) => {
+        const userId = message.sender_id;
+        if (!acc[userId]) {
+          acc[userId] = {
+            id: userId,
+            name: message.sender_name,
+            email: message.sender_email || 'No email available',
+            lastMessage: message.content,
+            lastMessageTime: message.created_at
+          };
+        }
+        return acc;
+      }, {});
 
-      if (uniqueUserIds.length === 0) {
-        setUsers([]);
-        setLoading(false);
-        return;
-      }
-
-      // Fetch user details for each unique user
-      const usersWithMessages = await Promise.all(
-        uniqueUserIds.map(async (userId) => {
-          try {
-            const userResponse = await axios.get(`${API_ENDPOINTS.users.list}/${userId}`, {
-              withCredentials: true,
-              headers: {
-                'Authorization': `Bearer ${user.token}`
-              }
-            });
-            return userResponse.data.data;
-          } catch (error) {
-            console.error(`Error fetching user ${userId}:`, error);
-            return {
-              id: userId,
-              name: user.name || user.displayName?.split(" ")[0],
-              email: user.email || "No email available"
-            };
-          }
-        })
-      );
-
-      console.log('Users with messages:', usersWithMessages);
-      setUsers(usersWithMessages);
-      setLoading(false);
+      setUsers(Object.values(uniqueUsers));
     } catch (error) {
       console.error('Error fetching users:', error);
-      setError('Failed to load users. Please try again later.');
-      setUsers([]);
+      setError('Failed to load users');
+    } finally {
       setLoading(false);
     }
   };
@@ -311,16 +288,24 @@ const AdminMessenger = () => {
                   setSelectedUser(user);
                   fetchMessages(user.id);
                 }}
-                className={`p-4 cursor-pointer transition-colors ${selectedUser?.id === user.id ? 'bg-green-50 border-l-4 border-green-600' : 'hover:bg-gray-100'
-                  }`}
+                className={`p-4 cursor-pointer transition-colors ${selectedUser?.id === user.id ? 'bg-green-50 border-l-4 border-green-600' : 'hover:bg-gray-100'}`}
               >
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
                     <User className="w-5 h-5 text-gray-600" />
                   </div>
-                  <div>
-                    <h3 className="font-medium text-gray-800">{user.name || 'Unknown User'}</h3>
-                    <p className="text-sm text-gray-500">{user.email || 'No email available'}</p>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-gray-800 truncate">{user.name}</h3>
+                    <p className="text-sm text-gray-500 truncate">{user.email}</p>
+                    {/* <p className="text-sm text-gray-500 truncate">{user.lastMessage}</p> */}
+                    <div className="flex items-center mt-1">
+                      <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-800">
+                        Customer
+                      </span>
+                      <span className="text-xs text-gray-500 ml-2">
+                        {new Date(user.lastMessageTime).toLocaleTimeString()}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -339,8 +324,17 @@ const AdminMessenger = () => {
                   <User className="w-6 h-6 text-gray-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800">{selectedUser.name || 'Unknown User'}</h3>
-                  <p className="text-sm text-gray-500">{selectedUser.email || 'No email available'}</p>
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {selectedUser.name || 'Unknown User'}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    {selectedUser.email || 'No email available'}
+                  </p>
+                  <div className="flex items-center mt-1">
+                    <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-800">
+                      Customer
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -372,7 +366,7 @@ const AdminMessenger = () => {
                           <User className={`w-4 h-4 ${message.sender_id === user.id ? 'text-white' : 'text-gray-600'}`} />
                         </div>
                         <p className="text-sm font-semibold">
-                          {message.sender_id === user.id ? 'You' : message.sender_name || 'User'}
+                          {message.sender_id === user.id ? 'You' : message.sender_name}
                         </p>
                       </div>
                       <p className="text-sm mb-2">{message.content}</p>
@@ -387,31 +381,28 @@ const AdminMessenger = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            <form onSubmit={handleSendMessage} className="p-4 bg-white border-t">
-              <div className="flex space-x-3">
+            <div className="p-4 bg-white border-t">
+              <form onSubmit={handleSendMessage} className="flex items-center space-x-4">
                 <input
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type your message..."
-                  className="flex-1 p-3 border-2 border-gray-200 rounded-full focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition duration-200"
+                  className="flex-1 p-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
                 <button
                   type="submit"
-                  disabled={sending || !newMessage.trim()}
-                  className={`p-3 rounded-full transition duration-200 flex items-center justify-center ${sending || !newMessage.trim()
-                    ? 'bg-gray-300 cursor-not-allowed'
-                    : 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
-                    }`}
+                  disabled={!newMessage.trim() || sending}
+                  className="p-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {sending ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
-                    <Send className="w-6 h-6" />
+                    <Send className="w-5 h-5" />
                   )}
                 </button>
-              </div>
-            </form>
+              </form>
+            </div>
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center text-gray-500">

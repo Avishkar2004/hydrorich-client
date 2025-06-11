@@ -10,8 +10,7 @@ export default function Home() {
         {/* Hero Section */}
         <div className="text-center mb-16">
           <h1 className="text-5xl sm:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-800 leading-tight mb-6">
-            Hydrorich AI 🌿
-          </h1>
+            Hydrorich: AI-Powered Smart Farming for a Greener Future 🌿          </h1>
           <p className="text-gray-700 text-lg sm:text-xl mb-8 max-w-3xl mx-auto">
             Revolutionizing agriculture with AI-powered solutions. Experience the future of smart farming with Hydrorich — where artificial intelligence meets organic excellence.
           </p>

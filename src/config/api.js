@@ -25,6 +25,7 @@ api.interceptors.response.use(
 );
 
 const API_ENDPOINTS = {
+  BASE_URL: API_BASE_URL,
   auth: {
     user: `${API_BASE_URL}/api/auth/user`,
     login: `${API_BASE_URL}/api/auth/login`,
