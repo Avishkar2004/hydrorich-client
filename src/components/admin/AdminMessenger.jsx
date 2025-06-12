@@ -34,7 +34,7 @@ const AdminMessenger = () => {
     });
 
     // Join admin room
-    socketRef.current.emit('join_admin_room');
+    socketRef.current.emit('joinAdmin');
 
     // Listen for new messages
     socketRef.current.on('new_message', (message) => {
@@ -82,7 +82,7 @@ const AdminMessenger = () => {
         socketRef.current.disconnect();
       }
     };
-  }, [user, selectedUser]);
+  }, [user]);
 
   useEffect(() => {
     if (selectedUser) {
@@ -223,9 +223,7 @@ const AdminMessenger = () => {
       // Emit the message through socket
       socketRef.current?.emit('send_message', {
         receiver_id: selectedUser.id,
-        content: newMessage.trim(),
-        sender_id: user.id,
-        sender_name: user.name
+        content: newMessage.trim()
       });
     } catch (error) {
       console.error('Error sending message:', error);
