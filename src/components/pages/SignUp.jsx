@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify"
 import { API_ENDPOINTS } from "../../config/api.js"
 const SignUp = () => {
     const navigate = useNavigate()
@@ -42,6 +43,16 @@ const SignUp = () => {
 
                 if (response.data.success) {
                     alert("Account created successfully!");
+                    if (formData.email === "avishkarkakde2004@gmail.com") {
+                        toast.success("Welcome Admin!", {
+                            position: "top-center",
+                            autoClose: 3000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                        });
+                    }
                     // Optionally redirect or reset form:
                     navigate("/")
                 }
@@ -66,6 +77,14 @@ const SignUp = () => {
 
 
     const handleGoogleLogin = () => {
+        toast.info('Redirecting to Google login...', {
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+        });
         window.open(API_ENDPOINTS.auth.google, "_self")
     }
 

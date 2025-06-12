@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../config/api.js";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const Login = () => {
     const navigate = useNavigate()
     const [formData, setFormData] = useState({ email: "", password: "" });
@@ -37,6 +40,31 @@ const Login = () => {
                     }
                 })
                 if (response.data.success) {
+                    console.log("response", response.data)
+                    // Show welcome toast for admin
+                    if (response.data.user?.role === 'admin') {
+                        toast.success('Welcome Admin! 👋', {
+                            position: "top-center",
+                            autoClose: 3000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            theme: "colored",
+                            style: {
+                                background: 'linear-gradient(to right, #00b09b, #96c93d)',
+                                color: 'white',
+                                fontSize: '16px',
+                                fontWeight: 'bold',
+                                padding: '16px',
+                                borderRadius: '8px',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                            },
+                            progressStyle: {
+                                background: 'rgba(255,255,255,0.3)'
+                            }
+                        });
+                    }
                     // Refresh the page to update the auth state
                     window.location.href = "/";
                 }
@@ -44,23 +72,77 @@ const Login = () => {
                 if (error.message) {
                     const { data } = error.response
                     if (data.message) {
-                        alert(data.message)
+                        toast.error(data.message, {
+                            position: "top-center",
+                            theme: "colored",
+                            style: {
+                                background: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+                                color: 'white',
+                                fontSize: '16px',
+                                fontWeight: 'bold',
+                                padding: '16px',
+                                borderRadius: '8px',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                            }
+                        });
                     }
                 } else {
                     console.error("Login error:", error)
-                    alert("Something went wrong")
+                    toast.error("Something went wrong", {
+                        position: "top-center",
+                        theme: "colored",
+                        style: {
+                            background: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+                            color: 'white',
+                            fontSize: '16px',
+                            fontWeight: 'bold',
+                            padding: '16px',
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                        }
+                    });
                 }
-
             }
         }
     };
 
     const handleGoogleLogin = () => {
+        toast.info('Redirecting to Google login... 🔄', {
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+            style: {
+                background: 'linear-gradient(to right, #2193b0, #6dd5ed)',
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: 'bold',
+                padding: '16px',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+            }
+        });
         window.open(API_ENDPOINTS.auth.google, '_self');
     };
 
     return (
         <div className="flex items-center justify-center bg-gray-50 px-4">
+            <ToastContainer
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+                style={{ zIndex: 9999 }}
+            />
             <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-md mt-10">
                 <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">Log In to Your Account</h2>
 
