@@ -21,8 +21,8 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, loading, logout } = useAuth()
   const navigate = useNavigate()
-  const { cart, clearCart } = useCartStores()
-  const { wishlist, clearWishlist } = useWishlistStore()
+  const { cart, clearCart, syncCart } = useCartStores()
+  const { wishlist, clearWishlist, syncWishlist } = useWishlistStore()
   const { searchQuery, setSearchQuery, searchProducts, clearSearch } = useSearchStore()
   const searchRef = useRef(null)
   const navLinks = ["Products", "About Us", "Contact"];
@@ -39,6 +39,14 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [clearSearch]);
 
+  // Sync cart and wishlist when user logs in
+  useEffect(() => {
+    if (user) {
+      syncCart()
+      syncWishlist()
+    }
+  }, [user, syncCart, syncWishlist])
+
   // Debounced search
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -49,8 +57,6 @@ export default function Header() {
 
     return () => clearTimeout(timer);
   }, [searchQuery, searchProducts]);
-
-
 
   const handleLogout = async () => {
     try {

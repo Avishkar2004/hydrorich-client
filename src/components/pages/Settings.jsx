@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth.js';
 import {
     User,
@@ -19,6 +19,7 @@ import {
     AlertTriangle
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { API_ENDPOINTS, getAuthHeader } from '../../config/api.js';
 
 const Settings = () => {
     const { user, loading, logout } = useAuth();
@@ -27,6 +28,9 @@ const Settings = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+    const [latestOrder, setLatestOrder] = useState(null);
+    const [loadingOrders, setLoadingOrders] = useState(true);
+
 
     const [formData, setFormData] = useState({
         name: user?.name || '',
@@ -37,6 +41,63 @@ const Settings = () => {
         newPassword: '',
         confirmPassword: '',
     });
+
+    useEffect(() => {
+        const fetchLatestOrder = async () => {
+            if (!user) return;
+
+            try {
+                const response = await fetch(API_ENDPOINTS.orders, {
+                    headers: getAuthHeader(),
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch orders');
+                }
+
+                const data = await response.json();
+                if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+                    const sortedOrders = data.data.sort((a, b) =>
+                        new Date(b.created_at) - new Date(a.created_at)
+                    );
+                    setLatestOrder(sortedOrders[0]);
+                }
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+            } finally {
+                setLoadingOrders(false);
+            }
+        };
+
+        fetchLatestOrder();
+    }, [user]);
+
+    useEffect(() => {
+        const fetchLatestOrder = async () => {
+            if (!user) return
+
+            try {
+                const response = await fetch(API_ENDPOINTS.orders, {
+                    headers: getAuthHeader(),
+                    credentials: 'include'
+                })
+                if (!response.ok) {
+                    throw new Error('Failed to fetch orders')
+                }
+                const data = await response.json()
+                if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+                    const sortedOrders = data.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                    setLatestOrder(sortedOrders[0])
+                }
+            } catch (error) {
+                console.error('Error fetching orders:', error)
+            } finally {
+                setLoadingOrders(false)
+            }
+        }
+        fetchLatestOrder()
+    }, [user])
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -187,11 +248,16 @@ const Settings = () => {
                                             <input
                                                 type="tel"
                                                 name="phone"
-                                                value={formData.phone}
+                                                value={latestOrder?.shipping_address?.phone || formData.phone}
                                                 onChange={handleInputChange}
                                                 className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
                                                 placeholder="Your phone number"
                                             />
+                                            {latestOrder?.shipping_address?.phone && (
+                                                <p className='mt-1 text-sm text-gray-500'>
+                                                    Last used in your most recent order
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="flex justify-end">
@@ -297,16 +363,6 @@ const Settings = () => {
                                         </div>
                                         <label className="relative inline-flex items-center cursor-pointer">
                                             <input type="checkbox" className="sr-only peer" defaultChecked />
-                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-                                        </label>
-                                    </div>
-                                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                                        <div>
-                                            <h3 className="font-medium text-gray-800">SMS Notifications</h3>
-                                            <p className="text-sm text-gray-600">Get order updates via SMS</p>
-                                        </div>
-                                        <label className="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" className="sr-only peer" />
                                             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
                                         </label>
                                     </div>
