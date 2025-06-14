@@ -31,6 +31,7 @@ const API_ENDPOINTS = {
     login: `${API_BASE_URL}/api/auth/login`,
     signup: `${API_BASE_URL}/api/auth/signup`,
     logout: `${API_BASE_URL}/api/auth/logout`,
+    changePasseword: `${API_BASE_URL}/api/auth/user/change-password`,
     google: `${API_BASE_URL}/api/auth/google`,
   },
   admin: {

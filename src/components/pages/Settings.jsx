@@ -30,6 +30,8 @@ const Settings = () => {
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
     const [latestOrder, setLatestOrder] = useState(null);
     const [loadingOrders, setLoadingOrders] = useState(true);
+    const [passwordError, setPasswordError] = useState("")
+    const [passwordSuccess, setPasswordSuccess] = useState("")
 
 
     const [formData, setFormData] = useState({
@@ -73,31 +75,6 @@ const Settings = () => {
         fetchLatestOrder();
     }, [user]);
 
-    useEffect(() => {
-        const fetchLatestOrder = async () => {
-            if (!user) return
-
-            try {
-                const response = await fetch(API_ENDPOINTS.orders, {
-                    headers: getAuthHeader(),
-                    credentials: 'include'
-                })
-                if (!response.ok) {
-                    throw new Error('Failed to fetch orders')
-                }
-                const data = await response.json()
-                if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-                    const sortedOrders = data.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-                    setLatestOrder(sortedOrders[0])
-                }
-            } catch (error) {
-                console.error('Error fetching orders:', error)
-            } finally {
-                setLoadingOrders(false)
-            }
-        }
-        fetchLatestOrder()
-    }, [user])
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -105,6 +82,116 @@ const Settings = () => {
             ...prev,
             [name]: value
         }));
+    };
+
+    const handlePasswordChange = async (e) => {
+        e.preventDefault()
+        setPasswordError("")
+        setPasswordSuccess("")
+        setIsLoading(true)
+
+        // Validate passwords
+        if (formData.newPassword.length < 8) {
+            setPasswordError("New password must be at least 8 characters long")
+            setIsLoading(false)
+            return
+        }
+
+        if (formData.newPassword !== formData.confirmPassword) {
+            setPasswordError("New passwords do not match")
+            setIsLoading(false)
+            return
+        }
+
+
+        try {
+            const response = await fetch(`${API_ENDPOINTS.auth.user}/change-password`, {
+                method: "POST",
+                headers: {
+                    ...getAuthHeader(),
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    currentPassword: formData.currentPassword,
+                    newPassword: formData.newPassword
+                }),
+            })
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to change password")
+            }
+            setPasswordSuccess("Password changed successfully")
+
+            // Clear Password fields
+            setFormData((prev) => ({
+                ...prev,
+                currentPassword: "",
+                newPassword: "",
+                confirmPassword: ""
+            }))
+        } catch (error) {
+            setPasswordError(error.message || "Failed to change password. Please try again.")
+        } finally {
+            setIsLoading(false)
+        }
+
+    }
+
+    const handlePasswordChage = async (e) => {
+        e.preventDefault();
+        setPasswordError('');
+        setPasswordSuccess('');
+        setIsLoading(true);
+
+        // Validate passwords
+        if (formData.newPassword.length < 8) {
+            setPasswordError('New password must be at least 8 characters long');
+            setIsLoading(false);
+            return;
+        }
+
+        if (formData.newPassword !== formData.confirmPassword) {
+            setPasswordError('New passwords do not match');
+            setIsLoading(false);
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_ENDPOINTS.auth.changePasseword}`, {
+                method: 'POST',
+                headers: {
+                    ...getAuthHeader(),
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    currentPassword: formData.currentPassword,
+                    newPassword: formData.newPassword,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to change password');
+            }
+
+            setPasswordSuccess('Password changed successfully');
+            // Clear password fields
+            setFormData(prev => ({
+                ...prev,
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: '',
+            }));
+        } catch (error) {
+            setPasswordError(error.message || 'Failed to change password. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -282,7 +369,17 @@ const Settings = () => {
                         {activeTab === 'security' && (
                             <div>
                                 <h2 className="text-2xl font-bold text-gray-800 mb-6">Security Settings</h2>
-                                <form onSubmit={handleSubmit} className="space-y-6">
+                                <form onSubmit={handlePasswordChange} className="space-y-6">
+                                    {passwordError && (
+                                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
+                                            {passwordError}
+                                        </div>
+                                    )}
+                                    {passwordSuccess && (
+                                        <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-600">
+                                            {passwordSuccess}
+                                        </div>
+                                    )}
                                     <div className="space-y-4">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -296,6 +393,7 @@ const Settings = () => {
                                                     onChange={handleInputChange}
                                                     className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
                                                     placeholder="Enter current password"
+                                                    required
                                                 />
                                                 <button
                                                     type="button"
@@ -306,18 +404,28 @@ const Settings = () => {
                                                 </button>
                                             </div>
                                         </div>
-                                        <div>
+                                        <div className="relative">
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                                 New Password
                                             </label>
                                             <input
-                                                type="password"
+                                                type={showPassword ? "text" : "password"}
                                                 name="newPassword"
                                                 value={formData.newPassword}
                                                 onChange={handleInputChange}
                                                 className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
                                                 placeholder="Enter new password"
+                                                required
+                                                minLength={8}
                                             />
+                                            <button
+                                                type='button'
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                                            >
+                                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            </button>
+                                            <p className="mt-1 text-sm text-gray-500">Password must be at least 8 characters long</p>
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -330,6 +438,7 @@ const Settings = () => {
                                                 onChange={handleInputChange}
                                                 className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
                                                 placeholder="Confirm new password"
+                                                required
                                             />
                                         </div>
                                     </div>
@@ -392,16 +501,13 @@ const Settings = () => {
                                                     <CreditCard size={20} className="text-gray-600" />
                                                 </div>
                                                 <div>
-                                                    <h3 className="font-medium text-gray-800">Visa ending in 4242</h3>
-                                                    <p className="text-sm text-gray-600">Expires 12/24</p>
+                                                    <h3 className="font-medium text-gray-800">{latestOrder?.payment_method}</h3>
+                                                    <p className='text-sm text-gray-600'>Due to security reasons, we do not store your payment details. You can add a new payment method to your account.</p>
                                                 </div>
                                             </div>
                                             <button className="text-red-600 hover:text-red-700">Remove</button>
                                         </div>
                                     </div>
-                                    <button className="w-full p-4 border-2 border-dashed border-gray-200 rounded-xl text-gray-600 hover:border-green-500 hover:text-green-600 transition-colors">
-                                        + Add New Payment Method
-                                    </button>
                                 </div>
                             </div>
                         )}
@@ -414,19 +520,13 @@ const Settings = () => {
                                     <div className="p-4 border border-gray-200 rounded-xl">
                                         <div className="flex items-start justify-between">
                                             <div>
-                                                <h3 className="font-medium text-gray-800">Home Address</h3>
-                                                <p className="text-gray-600 mt-1">123 Main Street, Apt 4B</p>
-                                                <p className="text-gray-600">New York, NY 10001</p>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <button className="text-gray-600 hover:text-green-600">Edit</button>
-                                                <button className="text-red-600 hover:text-red-700">Remove</button>
+                                                <h3 className="font-medium text-gray-800">{latestOrder?.shipping_address?.fullName}</h3>
+                                                <p className="text-gray-600 mt-1">{latestOrder?.shipping_address?.street}</p>
+                                                <p className="text-gray-600">{latestOrder?.shipping_address?.city}, {latestOrder?.shipping_address?.state}, {latestOrder?.shipping_address?.pincode}</p>
                                             </div>
                                         </div>
+                                        <span className='text-sm text-gray-500'>This is the last address used in your most recent order</span>
                                     </div>
-                                    <button className="w-full p-4 border-2 border-dashed border-gray-200 rounded-xl text-gray-600 hover:border-green-500 hover:text-green-600 transition-colors">
-                                        + Add New Address
-                                    </button>
                                 </div>
                             </div>
                         )}
