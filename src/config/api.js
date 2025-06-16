@@ -49,7 +49,7 @@ const API_ENDPOINTS = {
   },
   allProducts: `${API_BASE_URL}/api/products`,
   orders: `${API_BASE_URL}/api/orders`,
-  invoices: `${API_BASE_URL}/api/invoices/:orderId`,
+  invoices: `${API_BASE_URL}/api/invoice/:orderId`,
   contact: `${API_BASE_URL}/api/contact`,
   messages: {
     list: `${API_BASE_URL}/api/messages`,

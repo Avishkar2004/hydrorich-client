@@ -48,8 +48,10 @@ const Orders = () => {
     const downloadInvoice = async (orderId) => {
         try {
             setDownloadingInvoices(prev => ({ ...prev, [orderId]: true }));
+
+            // Create a new AbortController with a longer timeout
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000);
+            const timeoutId = setTimeout(() => controller.abort(), 60000); // Increased to 60 seconds
 
             const response = await fetch(API_ENDPOINTS.invoices.replace(":orderId", orderId), {
                 credentials: "include",
@@ -60,30 +62,37 @@ const Orders = () => {
             clearTimeout(timeoutId);
 
             if (!response.ok) {
-                throw new Error('Failed to download invoice');
+                throw new Error(`Failed to download invoice: ${response.statusText}`);
             }
 
             const contentType = response.headers.get('content-type');
             if (!contentType || !contentType.includes('application/pdf')) {
-                throw new Error('Invalid response format');
+                throw new Error('Invalid response format: Expected PDF');
             }
 
             const blob = await response.blob();
             if (blob.size < 1000) {
-                throw new Error('Invalid PDF file received');
+                throw new Error('Invalid PDF file received: File too small');
             }
 
+            // Create and trigger download
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
             a.download = `invoice-${orderId}.pdf`;
             document.body.appendChild(a);
             a.click();
+
+            // Cleanup
             window.URL.revokeObjectURL(url);
             a.remove();
         } catch (error) {
             console.error("Error downloading invoice:", error);
-            alert(error.name === 'AbortError' ? "Download timed out. Please try again." : error.message || "Failed to download invoice.");
+            if (error.name === 'AbortError') {
+                alert("Download timed out. Please try again.");
+            } else {
+                alert(error.message || "Failed to download invoice. Please try again.");
+            }
         } finally {
             setDownloadingInvoices(prev => ({ ...prev, [orderId]: false }));
         }

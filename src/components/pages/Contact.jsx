@@ -99,7 +99,7 @@ const Contact = () => {
                                 </div>
                                 <div>
                                     <h3 className="font-medium text-gray-800">Email</h3>
-                                    <p className="text-gray-600">support@hydrorich.com</p>
+                                    <p className="text-gray-600">avishkarkakde2004@gmail.com</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">
@@ -108,7 +108,7 @@ const Contact = () => {
                                 </div>
                                 <div>
                                     <h3 className="font-medium text-gray-800">Phone</h3>
-                                    <p className="text-gray-600">+91 1234567890</p>
+                                    <p className="text-gray-600">+91 9322810348</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">
@@ -117,7 +117,7 @@ const Contact = () => {
                                 </div>
                                 <div>
                                     <h3 className="font-medium text-gray-800">Address</h3>
-                                    <p className="text-gray-600">123 Water Street, Mumbai, India</p>
+                                    <p className="text-gray-600">Pune, Maharashtra, India</p>
                                 </div>
                             </div>
                         </div>
