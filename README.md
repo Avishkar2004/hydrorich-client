@@ -1,54 +1,180 @@
-# React + TypeScript + Vite
+# Hydrorich Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend application for Hydrorich, built with React, Vite, and TypeScript. The application provides a modern interface for managing agricultural products, user interactions, and real-time chat functionality.
 
-Currently, two official plugins are available:
+## Prerequisites
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Node.js (v20 or higher)
+- npm or yarn package manager
+- Modern web browser
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React 19
+- Vite 6
+- TypeScript
+- TailwindCSS
+- Socket.io Client
+- React Router DOM
+- Zustand (State Management)
+- Chart.js (for analytics)
+- Framer Motion (for animations)
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Getting Started
+
+1. **Clone the repository**
+
+```bash
+git clone https://github.com/Avishkar2004/hydrorich-client
+cd client
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. **Install dependencies**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+npm install
+# or
+yarn install
 ```
+
+3. **Set up environment variables**
+
+Create a `.env` file in the client directory with the following variables:
+
+```env
+VITE_API_URL=http://localhost:8080
+VITE_SOCKET_URL=http://localhost:8080
+```
+
+4. **Start the development server**
+
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+The application will be available at `http://localhost:5173`
+
+## Available Scripts
+
+- `npm run dev` - Start the development server
+- `npm run build` - Build the production-ready application
+- `npm run lint` - Run ESLint for code quality
+- `npm run preview` - Preview the production build locally
+
+## Features
+
+- User authentication (including Google OAuth)
+- Product catalog and management
+- Real-time chat with admin support
+- Shopping cart functionality
+- Order tracking
+- Admin dashboard with analytics
+- Responsive design
+- Interactive product galleries
+
+## Project Structure
+
+```
+client/
+├── eslint.config.js           # ESLint configuration
+├── index.html                 # Entry HTML file
+├── package.json               # Project dependencies and scripts
+├── postcss.config.js         # PostCSS configuration
+├── public/                   # Public assets
+│   └── vite.svg
+├── src/
+│   ├── App.css               # Main application styles
+│   ├── App.jsx               # Main application component
+│   ├── decleration.d.ts
+│   ├── index.css
+│   ├── main.tsx
+│   ├── assets/
+│   │   ├── Collections/      # Product collection images
+│   │   │   ├── fungicide1.avif
+│   │   │   ├── insectiicide1.avif
+│   │   │   ├── micronutrients1.avif
+│   │   │   ├── organic.avif
+│   │   │   └── pgr.avif
+│   │   ├── Logo.jpg
+│   │   ├── Options/
+│   │   │   └── crops.png
+│   │   ├── products/
+│   │   │   ├── Hydrorich.jpg
+│   │   │   └── Hydrorich2.jpg
+│   │   └── react.svg
+│   ├── components/
+│   │   ├── admin/           # Admin dashboard components
+│   │   │   ├── AddProduct.jsx
+│   │   │   ├── AdminAllProducts.jsx
+│   │   │   ├── AdminMessenger.jsx
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── OrderAnalytics.jsx
+│   │   │   ├── PaymentStatus.jsx
+│   │   │   ├── PerformanceMetrics.jsx
+│   │   │   └── ProtectedAdminRoute.jsx
+│   │   ├── Footer.jsx
+│   │   ├── Header.jsx
+│   │   ├── Messenger.jsx
+│   │   └── pages/          # Main application pages
+│   │       ├── AboutUs.jsx
+│   │       ├── AddToCart.jsx
+│   │       ├── AllProductDetail.jsx
+│   │       ├── AllProducts.jsx
+│   │       ├── Cart.jsx
+│   │       ├── Checkout.jsx
+│   │       ├── Contact.jsx
+│   │       ├── FAQ.jsx
+│   │       ├── Login.jsx
+│   │       ├── Orders.jsx
+│   │       ├── OrderSuccess.jsx
+│   │       ├── OrderTracking.jsx
+│   │       ├── Profile.jsx
+│   │       ├── Settings.jsx
+│   │       ├── SignUp.jsx
+│   │       ├── Wishlist.jsx
+│   │       ├── crop/
+│   │       ├── fungicide/
+│   │       ├── Insecticide/
+│   │       ├── micronutrients/
+│   │       ├── organicproduct/
+│   │       └── pgr/
+│   ├── config/
+│   │   └── api.js          # API configuration
+│   ├── hooks/
+│   │   └── useAuth.js      # Authentication hook
+│   ├── services/           # API services
+│   │   ├── authService.js
+│   │   ├── cartService.js
+│   │   └── wishlistService.js
+│   ├── store/             # State management
+│   │   ├── cartStore.js
+│   │   ├── searchStore.js
+│   │   └── wishlistStore.js
+│   └── utils/
+│       ├── socket.js      # Socket.io configuration
+│       └── utils.js       # Utility functions
+├── tailwind.config.js     # Tailwind CSS configuration
+├── tsconfig.json         # TypeScript configuration
+├── tsconfig.node.json    # Node-specific TS config
+└── vite.config.ts       # Vite configuration
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## Build for Production
+
+```bash
+npm run build
+# or
+yarn build
+```
+
+The built files will be in the `dist` directory, ready for deployment.
