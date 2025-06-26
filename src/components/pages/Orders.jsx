@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth.js";
 import { API_ENDPOINTS, getAuthHeader } from "../../config/api.js";
-import { Package, Loader2, Calendar, MapPin, CreditCard, ChevronRight, ShoppingBag, Truck, CheckCircle2, ArrowRight, ArrowLeft, Download, FileDown, Clock } from "lucide-react";
+import { Package, Loader2, Calendar, MapPin, CreditCard, ChevronRight, ShoppingBag, Truck, CheckCircle2, ArrowRight, ArrowLeft, Download, FileDown, Clock, MessageCircle } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
+import ReviewModal from "../ui/ReviewModal.jsx";
 
 const Orders = () => {
     const { user } = useAuth();
@@ -11,6 +12,9 @@ const Orders = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [downloadingInvoices, setDownloadingInvoices] = useState({});
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [selectedOrderId, setSelectedOrderId] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -127,6 +131,17 @@ const Orders = () => {
             case 'failed': return 'bg-red-100 text-red-800 border-red-200';
             default: return 'bg-gray-100 text-gray-800 border-gray-200';
         }
+    };
+
+    const handleReviewClick = (product, orderId) => {
+        setSelectedProduct(product);
+        setSelectedOrderId(orderId);
+        setIsModalOpen(true);
+    };
+
+    const handleReviewSubmitted = () => {
+        // Optionally refresh orders or show success message
+        setIsModalOpen(false);
     };
 
     if (!user) {
@@ -308,6 +323,15 @@ const Orders = () => {
                                                         <p className="text-sm font-medium text-green-600">
                                                             ₹{(item.price_per_unit * item.quantity)?.toLocaleString() || '0'}
                                                         </p>
+                                                        {order.status === 'delivered' && (
+                                                            <button
+                                                                onClick={() => handleReviewClick(item, order.id)}
+                                                                className="mt-2 inline-flex items-center gap-1 text-xs bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition-colors"
+                                                            >
+                                                                <MessageCircle size={12} />
+                                                                Review
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </div>
                                             ))
@@ -323,6 +347,17 @@ const Orders = () => {
                     ))}
                 </div>
             </div>
+
+            {/* Review Modal */}
+            {selectedProduct && (
+                <ReviewModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    product={selectedProduct}
+                    orderId={selectedOrderId}
+                    onReviewSubmitted={handleReviewSubmitted}
+                />
+            )}
         </div>
     );
 };

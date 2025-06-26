@@ -31,6 +31,7 @@ import FungicideList from "../components/pages/fungicide/FungicideList.jsx";
 import Checkout from "../components/pages/Checkout.jsx";
 import OrderSuccess from "../components/pages/OrderSuccess.jsx";
 import Orders from "../components/pages/Orders.jsx";
+import ReviewableOrders from "../components/pages/ReviewableOrders.jsx";
 import PgrDetails from "../components/pages/pgr/PgrDetails.jsx";
 import MicroNutrientDetails from "../components/pages/micronutrients/MicroNutrientDetails.jsx";
 import InsecticideDetails from "../components/pages/Insecticide/InsecticideDetails.jsx";
@@ -103,6 +104,7 @@ const AppRoutes = () => {
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/orders" element={<Orders />} />
+                <Route path="/reviewable-orders" element={<ReviewableOrders />} />
                 <Route path="/order-success" element={<OrderSuccess />} />
                 <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
                 <Route path="/messages" element={<Messenger />} />

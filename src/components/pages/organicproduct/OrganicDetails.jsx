@@ -6,6 +6,7 @@ import useCartStore from '../../../store/cartStore.js';
 import useWishlistStore from '../../../store/wishlistStore.js';
 import AddToCart from '../../pages/AddToCart.jsx';
 import { useAuth } from '../../../hooks/useAuth.js';
+import ReviewSection from '../../ui/ReviewSection.jsx';
 
 function OrganicDetails() {
     const { id } = useParams();
@@ -198,19 +199,12 @@ function OrganicDetails() {
                                 <li className="flex items-center gap-2"><CheckCircle className="text-green-500" size={16} /> Genuine product guarantee</li>
                             </ul>
                         </div>
-
                         {/* Reviews */}
-                        <div className="mt-6">
-                            <h2 className="font-semibold text-lg text-green-900">Customer Reviews</h2>
-                            <div className="flex items-center gap-1 mt-1">
-                                <Star className="text-yellow-500" size={18} />
-                                <Star className="text-yellow-500" size={18} />
-                                <Star className="text-yellow-500" size={18} />
-                                <Star className="text-yellow-500" size={18} />
-                                <Star className="text-gray-300" size={18} />
-                                <span className="ml-2 text-sm text-gray-600">4.2/5 based on 87 reviews</span>
-                            </div>
-                        </div>
+                        <ReviewSection
+                            productId={productId}
+                            averageRating={product.average_rating || 0}
+                            reviewCount={product.review_count || 0}
+                        />
                     </div>
 
                     {/* Add to Cart Button */}

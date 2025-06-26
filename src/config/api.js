@@ -51,6 +51,12 @@ const API_ENDPOINTS = {
   orders: `${API_BASE_URL}/api/orders`,
   invoices: `${API_BASE_URL}/api/invoice/:orderId`,
   contact: `${API_BASE_URL}/api/contact`,
+  reviews: {
+    submit: `${API_BASE_URL}/api/reviews/submit`,
+    product: `${API_BASE_URL}/api/reviews/product`,
+    reviewableOrders: `${API_BASE_URL}/api/reviews/reviewable-orders`,
+    delete: `${API_BASE_URL}/api/reviews`,
+  },
   messages: {
     list: `${API_BASE_URL}/api/messages`,
     send: `${API_BASE_URL}/api/messages/send`,

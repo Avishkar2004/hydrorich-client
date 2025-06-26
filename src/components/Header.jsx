@@ -13,7 +13,8 @@ import {
   Settings,
   MessageSquare,
   FileText,
-  ChevronDown
+  ChevronDown,
+  Star
 } from "lucide-react";
 import useWishlistStore from "../store/wishlistStore.js";
 
@@ -154,6 +155,11 @@ export default function Header() {
                       <ShoppingCart size={16} /> My Orders
                     </Link>
                     <Link
+                      to="/reviewable-orders"
+                      className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition">
+                      <Star size={16} /> Write Reviews
+                    </Link>
+                    <Link
                       to="/settings"
                       className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition">
                       <Settings size={16} /> Settings
@@ -252,6 +258,11 @@ export default function Header() {
                   to="/orders"
                   className="flex items-center gap-2 text-sm hover:text-green-600 transition">
                   <ShoppingCart size={16} /> My Orders
+                </Link>
+                <Link
+                  to="/reviewable-orders"
+                  className="flex items-center gap-2 text-sm hover:text-green-600 transition">
+                  <Star size={16} /> Write Reviews
                 </Link>
                 <Link
                   to="/settings"
