@@ -21,7 +21,7 @@ const OrderSuccess = () => {
                         <ArrowRight size={20} />
                     </Link>
                     <Link
-                        to="/pgr"
+                        to="/pgrs"
                         className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-600 hover:bg-gray-50 px-8 py-3 rounded-xl transition-all duration-300 w-full"
                     >
                         Continue Shopping

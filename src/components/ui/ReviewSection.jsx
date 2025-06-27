@@ -33,7 +33,7 @@ const ReviewSection = ({ productId, averageRating = 0, reviewCount = 0 }) => {
         setReviews(data.data.reviews);
         setPagination(data.data.pagination);
       } else {
-        setError('Failed to load reviews');
+        setError('');
       }
     } catch (err) {
       setError('Network error. Please try again.');
@@ -72,9 +72,8 @@ const ReviewSection = ({ productId, averageRating = 0, reviewCount = 0 }) => {
       <Star
         key={i}
         size={16}
-        className={`${
-          i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
-        }`}
+        className={`${i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+          }`}
       />
     ));
   };
@@ -205,11 +204,11 @@ const ReviewSection = ({ productId, averageRating = 0, reviewCount = 0 }) => {
               >
                 <ChevronLeft size={16} />
               </button>
-              
+
               <span className="text-sm text-gray-600">
                 Page {pagination.currentPage} of {pagination.totalPages}
               </span>
-              
+
               <button
                 onClick={() => setCurrentPage(currentPage + 1)}
                 disabled={!pagination.hasNextPage}
