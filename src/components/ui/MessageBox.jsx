@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MessageSquare, Bell } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../../hooks/useAuth.js';
@@ -29,12 +29,15 @@ const MessageBox = () => {
     }, []);
 
     const handleClick = () => {
-        if (user.email === "avishkarkakde2004@gmail.com") {
-            navigate("/admin/messages")
+        if (!user) {
+            navigate('/login');
+        } else if (user.email === "avishkarkakde2004@gmail.com") {
+            navigate("/admin/messages");
         } else {
-            navigate("/messages")
+            navigate("/messages");
         }
     };
+
 
     return (
         <div
@@ -67,7 +70,16 @@ const MessageBox = () => {
                         <Bell className="w-4 h-4" />
                         <span>Messages</span>
                     </div>
-                    {unreadCount > 0 && (
+                    {user ? (
+                        <div className='mt-1 text-center text-sm font-semibold text-green-300'>
+                            Click to view your messages
+                        </div>
+                    ) : (
+                        <div className='mt-1 text-center text-sm font-semibold text-red-400'>
+                            You are not logged in
+                        </div>
+                    )}
+                    {unreadCount > 0 && user && (
                         <div className="text-xs text-gray-300 mt-1">
                             {unreadCount} unread message{unreadCount !== 1 ? 's' : ''}
                         </div>

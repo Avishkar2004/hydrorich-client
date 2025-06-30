@@ -18,6 +18,7 @@ const AdminMessenger = () => {
   const socketRef = useRef(null);
   const [isTyping, setIsTyping] = useState(false);
   const typingTimeoutRef = useRef(null);
+  const [autoSelectedUser, setAutoSelectedUser] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -25,53 +26,132 @@ const AdminMessenger = () => {
       return;
     }
 
-    // Initialize socket connection
-    socketRef.current = io(API_ENDPOINTS.socket, {
-      withCredentials: true,
-      auth: {
-        token: user.token
-      }
-    });
-
-    // Join admin room
-    socketRef.current.emit('joinAdmin');
-
-    // Listen for new messages
-    socketRef.current.on('new_message', (message) => {
-      console.log('New message received:', message);
-      if (selectedUser && message.sender_id === selectedUser.id) {
-        setMessages(prevMessages => {
-          if (prevMessages.some(m => m.id === message.id)) {
-            return prevMessages;
-          }
-          return [...prevMessages, message];
+    const initializeSocket = async () => {
+      try {
+        // Fetch session data for socket authentication
+        const sessionResponse = await fetch(`${API_ENDPOINTS.auth.base}/session`, {
+          credentials: 'include'
         });
-        scrollToBottom();
+
+        if (!sessionResponse.ok) {
+          throw new Error('Failed to get session');
+        }
+
+        const sessionData = await sessionResponse.json();
+
+        // Initialize socket connection with session
+        socketRef.current = io(API_ENDPOINTS.socket, {
+          withCredentials: true,
+          auth: {
+            session: sessionData.session
+          }
+        });
+
+        // Join admin room
+        socketRef.current.emit('joinAdmin');
+
+        // Listen for new messages
+        socketRef.current.on('new_message', (message) => {
+          console.log('New message received in admin:', message);
+          console.log('Selected user ID:', selectedUser?.id);
+          console.log('Message sender ID:', message.sender_id);
+
+          // If no user is selected, or the message is from a different user, auto-select the sender
+          if (!selectedUser || message.sender_id !== selectedUser.id) {
+            console.log('Auto-selecting user:', message.sender_id);
+            // Find the user in the users list or create a new user object
+            const senderUser = users.find(u => u.id === message.sender_id) || {
+              id: message.sender_id,
+              name: message.sender_name || 'Unknown User',
+              email: 'No email available',
+              lastMessage: message.content,
+              lastMessageTime: message.created_at
+            };
+
+            // If the user doesn't exist in the users list, add them
+            if (!users.find(u => u.id === message.sender_id)) {
+              setUsers(prevUsers => [...prevUsers, senderUser]);
+            }
+
+            setSelectedUser(senderUser);
+            setAutoSelectedUser(true);
+
+            // Clear the auto-selection notification after 3 seconds
+            setTimeout(() => setAutoSelectedUser(false), 3000);
+
+            // Add the message to the conversation immediately
+            setMessages(prevMessages => {
+              console.log('Adding message to conversation (auto-select):', message);
+              const newMessages = [...prevMessages, message];
+              console.log('Updated messages (auto-select):', newMessages);
+              return newMessages;
+            });
+            scrollToBottom();
+          } else {
+            // Message is from currently selected user
+            setMessages(prevMessages => {
+              console.log('Current messages before update:', prevMessages);
+
+              // Check if message already exists by content and sender
+              const exists = prevMessages.some(m =>
+                m.content === message.content &&
+                m.sender_id === message.sender_id &&
+                Math.abs(new Date(m.created_at) - new Date(message.created_at)) < 5000 // Within 5 seconds
+              );
+
+              console.log('Message exists check:', exists);
+
+              if (exists) {
+                // Replace temporary message with real message
+                const updatedMessages = prevMessages.map(m =>
+                  (m.content === message.content &&
+                    m.sender_id === message.sender_id &&
+                    Math.abs(new Date(m.created_at) - new Date(message.created_at)) < 5000)
+                    ? message
+                    : m
+                );
+                console.log('Updated messages (replaced):', updatedMessages);
+                return updatedMessages;
+              }
+
+              const newMessages = [...prevMessages, message];
+              console.log('Updated messages (added):', newMessages);
+              return newMessages;
+            });
+            scrollToBottom();
+          }
+
+          // Refresh users list to show new message sender
+          fetchUsers();
+        });
+
+        // Listen for typing indicators
+        socketRef.current.on('user_typing', (data) => {
+          if (selectedUser && data.user_id === selectedUser.id) {
+            setIsTyping(data.isTyping);
+          }
+        });
+
+        // Listen for admin room join confirmation
+        socketRef.current.on('admin_room_joined', () => {
+          console.log('Admin room joined successfully');
+        });
+
+        // Listen for errors
+        socketRef.current.on('error', (error) => {
+          console.error('Socket error:', error);
+          setError('Connection error. Please refresh the page.');
+        });
+
+        // Fetch users immediately
+        fetchUsers();
+      } catch (error) {
+        console.error('Error initializing socket:', error);
+        setLoading(false);
       }
-      // Refresh users list to show new message sender
-      fetchUsers();
-    });
+    };
 
-    // Listen for typing indicators
-    socketRef.current.on('user_typing', (data) => {
-      if (selectedUser && data.user_id === selectedUser.id) {
-        setIsTyping(data.isTyping);
-      }
-    });
-
-    // Listen for admin room join confirmation
-    socketRef.current.on('admin_room_joined', () => {
-      console.log('Admin room joined successfully');
-    });
-
-    // Listen for errors
-    socketRef.current.on('error', (error) => {
-      console.error('Socket error:', error);
-      setError('Connection error. Please refresh the page.');
-    });
-
-    // Fetch users immediately
-    fetchUsers();
+    initializeSocket();
 
     return () => {
       if (socketRef.current) {
@@ -86,17 +166,27 @@ const AdminMessenger = () => {
 
   useEffect(() => {
     if (selectedUser) {
+      console.log('Joining chat room with user:', selectedUser.id);
       // Join the chat room with the selected user
       socketRef.current?.emit('join_chat', selectedUser.id);
       fetchMessages(selectedUser.id);
     }
     return () => {
       if (selectedUser) {
+        console.log('Leaving chat room with user:', selectedUser.id);
         // Leave the chat room when component unmounts or user changes
         socketRef.current?.emit('leave_chat', selectedUser.id);
       }
     };
   }, [selectedUser]);
+
+  // Auto-fetch messages when selectedUser changes
+  useEffect(() => {
+    if (selectedUser && socketRef.current) {
+      console.log('Auto-fetching messages for selected user:', selectedUser.id);
+      fetchMessages(selectedUser.id);
+    }
+  }, [selectedUser?.id]); // Only trigger when user ID changes
 
   const fetchUsers = async () => {
     try {
@@ -155,7 +245,7 @@ const AdminMessenger = () => {
       }
 
       const messagesData = response.data.data || [];
-      console.log('Sorted messages:', messagesData);
+      console.log('Fetched messages data:', messagesData);
       setMessages(messagesData);
       scrollToBottom();
     } catch (error) {
@@ -171,6 +261,16 @@ const AdminMessenger = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Debug messages state changes
+  useEffect(() => {
+    console.log('Admin messages state changed:', messages);
+  }, [messages]);
+
+  // Debug selected user changes
+  useEffect(() => {
+    console.log('Selected user changed:', selectedUser);
+  }, [selectedUser]);
 
   const handleTyping = () => {
     if (selectedUser) {
@@ -194,37 +294,33 @@ const AdminMessenger = () => {
 
     setSending(true);
     try {
-      console.log('Sending message to user:', selectedUser.id);
-      const response = await axios.post(
-        API_ENDPOINTS.messages.admin.send,
-        {
-          receiver_id: selectedUser.id,
-          content: newMessage.trim()
-        },
-        {
-          withCredentials: true,
-          headers: {
-            'Authorization': `Bearer ${user.token}`
-          }
-        }
-      );
+      console.log('Sending message via socket to user:', selectedUser.id);
+      console.log('Selected user object:', selectedUser);
 
-      console.log('Send message response:', response.data);
-
-      if (!response.data || !response.data.success) {
-        throw new Error('Invalid response from server');
-      }
-
-      const sentMessage = response.data.data;
-      setMessages(prev => [...prev, sentMessage]);
-      setNewMessage('');
-      scrollToBottom();
-
-      // Emit the message through socket
+      // Send message via socket
       socketRef.current?.emit('send_message', {
         receiver_id: selectedUser.id,
         content: newMessage.trim()
       });
+
+      // Optimistically add message to UI
+      const tempMessage = {
+        id: Date.now(), // Temporary ID
+        sender_id: user.id,
+        receiver_id: selectedUser.id,
+        content: newMessage.trim(),
+        created_at: new Date().toISOString(),
+        sender_name: 'Admin'
+      };
+
+      console.log('Adding temporary message:', tempMessage);
+      setMessages(prev => {
+        const newMessages = [...prev, tempMessage];
+        console.log('Messages after adding temp:', newMessages);
+        return newMessages;
+      });
+      setNewMessage('');
+      scrollToBottom();
     } catch (error) {
       console.error('Error sending message:', error);
       setError('Failed to send message. Please try again.');
@@ -258,19 +354,17 @@ const AdminMessenger = () => {
   }
 
   return (
-    <div className="flex h-[800px] bg-white rounded-2xl shadow-xl overflow-hidden">
-      {/* Users List */}
-      <div className="w-1/4 border-r bg-gray-50">
-        <div className="p-6 bg-gradient-to-r from-green-600 to-green-700 text-white">
-          <h2 className="text-xl font-bold mb-2">Support Inbox</h2>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search users..."
-              className="w-full p-2 pl-8 bg-white/20 rounded-lg text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50"
-            />
-            <Search className="w-4 h-4 absolute left-2 top-3 text-white/70" />
-          </div>
+    <div className="flex h-screen bg-gray-100">
+      <div className="w-1/3 bg-white border-r border-gray-200 flex flex-col">
+        <div className="p-4 border-b border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-800">Customer Messages</h2>
+          {autoSelectedUser && selectedUser && (
+            <div className="mt-2 p-2 bg-blue-100 border border-blue-300 rounded-md">
+              <p className="text-sm text-blue-700">
+                Auto-selected conversation with <strong>{selectedUser.name}</strong>
+              </p>
+            </div>
+          )}
         </div>
         <div className="overflow-y-auto h-[calc(100%-8rem)]">
           {users.length === 0 ? (

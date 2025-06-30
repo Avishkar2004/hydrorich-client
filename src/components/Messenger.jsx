@@ -12,6 +12,7 @@ const Messenger = () => {
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [socketConnected, setSocketConnected] = useState(false);
   const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
 
@@ -21,36 +22,122 @@ const Messenger = () => {
       return;
     }
 
-    // Initialize socket connection
-    socketRef.current = io(API_ENDPOINTS.socket, {
-      withCredentials: true,
-      auth: {
-        token: user.token
-      }
-    });
+    const initializeSocket = async () => {
+      try {
+        // Fetch session data for socket authentication
+        const sessionResponse = await fetch(`${API_ENDPOINTS.auth.base}/session`, {
+          credentials: 'include'
+        });
 
-    // Join user's room
-    socketRef.current.emit('join', user.id);
-
-    // Listen for new messages
-    socketRef.current.on('new_message', (message) => {
-      console.log('New message received:', message);
-      setMessages(prev => {
-        // Check if message already exists
-        if (prev.some(m => m.id === message.id)) {
-          return prev;
+        if (!sessionResponse.ok) {
+          throw new Error('Failed to get session');
         }
-        return [...prev, message];
-      });
-      scrollToBottom();
-    });
 
-    // Fetch existing messages
-    fetchMessages();
+        const sessionData = await sessionResponse.json();
+
+        // Initialize socket connection with session
+        socketRef.current = io(API_ENDPOINTS.socket, {
+          withCredentials: true,
+          auth: {
+            session: sessionData.session
+          }
+        });
+
+        // Socket connection events
+        socketRef.current.on('connect', () => {
+          console.log('Socket connected');
+          setSocketConnected(true);
+        });
+
+        socketRef.current.on('disconnect', () => {
+          console.log('Socket disconnected');
+          setSocketConnected(false);
+        });
+
+        socketRef.current.on('connect_error', (error) => {
+          console.error('Socket connection error:', error);
+          setSocketConnected(false);
+        });
+
+        // Join user's room
+        socketRef.current.emit('join', user.id);
+        // console.log('Joined user room:', `user_${user.id}`);
+
+        // Listen for new messages
+        socketRef.current.on('new_message', (message) => {
+          // console.log('New message received:', message);
+          // console.log('Current user ID:', user.id);
+          // console.log('Message sender ID:', message.sender_id);
+          // console.log('Message receiver ID:', message.receiver_id);
+          setMessages(prev => {
+            // console.log('Current messages before update:', prev);
+
+            // Check if message already exists by content and sender
+            const exists = prev.some(m =>
+              m.content === message.content &&
+              m.sender_id === message.sender_id &&
+              Math.abs(new Date(m.created_at) - new Date(message.created_at)) < 5000 // Within 5 seconds
+            );
+
+            // console.log('Message exists check:', exists);
+
+            if (exists) {
+              // Replace temporary message with real message
+              const updatedMessages = prev.map(m =>
+                (m.content === message.content &&
+                  m.sender_id === message.sender_id &&
+                  Math.abs(new Date(m.created_at) - new Date(message.created_at)) < 5000)
+                  ? message
+                  : m
+              );
+              // console.log('Updated messages (replaced):', updatedMessages);
+              return updatedMessages;
+            }
+
+            const newMessages = [...prev, message];
+            // console.log('Updated messages (added):', newMessages);
+            return newMessages;
+          });
+          scrollToBottom();
+        });
+
+        // Listen for message notifications
+        socketRef.current.on('message_notification', (message) => {
+          // console.log('Message notification received:', message);
+          setMessages(prev => {
+            // Check if message already exists by content and sender
+            const exists = prev.some(m =>
+              m.content === message.content &&
+              m.sender_id === message.sender_id &&
+              Math.abs(new Date(m.created_at) - new Date(message.created_at)) < 5000 // Within 5 seconds
+            );
+
+            if (exists) {
+              return prev;
+            }
+
+            return [...prev, message];
+          });
+          scrollToBottom();
+        });
+
+        // Fetch existing messages
+        fetchMessages();
+      } catch (error) {
+        console.error('Error initializing socket:', error);
+        setLoading(false);
+      }
+    };
+
+    initializeSocket();
 
     return () => {
       if (socketRef.current) {
         socketRef.current.off('new_message');
+        socketRef.current.off('message_notification');
+        socketRef.current.off('connect');
+        socketRef.current.off('disconnect');
+        socketRef.current.off('connect_error');
         socketRef.current.disconnect();
       }
     };
@@ -58,7 +145,7 @@ const Messenger = () => {
 
   const fetchMessages = async () => {
     try {
-      console.log('Fetching messages...');
+      // console.log('Fetching messages...');
       const response = await axios.get(API_ENDPOINTS.messages.list, {
         withCredentials: true,
         headers: {
@@ -66,14 +153,14 @@ const Messenger = () => {
         }
       });
 
-      console.log('Messages response:', response.data);
+      // console.log('Messages response:', response.data);
 
       if (!response.data || !response.data.success) {
         throw new Error('Invalid response from server');
       }
 
       const messagesData = response.data.data || [];
-      console.log('Processed messages:', messagesData);
+      // console.log('Processed messages:', messagesData);
 
       // Sort messages by timestamp
       messagesData.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
@@ -94,35 +181,43 @@ const Messenger = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Debug messages state changes
+  useEffect(() => {
+    // console.log('Messages state changed:', messages);
+  }, [messages]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || !socketConnected) return;
 
     setSending(true);
     try {
-      console.log('Sending message to admin...');
-      const response = await axios.post(
-        API_ENDPOINTS.messages.send,
-        {
-          receiver_id: 'admin',
-          content: newMessage.trim()
-        },
-        {
-          withCredentials: true,
-          headers: {
-            'Authorization': `Bearer ${user.token}`
-          }
-        }
-      );
+      // console.log('Sending message via socket...');
+      // console.log('User ID:', user.id);
+      // console.log('User object:', user);
 
-      console.log('Send message response:', response.data);
+      // Send message via socket
+      socketRef.current.emit('send_message', {
+        receiver_id: 'admin',
+        content: newMessage.trim()
+      });
 
-      if (!response.data || !response.data.success) {
-        throw new Error('Invalid response from server');
-      }
+      // Optimistically add message to UI
+      const tempMessage = {
+        id: Date.now(), // Temporary ID
+        sender_id: user.id,
+        receiver_id: 'admin',
+        content: newMessage.trim(),
+        created_at: new Date().toISOString(),
+        sender_name: user.name || user.displayName?.split(" ")[0]
+      };
 
-      const sentMessage = response.data.data;
-      setMessages(prev => [...prev, sentMessage]);
+      // console.log('Adding temporary message:', tempMessage);
+      setMessages(prev => {
+        const newMessages = [...prev, tempMessage];
+        // console.log('Messages after adding temp:', newMessages);
+        return newMessages;
+      });
       setNewMessage('');
       scrollToBottom();
     } catch (error) {
@@ -179,12 +274,18 @@ const Messenger = () => {
           <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
             <MessageCircle className="w-6 h-6" />
           </div>
-          <div>
+          <div className="flex-1">
             <h2 className="text-2xl font-bold">Support Chat</h2>
             <p className="text-green-100 flex items-center text-sm">
               <Clock className="w-4 h-4 mr-1" />
               We typically respond within 24 hours
             </p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className={`w-3 h-3 rounded-full ${socketConnected ? 'bg-green-400' : 'bg-red-400'}`}></div>
+            <span className="text-xs text-green-100">
+              {socketConnected ? 'Connected' : 'Disconnected'}
+            </span>
           </div>
         </div>
       </div>
@@ -237,13 +338,17 @@ const Messenger = () => {
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type your message..."
-            className="flex-1 p-3 border-2 border-gray-200 rounded-full focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition duration-200"
+            placeholder={socketConnected ? "Type your message..." : "Connecting..."}
+            disabled={!socketConnected}
+            className={`flex-1 p-3 border-2 rounded-full focus:outline-none focus:ring-2 transition duration-200 ${socketConnected
+              ? 'border-gray-200 focus:border-green-500 focus:ring-green-200'
+              : 'border-gray-300 bg-gray-100 cursor-not-allowed'
+              }`}
           />
           <button
             type="submit"
-            disabled={sending || !newMessage.trim()}
-            className={`p-3 rounded-full transition duration-200 flex items-center justify-center ${sending || !newMessage.trim()
+            disabled={sending || !newMessage.trim() || !socketConnected}
+            className={`p-3 rounded-full transition duration-200 flex items-center justify-center ${sending || !newMessage.trim() || !socketConnected
               ? 'bg-gray-300 cursor-not-allowed'
               : 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
               }`}
